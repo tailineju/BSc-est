@@ -1,0 +1,48 @@
+---
+title: "Lista 1"
+subtitle: "ESTATÍSTICA COMPUTACIONAL"
+author: "Tailine J. S. Nonato"
+date: "09/09/2023"
+format:
+  html:
+    code-fold: true
+---
+
+## Rizzo 5.2
+
+Q: Compute a Monte Carlo estimate of the standard
+normal cdf, by generating from the Uniform($\theta$,$x$) distribution. Compare your estimates with the normal cdf function pnorm. Compute an estimate of the variance of your Monte Carlo estimate of $\phi$(2), and a 95% confidence interval for $\phi$(2).
+
+```{r, echo=FALSE, message=FALSE}
+#loading packages
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse)
+```
+
+To answer the questions, the first step is creating the 
+
+```{r}
+#creating a function
+phi.mc <- function(x, n){
+    x.abs=abs(x)
+    i=(1/n)*(x.abs/sqrt(2*pi))*sum(exp(((-runif(n,max=x.abs)^2)/2)))
+    if(x>=0){return(0.5+i)}
+    if(x<0){return(0.5-i)}
+}
+
+phi.mc(2,1000)
+x.seq<-seq(-3,3,0.5)
+phi.mc.seq<- lapply(x.seq, phi.mc(x.seq,1000))
+pnorm.seq<-pnorm(x.seq)
+cbind(x.seq,phi.mc.seq,pnorm.seq)
+```
+
+If we run the function using x=2 and n=1000, we get:
+```{r}
+phi.mc(0,1000)
+```
+
+Now, comparing the estimates with pnorm we get the following table:
+
+
+## Rizzo 3.3

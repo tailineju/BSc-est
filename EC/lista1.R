@@ -1,4 +1,5 @@
-library("tidyverse")
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse)
 
 phi.mc <- function(x, n){
     x.abs=abs(x)
