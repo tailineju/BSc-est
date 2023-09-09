@@ -1,0 +1,38 @@
+install.packages("tidyverse")
+library("tidyverse")
+
+massa <- c(62, 62.9, 36.1, 54.6, 48.5, 42, 47.4, 50.6, 42, 48.7, 40.3, 33.1, 51.9, 42.4, 34.5, 51.1, 41.2, 51.9, 46.9)
+taxa <- c(1792, 1666, 995, 1425, 1396, 1418, 1362, 1502, 1256, 1614, 1189, 913, 1460, 1124, 1052, 1347,1204,1867,1439)
+
+df <- data.frame(massa,taxa)
+
+summary(df$massa)
+sd(df$massa)
+cf_x <- sd(df$massa)/mean(df$massa)
+
+summary(df$taxa)
+mean(df$taxa)
+sd(df$taxa)
+cf_y <- sd(df$taxa)/mean(df$taxa)
+
+boxplot(df$massa)
+boxplot(df$taxa)
+
+ggplot(df, aes(x=massa,y=taxa)) +
+geom_point()
+stat_smooth(method = "lm",
+              formula = y ~ x,
+              geom = "smooth")
+
+
+cor(df$massa,df$taxa)
+
+#h0: p = 0
+#h1: p != 0
+
+cor.test(massa, taxa)
+
+#h0: p = 0
+#h1: p > 0
+
+cor.test(massa, taxa, alternative="greater")
