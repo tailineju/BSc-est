@@ -51,5 +51,37 @@ ybarra<- mean(taxa)
 beta1<- (sum(df$xiyi) - (n*xbarra*ybarra))/(sum(df$xi2)-(n*(xbarra)^2))
 beta0<- ybarra - (beta1*xbarra)
 
-df$estim <- beta0 + (beta1*df$massa)
+df$estim <- beta0 + (beta1*df$massa) #media de taxa de metabolismo
 
+df$residuo<- df$taxa - df$estim
+df$residuo2 <- df$residuo^2
+
+sum(df$residuo) #==0
+
+sum(df$residuo2) #minimo (menor soma possivel)
+
+sum(df$taxa) 
+#==
+sum(df$estim)
+
+df$xiei <- df$massa * df$residuo
+
+sum(df$xiei) #==0
+
+df$yiei <- df$estim * df$residuo
+
+sum(df$yiei) #==0
+
+beta0 + (beta1*xbarra) #==ybarra
+
+#estim variancia
+sigma2 <- (sum(df$residuo2))/(n-2)
+
+#denom variancias
+denom <- sum(df$xi2) - (n*(xbarra^2))
+
+s2beta0 <- sigma2 * (sum(df$xi2)/(n*denom))
+s2beta1 <- sigma2/denom
+
+sbeta1 <- sqrt(s2beta1)
+sbeta0 <- sqrt(s2beta0)
