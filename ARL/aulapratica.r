@@ -1,9 +1,10 @@
-install.packages("tidyverse")
-library("tidyverse")
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse)
 
 massa <- c(62, 62.9, 36.1, 54.6, 48.5, 42, 47.4, 50.6, 42, 48.7, 40.3, 33.1, 51.9, 42.4, 34.5, 51.1, 41.2, 51.9, 46.9)
 taxa <- c(1792, 1666, 995, 1425, 1396, 1418, 1362, 1502, 1256, 1614, 1189, 913, 1460, 1124, 1052, 1347,1204,1867,1439)
 
+# aula pratica 01/09
 df <- data.frame(massa,taxa)
 
 summary(df$massa)
@@ -36,3 +37,19 @@ cor.test(massa, taxa)
 #h1: p > 0
 
 cor.test(massa, taxa, alternative="greater")
+
+
+## #############################################
+#aula pratica 15/09
+
+df$xiyi<- massa*taxa
+df$xi2<- massa^2
+n<-nrow(df)
+xbarra<- mean(massa)
+ybarra<- mean(taxa)
+
+beta1<- (sum(df$xiyi) - (n*xbarra*ybarra))/(sum(df$xi2)-(n*(xbarra)^2))
+beta0<- ybarra - (beta1*xbarra)
+
+df$estim <- beta0 + (beta1*df$massa)
+
