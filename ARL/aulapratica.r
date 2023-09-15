@@ -85,3 +85,11 @@ s2beta1 <- sigma2/denom
 
 sbeta1 <- sqrt(s2beta1)
 sbeta0 <- sqrt(s2beta0)
+
+cf.var.b1 <- sbeta1/beta1
+cf.var.b0 <- sbeta0/beta0
+
+
+covb1b0 <- -xbarra*s2beta1 #negativo= inversamente relacionado
+
+cf.corr <- covb1b0/(sbeta1*sbeta0) #se 1 for pequeno a tendencia eh que o outro seja maior
