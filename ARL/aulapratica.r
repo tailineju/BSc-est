@@ -103,3 +103,11 @@ inf <- beta1 - qt(1-0.025,n-2)*sbeta1
 beta1
 ic<- c(inf,sup)
 ic
+
+#teste de ausencia de regressao
+#h0: beta1 =0
+#h1: beta1 != 0
+Tcalc <- beta1/sbeta1
+qt(1-0.025,n-2) #regiao critica
+
+#>< que rc, rejeita-se h0
