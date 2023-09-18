@@ -93,3 +93,13 @@ cf.var.b0 <- sbeta0/beta0
 covb1b0 <- -xbarra*s2beta1 #negativo= inversamente relacionado
 
 cf.corr <- covb1b0/(sbeta1*sbeta0) #se 1 for pequeno a tendencia eh que o outro seja maior
+
+
+################################### aula 1809
+# exer. calc ic(0,95)
+sup <- beta1 + qt(1-0.025,n-2)*sbeta1
+inf <- beta1 - qt(1-0.025,n-2)*sbeta1
+
+beta1
+ic<- c(inf,sup)
+ic
