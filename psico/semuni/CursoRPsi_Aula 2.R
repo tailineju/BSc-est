@@ -183,8 +183,8 @@ cor.plot(covariancia,numbers=TRUE,main="Autoeficacia")
 I1=indProd(dados,var1=1:9,var2=14:15)
 
 mod1 <- "Escola =~ X1 + X2 + X3 + X4 + X5 + X6 + X7 + X8 + X9
-         Assertiva =~ X10 + X11 + X12 + X13
-         Suporte =~ X14 + X15 + X16"
+Assertiva =~ X10 + X11 + X12 + X13
+Suporte =~ X14 + X15 + X16" #selecionar tudo para rodar
 
 # Ajuste do modelo
 fit1 <- cfa(mod1, data=dados, estimator = "WLSMV")
