@@ -4,38 +4,35 @@
 
 #############################################################################
 
-require(readxl)
-require(psych)
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,readxl, psych,lavaan,semPlot,semTools,corrplot)
 
 
-# Análise Fatorial Exploratória e Alfa de Cronbach
-
-setwd("D:\\A_UnB\\SemanaU")
-
+# Analise Fatorial Explorataria e Alfa de Cronbach
 # Importando arquivo exemploAF.xlsx
 
-dados=read_excel("exemploAF.xlsx")
+dados=read_excel("psico/semuni/exemploAF.xlsx")
 
 str(dados)
 
 table(dados$X1)
 
 
-# Correlações
+# Correlacoes
 
-# Escala autoeficácia
+# Escala autoeficacia
 
 correlacoes=cor(dados, method="pearson")
 correlacoes=cor(dados, method="spearman")
-correlacoes=cor(dados, method="kendall")
+correlacoes=cor(dados, method="kendall") #ordenacao e var nao normal
 
-# Gráfico de correlações
+# Grafico de correlacoes
 cor.plot(correlacoes,numbers=TRUE,main="Autoeficacia")
 
 
-# Identificação do número de fatores
+# Identificacao do numero de fatores
 
-# Extração por componentes principais
+# Extracaoo por componentes principais
 
 fit<-fa(dados,fm="pa")
 
@@ -49,17 +46,18 @@ plot(fit$e.values,type="o",  ylim = c(0, 6),
      xlab="Componente", ylab="Autovalor")
 
 
-# Análise paralela
+# Analise paralela
 
 paralela=fa.parallel(dados,nfactors=4, fa="pc", error.bars=TRUE,
-                     main="Análise Paralela", n.iter=20,
+                     main="Analise Paralela", n.iter=20,
                      ylabel=NULL,show.legend=TRUE,
-                     sim=TRUE,quant=.95,cor="cor",
+                     sim=TRUE,quant=.95,cor="poly", 
+                     #dados ordinais polypolica(?)
                      use="pairwise",plot=TRUE,correct=.5)
 
 dados=conjunto1
 
-# Número de variáveis
+# Numero de variaveis
 nvar=dim(dados)[2]
 x=c(1:nvar)
 
@@ -73,17 +71,18 @@ resultado=cbind(x,observado,reamostrado, simulado)
 resultado
 
 
-# Análise fatorial
+# Analise fatorial
 
 AF1 <- fa(dados, nfactors=3, rotate="Promax", cor=TRUE)
 
 summary(AF1)
 
-AF1
+print(AF1,sort=TRUE)
+#h2: comunalidade
+#u2: especificidade (1-h2)
 
-
-# Extraindo as informações para cálculo da % explicada
-# Número de variáveis 
+# Extraindo as informacoes para cï¿½lculo da % explicada
+# Numero de variaveis 
 nvar=dim(dados)[2]
 
 # Autovalores
@@ -99,22 +98,18 @@ for(i in 2:nvar) {
   var_explicada_a[i] <- var_explicada_a[i-1]+var_explicada[i]
 }
 
-# Tabela com as informações
+# Tabela com as informacoes
 x=c(1:nvar)
 tabela_var=data.frame(cbind(x,auto,var_explicada,var_explicada_a))
 tabela_var
 
 
 # Scree plot 2
-require(tidyverse)
-
 ggplot(tabela_var, aes(x=x, y=auto)) +
   scale_x_continuous(n.breaks=nvar)+
   labs(x="Fator ou componente", y="Autovalor")+
   geom_line()+
   geom_point(aes(x=x, y=auto))
-
-
 
 # Cargas fatoriais
 AF1$loadings
@@ -134,7 +129,7 @@ summary(escores)
 
 hist(escores$MR1)
 
-# São propostos então 3 fatores:
+# Sao propostos entao 3 fatores:
 
 # Fator 1 (autoeficacia para escola): 1 a 9
 
@@ -150,7 +145,7 @@ hist(escores$MR1)
 
 fat1=dados[,1:9]
 
-a=alpha(fat1)
+a=alpha(fat1,check.keys = TRUE)
 
 summary(a)
 a
@@ -173,22 +168,17 @@ a
 
 ######################################################################
 
-# Análise Fatorial Confirmatória
+# Analise Fatorial Confirmatoria
 
-install.packages("semTools")
-require(lavaan)
-require(semPlot)
-require(semTools)
-require(corrplot)
 
-# Covariância
+# Covariancia
 
 covariancia=cov(dados)
 
-# Gráfico de correlações
+# Grafico de correlacoes
 cor.plot(covariancia,numbers=TRUE,main="Autoeficacia")
 
-# Formulação do modelo
+# Formulacao do modelo
 
 I1=indProd(dados,var1=1:9,var2=14:15)
 
@@ -203,7 +193,7 @@ fit1 <- cfa(mod1, data=dados, estimator = "WLSMV")
 summary(fit1, fit.measures=TRUE, standardized = TRUE)
 
 
-# Gráfico
+# Grafico
 semPaths(fit1, what = 'par', layout = "tree2", sizeInt=0.5, std=F,
          edge.label.cex = 0.8, residuals = T, sizeLat=10,
          curve = 2.5, fade = F, rotation = 2, sizeMan=5,
@@ -213,7 +203,7 @@ semPaths(fit1, what = 'par', layout = "tree2", sizeInt=0.5, std=F,
          edge.width=0.5, nCharEdges = 1)
 
 
-# Índices de modificação
+# Indices de modificacao
 
 mi1 <- modificationIndices(fit1)
 mi1
