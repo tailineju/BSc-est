@@ -141,3 +141,13 @@ tabelaReg <- data.frame(var,SS,gl,MS,Ftab)
 pvalor<- pf(F, 1, n-2, lower.tail = FALSE)
 rc<- qf(0.05, 1, n-2, lower.tail = FALSE)
 rc
+
+#teste T
+
+tcalc <- beta1/sqrt(sigma2/(sum(df$xi2)-n*(xbarra^2)))
+tcalc^2 #== F
+
+
+R2<-SSR/SSTO #quantos % da variacao na var Y eu consegui explicar?
+
+sqrt(R2)
