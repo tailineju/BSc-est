@@ -111,3 +111,33 @@ Tcalc <- beta1/sbeta1
 qt(1-0.025,n-2) #regiao critica
 
 #>< que rc, rejeita-se h0
+
+
+
+SSTO <- sum(df$taxa^2)- n*(ybarra^2)
+
+
+SSR <- beta1^2 *(sum(df$xi2) - n*(xbarra^2))
+
+SSE<- SSTO-SSR
+
+
+MSR <- SSR/1
+MSE <- SSE/(n-2)
+
+F<- MSR/MSE
+
+var <- c('Reg','Erro')
+Ftab<- c(F,".")
+gl<- c(1, n-2)
+MS <- c(MSR, MSE)
+SS <-  c(SSR,SSE)   
+
+
+tabelaReg <- data.frame(var,SS,gl,MS,Ftab)
+
+#teste F
+
+pvalor<- pf(F, 1, n-2, lower.tail = FALSE)
+rc<- qf(0.05, 1, n-2, lower.tail = FALSE)
+rc
