@@ -1,28 +1,71 @@
 ---
-title: "Oct 3rd Class"
 subtitle: "ESTATÍSTICA COMPUTACIONAL"
 author: "Tailine J. S. Nonato"
-date: "05/10/2023"
+date: "10/05/2023"
 format: 
-    html:
-        code-fold: true
+  html:
+    code-fold: true
 ---
 
-## Oct 3rd Class 
+## Conteúdo - Aula 03/10
 
-- Distribuição conjunta
-- Normal Bivariada
+- Gerar valores seguindo uma distribuição Normal n-dimensional com base em parâmetros de média e variância existentes. 
+- Método da Fatoração de Choleski
 
 ## Rizzo 3.14
 
-Generate 200 random observations from the 3-dimensional multivariate normal distribution having mean vector µ = (0, 1, 2) and covariance matrix
-$\sigma =$
+Generate 200 random observations from the 3-dimensional multivariate normal distribution having mean vector $\mu = (0, 1, 2)$ and covariance matrix
+$$\sum =
 \begin{bmatrix} 
-1.0 − 0.5 0.5 \\
-− 0.5 1.0 − 0.5 \\
-0.5 − 0.5 1.0
-\end{bmatrix}
-using the Choleski factorization method. Use the R pairs plot to graph an array of scatter plots for each pair of variables. For each pair of variables, 96 Statistical Computing with R (visually) check that the location and correlation approximately agree with the theoretical parameters of the corresponding bivariate normal distribution.
+1    & -0.5 & 0.5 \\
+-0.5 &  1   & -0.5 \\
+0.5  & -0.5 & 1
+\end{bmatrix}$$
+using the Choleski factorization method. Use the R pairs plot to graph an array of scatter plots for each pair of variables. 
+
+For each pair of variables, 96 Statistical Computing with R (visually) check that the location and correlation approximately agree with the theoretical parameters of the corresponding bivariate normal distribution.
 
 ``` {r}
+#| message: FALSE
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,GGally)
 ```
+
+Seguindo o exemplo 3.18 do livro texto, tem-se que a função para o Método da Fatoração de Choleski para gerar amostras de Distribuição Normal N-Dimensional pode ser escrita por:
+
+```{r}
+rmvn.Choleski <-
+function(n, mu, Sigma) {
+# generate n random vectors from MVN(mu, Sigma)
+# dimension is inferred from mu and Sigma
+d <- length(mu) 
+Q <- chol(Sigma) # Choleski factorization of Sigma
+Z <- matrix(rnorm(n*d), nrow=n, ncol=d)
+X <- Z %*% Q + matrix(mu, n, d, byrow=TRUE)
+X
+}
+
+```
+
+Agora adicionando os dados informados no enunciado e rodando a função são geradas listas:
+
+```{r}
+#| label: pairs
+#| fig-cap: "Sample Scartter Plots"
+
+n <- 200
+mu <- c(0,1,2)
+sigma <- matrix(c(1,-.5,.5,-.5,1,-.5,.5,-.5,1),nrow=3)
+x<-rmvn.Choleski(n,mu,sigma)
+
+head(x)
+```
+E então os gráficos de dispersão dos valores gerados são dados por:
+
+```{r}
+pairs(x)
+```
+
+## Dificuldades
+- O que há por trás do Método de Choleski?
+- Como calcular as primeiras duas dimensões via distribuição marginal e distribuição condicional?
