@@ -151,3 +151,65 @@ tcalc^2 #== F
 R2<-SSR/SSTO #quantos % da variacao na var Y eu consegui explicar?
 
 sqrt(R2)
+
+
+#aula 1810
+
+
+#b= t de 1-alplha/4
+alpha<-0.05
+sup <- beta1 + qt(1-(alpha/4),n-2)*sbeta1
+inf <- beta1 - qt(1-(alpha/4),n-2)*sbeta1
+
+beta1
+ic<- c(inf,sup)
+ic
+
+#problema - taxa de metabolismo para 30, 42 e 50kg
+#media estimada
+xh<-c(30,42,50)
+yestim<- beta0+(beta1*xh)
+
+denom<- sum(df$massa^2) - n*(xbarra^2)
+num <- (xh-xbarra)^2
+
+syestim<- sqrt(MSE) * sqrt((1/n) +(num/denom))
+#syestim<- c(70.26,35.39,32.92) 
+
+#working-hotelling
+W2<-2*qf(1-alpha,2,n-2)
+W<-sqrt(W2)
+supW<- yestim + W*syestim
+infW<- yestim - W*syestim
+infW
+supW
+
+#bonferroni
+g<- length(xh)
+B<-qt(1-(alpha/(2*g)),n-2)
+supB<- yestim + B*syestim
+infB<- yestim - B*syestim
+infB
+supB
+
+
+#novas observacoes
+#scheffe
+Sch2 <- g*qf(1-alpha,g,n-2)
+Sch<-sqrt(Sch2)
+spred <- sqrt(MSE) * sqrt(1 + (1/n) +(num/denom))
+supSch<- yestim + Sch*spred
+infSch<- yestim - Sch*spred
+infSch
+supSch
+
+#bonferroni
+supBn<- yestim + B*spred
+infBn<- yestim - B*spred
+infBn
+supBn
+
+#regiao de confianca
+#working-hotelling
+infW
+supW
