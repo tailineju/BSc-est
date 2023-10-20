@@ -1,0 +1,169 @@
+---
+title: "Exercício de laboratorio 10"
+author: "Gabriela Carneiro - 18/0120816"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(kableExtra)
+library(broom)
+library(car)
+library(tidyverse)
+library(dae)
+library(magrittr)
+library(rsm)
+library(lmtest)
+```
+
+# {.unnumbered}
+
+## Entrada de dados
+
+```{r Entrada de dados, echo = FALSE}
+
+value <- c(-3, 0, -1, 2, -1, 2, 1, 6,
+           -1, 1, 0, 3, 0, 1, 1, 5)
+
+aa <- rep(c(-1, 1),8)
+bb <- rep(c(-1,-1, 1, 1),4)
+cc <- rep(rep(c(-1, 1), each = 4),2)
+
+dados10 <- data.frame (value, aa, bb, cc)
+```
+
+## ANOVA 
+
+```{r ANOVA, echo = FALSE}
+
+modelo10 <- aov(value ~ as.factor(aa)*as.factor(bb)*as.factor(cc))
+summary(modelo10)
+
+summary(modelo10)
+
+modelo10 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+Como pode ser observado pelos p-valores das análises de variância, há evidências para concluir que os fatores principais $A$, $B$ e $C$ tem efeitos sobre a resposta, mas suas intrações não afetam a resposta. Desse modo, a interação entre os fatores podem ser removidos da equação dos modelos de efeito.
+
+## Modelo de regressão
+
+```{r modelo de regressão, echo = FALSE}
+
+modreg <- lm(value ~ aa+bb+cc)
+```
+
+O modelo de regressão ajustado é:
+
+\begin{align}
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1X_1 + \hat{\beta}_2X_2 + \beta_3X_3
+\end{align}
+
+onde:
+
+\begin{align}
+\hat{y} = 1 + 1.5X_1 + 1.125X_2 + 0.875X_3
+\end{align}
+
+```{r Teste de normalidade, echo = FALSE}
+
+#dúvida: faz teste no modelo de regressão? 
+
+shapiro.test(modreg$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+O teste de Shapiro-Wilk foi aplicado sobre os resíduos do modelo de regressão obtido. Para este modelo, os dados estão 
+
+```{r Teste de Homocedacidade, echo = FALSE}
+hom <- bptest(modreg)
+
+hom %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+O teste de Breusch-Pagan indica que os testes são homogêneos. O que valida os modelos apresentados.
+
+```{r Pontos centrais, echo = FALSE}
+
+y <- c(value, 0.98, 0.95, 0.93, 0.96)
+aa2 <- c(aa, 0, 0, 0, 0)
+bb2 <- c(bb, 0, 0, 0, 0)
+cc2 <- c(cc, 0, 0, 0, 0)
+
+dadoscent <- data.frame(y, aa2, bb2, cc2)
+mcentral <- mean(y[17:20])
+mfatorial <- mean(y[1:16])
+
+```
+A média dos pontos centrais é 0.955 e a média dos pontos fatoriais é 1, fato que indica que os pontos estão no mesmo plano, já que são valores próximos.
+
+```{r Confirmação de curvatura, echo = FALSE}
+
+mse <- var(y[17:20])
+sqcurv <- 4*16*(mcentral-mfatorial)^2/20
+
+1-pf(sqcurv/mse, 1, 3)
+```
+No entanto, o p-valor obtido para o teste de curatura indica que há sim uma curvatura. 
+
+```{r}
+modelo10 <- lm(value ~ aa+bb+cc + I(aa^2))
+summary(modelo10)
+```
+

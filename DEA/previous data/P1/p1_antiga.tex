@@ -1,0 +1,420 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={P1 antiga},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{P1 antiga}
+\author{César A. Galvão - 19/0011572}
+\date{2022-07-08}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questao-1}{%
+\section{Questao 1}\label{questao-1}}
+
+\begin{longtable}{cccc}
+\toprule
+obs & 20g & 30g & 40g\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+obs & 20g & 30g & 40g\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{obs1} & \cellcolor{gray!15}{24} & \cellcolor{gray!15}{37} & \cellcolor{gray!15}{42}\\
+obs2 & 28 & 44 & 47\\
+\cellcolor{gray!15}{obs3} & \cellcolor{gray!15}{37} & \cellcolor{gray!15}{39} & \cellcolor{gray!15}{52}\\
+obs4 & 30 & 35 & 38\\*
+\end{longtable}
+
+\hypertarget{modelo}{%
+\subsection{Modelo}\label{modelo}}
+
+O modelo escolhido para a avaliação dos tratamentos é o modelo de
+efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{equation}
+
+em que \(\mu\) é a média geral, \(\tau_i\) é a média ou efeito dos
+grupos e \(e_{ij}\) é o desvio do elemento. Os grupos são indexados por
+\(i\) e os indivíduos de cada grupo indexados por \(j\).
+
+Considera-se para utilização do modelo de efeitos:
+
+\begin{itemize}
+\tightlist
+\item
+  independência entre realizações dos testes;
+\item
+  normalidade de distribuição dos resíduos;
+\item
+  homogeneidade de variâncias (homocedasticidade) dos resíduos.
+\end{itemize}
+
+Estima-se, considerando \(\bar{x}\) o estimador natural para \(\mu\) e
+QMRES \(= \hat{\sigma}^2\):
+
+\begin{longtable}{ccccc}
+\toprule
+$\bar{x}$ & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\hat{\sigma}^2$\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\bar{x}$ & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\hat{\sigma}^2$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{37.75} & \cellcolor{gray!15}{29.75} & \cellcolor{gray!15}{38.75} & \cellcolor{gray!15}{44.75} & \cellcolor{gray!15}{27.14}\\*
+\end{longtable}
+
+\hypertarget{anova}{%
+\subsection{ANOVA}\label{anova}}
+
+As hipóteses do teste de análise de variância são as seguintes:
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+A tabela de análise de variâncias é apresentada a seguir:
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{dosagem} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{456.00} & \cellcolor{gray!15}{228.00000} & \cellcolor{gray!15}{8.401228} & \cellcolor{gray!15}{0.0087421}\\
+Residuals & 9 & 244.25 & 27.13889 & NA & NA\\*
+\end{longtable}
+
+Considerando \(\alpha = 0,05\), rejeita-se a hipótese nula. Isto é,
+rejeita-se a hipótese de que há igualdade entre as médias de cada
+tratamento.
+
+De fato, realizando testes diagnósticos para normalidade e igualdade de
+variâncias, não se rejeita a hipótese de normalidade dos resíduos e
+considera-se a variância igual entre grupos, conforme apresentado na
+tabela a seguir:
+
+\begin{longtable}{ccc}
+\toprule
+Estatística de teste & p-valor & Método\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+Estatística de teste & p-valor & Método\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.9382542} & \cellcolor{gray!15}{0.4757921} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\
+0.4982699 & 0.6234012 & Levene igual. vars.\\*
+\end{longtable}
+
+\hypertarget{teste-de-fisher}{%
+\subsection{Teste de Fisher}\label{teste-de-fisher}}
+
+O teste é realizado utilizando as estatísticas de teste \(t_0\)
+
+\begin{align}
+  t_0 = \frac{|\bar{y}_{i.} - \bar{y}_{j.}|}{\sqrt{\text{QMRES} \left( \frac{1}{n_i}+\frac{1}{n_j} \right)}}
+\end{align}
+
+com \(an-a\) graus de liberdade sob a hipótese nula. Seus p-valores são
+apresentados na tabela a seguir:
+
+\begin{longtable}{ccc}
+\toprule
+Grupo.1 & Grupo.2 & p.valores\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+Grupo.1 & Grupo.2 & p.valores\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{20g} & \cellcolor{gray!15}{30g} & \cellcolor{gray!15}{0.0371682}\\
+20g & 40g & 0.0027912\\
+\cellcolor{gray!15}{30g} & \cellcolor{gray!15}{40g} & \cellcolor{gray!15}{0.1377938}\\*
+\end{longtable}
+
+Considerando \(\alpha = 0,05\) se rejeita a hipótese de igualdade entre
+as médias do grupo de 20g com o grupo 30g pelo teste de Fisher.
+
+\hypertarget{teste-de-tukey}{%
+\subsection{Teste de Tukey}\label{teste-de-tukey}}
+
+\begin{longtable}{cc}
+\toprule
+Comparações & p.valores\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+Comparações & p.valores\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{30g-20g} & \cellcolor{gray!15}{0.0859425}\\
+40g-20g & 0.0070702\\
+\cellcolor{gray!15}{40g-30g} & \cellcolor{gray!15}{0.2833753}\\*
+\end{longtable}
+
+Pelo teste de Tukey, apenas se rejeita a hipótese de igualdade entre as
+médias dos grupos de 40g e 20g, com o mesmo nível de confiança.
+
+\hypertarget{maximizauxe7uxe3o-da-bioatividade}{%
+\subsection{Maximização da
+bioatividade}\label{maximizauxe7uxe3o-da-bioatividade}}
+
+Considerando que pelo teste de Tukey os grupos de 20g e 40g têm médias
+estatisticamente diferentes e que este apresenta maior bioatividade,
+opta-se pelo tratamento de 40g. O intervalo de confiança é construído da
+seguinte forma:
+
+\begin{align}
+  IC(\bar{x}; 0,9) &= \bar{x} \pm t_{(an-a; 1-\alpha/2)} \cdot \sqrt{\frac{\text{QMRES}}{n}} \\
+  &= 44,75 \pm 1,83 \cdot  2,61 \\
+  &= \left[39,9737; 49,5263  \right]
+\end{align}
+
+\hypertarget{calcule-e22}{%
+\subsection{Calcule e22}\label{calcule-e22}}
+
+\begin{align}
+  y_{22} &= \mu + \tau_2 + e_{22}\\
+  44 &= 37.75 + 1 + e_{22} \\
+  e_{22} &= 5.25
+\end{align}
+
+\hypertarget{erro-tipo-ii}{%
+\subsection{Erro tipo II}\label{erro-tipo-ii}}
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \bigg| \phi^2 =  \frac{n}{\sigma^2} \sum\limits_{i=1}^{3} \tau_i^2  \right),
+\end{align}
+
+considerando a variância para os resíduos. Portanto,
+
+\begin{align}
+  \phi^2 &= \frac{n}{\text{QMRES}} 30 \\
+  &= \frac{3}{27,139} 30 \\
+  &= 4,42
+\end{align}
+
+é o parâmetro de não-centralidade (pnc ou, em inglês, \emph{ncp}) da
+distribuição \(F\) e, sob \(H_0\), \(\phi^2 = 0\).
+
+O valor
+\(F_\text{crit} = F( \gamma = 0,95; gl_1 = 2; gl_2 = 9, \phi^2 = 0)\) é
+de 4.256. Considerando \(\phi^2 =\) 4.4217, obtém-se
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \big| \phi^2 \text{ sob } H_1 \right) &= P\left( F_{\text{obs}} < 4,256 \big| \phi^2 = 4,422 \right) \\
+  &= 0,662.
+\end{align}
+
+\hypertarget{probabilidade-erro-tipo-ii-inferior-a-50}{%
+\subsection{Probabilidade erro tipo II inferior a
+50\%}\label{probabilidade-erro-tipo-ii-inferior-a-50}}
+
+Considerando os métodos de cálculo já utilizados, constroi-se a tabela a
+seguir:
+
+\begin{longtable}{ccccccc}
+\toprule
+n & $\phi^2$ & $\phi$ & g.l. & $F_{\text{crit}}$ & $\beta$ & Poder\\
+\midrule
+\endfirsthead
+\multicolumn{7}{@{}l}{\textit{(continued)}}\\
+\toprule
+n & $\phi^2$ & $\phi$ & g.l. & $F_{\text{crit}}$ & $\beta$ & Poder\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{4} & \cellcolor{gray!15}{4.42} & \cellcolor{gray!15}{2.10} & \cellcolor{gray!15}{9} & \cellcolor{gray!15}{4.26} & \cellcolor{gray!15}{0.66} & \cellcolor{gray!15}{0.34}\\
+5 & 5.53 & 2.35 & 12 & 3.89 & 0.56 & 0.44\\
+\cellcolor{gray!15}{6} & \cellcolor{gray!15}{6.63} & \cellcolor{gray!15}{2.58} & \cellcolor{gray!15}{15} & \cellcolor{gray!15}{3.68} & \cellcolor{gray!15}{0.46} & \cellcolor{gray!15}{0.54}\\*
+\end{longtable}
+
+Considerando os valores da tabela, para que o erro tipo II seja menor
+que 50\% são necessários 6 repetições para cada tratamento nesse
+experimento.
+
+\hypertarget{questuxe3o-2}{%
+\section{Questão 2}\label{questuxe3o-2}}
+
+Na tabela, \(D1\) representa a diferença entre as datas 2 e 1 e \(D2\) o
+mesmo para datas 4 e 3.
+
+\begin{longtable}{ccccccc}
+\toprule
+Árvores & Data 1 & Data 2 & Data 3 & Data 4 & D1 & D2\\
+\midrule
+\endfirsthead
+\multicolumn{7}{@{}l}{\textit{(continued)}}\\
+\toprule
+Árvores & Data 1 & Data 2 & Data 3 & Data 4 & D1 & D2\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{arvore 1} & \cellcolor{gray!15}{30} & \cellcolor{gray!15}{58} & \cellcolor{gray!15}{115} & \cellcolor{gray!15}{120} & \cellcolor{gray!15}{28} & \cellcolor{gray!15}{5}\\
+arvore 2 & 33 & 69 & 156 & 172 & 36 & 16\\
+\cellcolor{gray!15}{arvore 3} & \cellcolor{gray!15}{30} & \cellcolor{gray!15}{51} & \cellcolor{gray!15}{108} & \cellcolor{gray!15}{115} & \cellcolor{gray!15}{21} & \cellcolor{gray!15}{7}\\
+arvore 4 & 32 & 62 & 167 & 179 & 30 & 12\\
+\cellcolor{gray!15}{arvore 5} & \cellcolor{gray!15}{30} & \cellcolor{gray!15}{49} & \cellcolor{gray!15}{125} & \cellcolor{gray!15}{142} & \cellcolor{gray!15}{19} & \cellcolor{gray!15}{17}\\*
+\end{longtable}
+
+Deseja-se testar se o crescimento entre os períodos é diferente.
+Interessa testar portanto se as médias de \(D1\) e \(D2\) são
+diferentes. Antes de realizar um teste de comparaçao de médias para
+medidas repetidas, i.e.~um teste \(t\) pareado, testa-se para igualdade
+de variâncias.
+
+Considerando \(H_0\) sendo a igualdade entre as variâncias, obtém-se
+p-valor 0.625. Ou seja, não se rejeita a hipótese de igualdade de
+variâncias.
+
+Tomando a hipótese de normalidade dos dados como verdadeira, realiza-se
+o teste \(t\) pareado, para variâncias iguais, com nível de confiança
+\(\gamma = 0,95\). A hipótese nula do teste é a igualdade entre as
+médias, de modo que o teste realizado é bilateral.
+
+O p-valor obtido no teste é de 0.014, de modo que é possível rejeitar a
+hipótese nula a \(\alpha = 0,05\). Ou seja, pode-se dizer que há uma
+diferença estatisticamente diferente entre os crescimentos nos dois
+períodos.
+
+\end{document}

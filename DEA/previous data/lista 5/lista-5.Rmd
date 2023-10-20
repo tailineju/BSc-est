@@ -1,0 +1,247 @@
+---
+title: "Exercício de laboratório 5"
+subtitle: "Simulações Erro Tipo 2"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: false
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+options(scipen = 99999)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+
+# Cenário 1 - Tratamentos significativos e blocos não significativos
+
+Consideramos dois modelos, o primeiro considerando apenas o efeito de tratamentos e o segundo considerando efeito de blocos:
+
+\begin{align}
+  y_{ij} &= \mu + \tau_i + \varepsilon_{ij} \label{51}\\
+  y_{ij} &= \mu + \tau_i + \beta_j + \varepsilon_{ij} \label{52}
+\end{align}
+
+Consideramos um cenário em que de fato há diferença entre quatro tratamentos $(10, 20, -15, -15)$, porém os efeitos de blocos constituem um vetor nulo $(0, 0, 0, 0)$. Considerando a variância dos erros aleatórios como a mesma de $Var(y_{ij}) = Var(\varepsilon_{ij}) = \sigma^2 = 15^2$. Além disso, considera-se $\mu = 50$ e $\alpha = 0,05$.
+
+O erro tipo II é simulado gerando amostras aleatórias para ambos os modelos e contando aqueles em que, pelo p-valor, não se rejeita a hipótese nula.
+
+Espera-se haver mais casos de erro tipo 2 quando a blocagem é desnecessária, visto que se reduz os graus de liberdade do resíduo -- consequentemente aumentando o QMRES que é o denominador da estatística de teste.
+
+Para o cálculo analítico do erro tipo 2, utiliza-se o seguinte parâmetro de não centralidade:
+
+\begin{align}
+  NCP = \phi^2 &= n \cdot \frac{\sum\limits_{i = 1}^{4} \tau_i^2}{\sigma^2}\\
+  &= 4 \cdot \frac{3800}{225}
+\end{align}
+
+Além disso, considera-se $an-a = 4\cdot 4 - 4 = 12$ graus de liberdade para o modelo (\ref{51}) e $(a-1)(b-1) = 9$ graus de liberdade para o modelo (\ref{52}).
+
+
+```{r cenario-1, echo = FALSE}
+tratamentos <- factor(rep(c(1, 2, 3, 4), each=4))
+blocos <- factor(rep(c("A", "B", "C", "D"), 4))
+
+beta <- rep(c(0,0,0,0), 4)
+mu <- 50
+trat <- rep(c(10, 20, -15, -15), each=4)
+
+pval1 <- 0
+pval2 <- 0
+
+tau <- c(10, 20, -15, -15)
+
+#Simulação
+for (i in 1:1000){
+  dados <- mu+trat+beta+rnorm(16, 0, 15)
+  
+  tabela1 <- aov(dados~tratamentos)
+  pval <- summary(tabela1)[[1]][1, 5]
+  pval1 <- if_else(pval < 0.05, pval1+1, pval1)
+  #
+  tabela2 <- aov(dados~tratamentos+blocos)
+  pval <- summary(tabela2)[[1]][1, 5]
+  pval2 <- if_else(pval < 0.05, pval2+1, pval2)
+  
+}
+
+
+#Erro tipo 2 - PODIA TER APENAS CONTADO OS CASOS EM QUE PVALOR > 0.05
+m1 <- 1-(pval1/1000) #modelo 1
+m2 <- 1-(pval2/1000) #modelo 2 
+
+
+#Cálculo de forma analítica
+
+#P(não rejeitar H0\ H0 falsa)=
+#P(Fobs<F_critico\ phi=n*sum(tauˆ2)/(sigma2))
+
+
+# CALCULAR OS TAU
+
+
+#Modelo 1
+F_critico <- qf(0.95, 3, 12) #gl = an-a
+erro2_1 <- pf(F_critico, 3, 12, 4*sum(tau^2)/(15^2))
+
+#Modelo 2
+F_critico2 <- qf(0.95, 3, 9) #gl = (a-1)*(b-1)
+erro2_2 <- pf(F_critico2, 3, 9, 4*sum(tau^2)/(15^2))
+```
+Quando não se considera blocos, modelo (\ref{51}), obtem-se uma proporção de `r m1` erros tipo 2. No modelo (\ref{52}), a proporção é de `r m2`, corroborando a hipótese inicial. Os valores analíticos seguem a mesma tendência -- `r round(erro2_1,3)` e `r round(erro2_2,3)` respectivamente.
+
+# Cenário 2 - Tratamentos significativos e blocos significativos
+
+É esperado que, quando a estrutura de bloco é necessária e não é utilizada, mais variabilidade do sistema seja atribuída ao resíduo -- quando não seria devido ao erro aleatório. Isso ocorre devido a inflacionamento da soma de quadrados do resíduo.
+
+```{r cenario-2, echo = FALSE}
+
+tratamentos <- factor(rep(c(1, 2, 3, 4), each=4))
+blocos <- factor(rep(c("A", "B", "C", "D"), 4))
+
+beta <- rep(c(15,15,-15,-15), 4)
+mu <- 50
+
+tau <- c(10, 20, -15, -15)
+
+trat <- rep(tau, each=4)
+
+pval1 <- 0
+pval2 <- 0
+
+
+
+#Simulação
+for (i in 1:1000){
+  dados <- mu+trat+beta+rnorm(16, 0, 15)
+  
+  tabela1 <- aov(dados~tratamentos)
+  pval <- summary(tabela1)[[1]][1, 5]
+  pval1 <- if_else(pval > 0.05, pval1+1, pval1)
+  #
+  tabela2 <- aov(dados~tratamentos+blocos)
+  pval <- summary(tabela2)[[1]][1, 5]
+  pval2 <- if_else(pval > 0.05, pval2+1, pval2)
+  
+}
+
+
+#Erro tipo 2 - PODIA TER APENAS CONTADO OS CASOS EM QUE PVALOR > 0.05
+m1 <- pval1/1000 #modelo 1
+m2 <- pval2/1000 #modelo 2 
+
+
+#Cálculo de forma analítica
+
+#P(não rejeitar H0\ H0 falsa)=
+#P(Fobs<F_critico\ phi=n*sum(tauˆ2)/(sigma2))
+
+NCP <- 4*sum(tau^2)/(15^2)
+
+#Modelo 1
+F_critico <- qf(0.95, 3, 12) #gl = an-a
+erro2_1 <- pf(F_critico, 3, 12, NCP)
+
+#Modelo 2
+F_critico2 <- qf(0.95, 3, 9) #gl = (a-1)*(b-1)
+erro2_2 <- pf(F_critico2, 3, 9, NCP)
+
+```
+
+De fato, observa-se um erro tipo dois muito divergente daquele calculado analiticamente e superior ao obtido empiricamente para a estrutura com bloco.
+
+```{r tabela-cenario2, echo = FALSE}
+
+data.frame(Modelo = c("sem bloco", "com bloco"),
+           `Erro empirico` = c(m1, m2),
+           `Erro teorico` = c(erro2_1, erro2_2)) %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
+# Cenário 3 - Tratamentos não significativos e blocos não significativos
+
+Avaliamos agora a probabilidade de erro tipo 1, cuja referência é o $\alpha = 0,05$ estabelecido. Como de fato não há efeito de tratamento e de bloco, z
+
+```{r cenario3, echo = FALSE}
+
+tratamentos <- factor(rep(c(1, 2, 3, 4), each=4))
+blocos <- factor(rep(c("A", "B", "C", "D"), 4))
+
+beta <- rep(c(0,0,0,0), 4)
+mu <- 50
+
+tau <- c(0,0,0,0)
+
+trat <- rep(tau, each=4)
+
+pval1 <- 0
+pval2 <- 0
+
+#Simulação
+for (i in 1:1000){
+  dados <- mu+trat+beta+rnorm(16, 0, 15)
+  
+  tabela1 <- aov(dados~tratamentos)
+  pval <- summary(tabela1)[[1]][1, 5]
+  pval1 <- if_else(pval < 0.05, pval1+1, pval1)
+  #
+  tabela2 <- aov(dados~tratamentos+blocos)
+  pval <- summary(tabela2)[[1]][1, 5]
+  pval2 <- if_else(pval < 0.05, pval2+1, pval2)
+  
+}
+
+
+#Erro tipo 2 - PODIA TER APENAS CONTADO OS CASOS EM QUE PVALOR > 0.05
+m1 <- pval1/1000 #modelo 1
+m2 <- pval2/1000 #modelo 2 
+
+
+#Cálculo de forma analítica
+
+#P(não rejeitar H0\ H0 falsa)=
+#P(Fobs<F_critico\ phi=n*sum(tauˆ2)/(sigma2))
+
+# NCP <- 4*sum(tau^2)/(15^2)
+
+# #Modelo 1
+# F_critico <- qf(0.95, 3, 12) #gl = an-a
+# erro2_1 <- pf(F_critico, 3, 12, NCP)
+# 
+# #Modelo 2
+# F_critico2 <- qf(0.95, 3, 9) #gl = (a-1)*(b-1)
+# erro2_2 <- pf(F_critico2, 3, 9, NCP)
+```
+

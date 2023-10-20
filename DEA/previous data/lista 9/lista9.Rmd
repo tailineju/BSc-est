@@ -1,0 +1,305 @@
+---
+title: "Lista 2 modulo 3"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 9999)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+library(magrittr)
+library(cowplot)
+library(rsm)
+```
+
+# {.unnumbered}
+
+```{r dados, echo = FALSE}
+#contrastes e niveis dos fatores
+fa <- rep(rep(c(-1,1), 2), 4)
+niveis_A <- c(.55, .59)
+fb <- rep(rep(c(-1,1), each = 2), 4)
+niveis_B <- c(10, 15)
+
+#replicas e fator das réplicas
+n <- 4
+replicas <- factor(rep(c("I", "II", "III", "IV"), each = 4))
+
+#vetor de valores
+y <- c(14.037, 13.88, 14.821, 14.888,
+       16.165, 13.86, 14.757, 14.921,
+       13.972, 14.032, 14.843, 14.415,
+       13.907, 13.914, 14.878, 14.932)
+
+#fator de interação
+fab <- fa*fb
+
+#tabela com dados
+dados <- data.frame(
+  A = as.factor(fa), niveis_A = niveis_A, B = as.factor(fb), niveis_B = niveis_B,
+  AB = fab, replicas, y
+)
+
+#matriz de desenho
+desenho <- unique(data.frame(fa, fb, fab))
+```
+
+## Efeitos dos fatores
+
+Para calcular os efeitos dos fatores, calcula-se os totais ($a$, $b$, $ab$ e $(1)$) utilizando os seguintes contrastes:
+
+```{r contrastes, echo = FALSE}
+desenho %>%
+  mutate(Totais = c("(1)", "a", "b", "ab"))%>%
+  select(Totais, everything())%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 3, 
+    col.names = c("Totais", "A", "B", "AB")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+Para calcular a magnitude do efeito A, por exemplo, calcula-se:
+
+\begin{align}
+  A = \frac{a+ab-b-(1)}{2n} = \frac{58.081 + 59.299 + 55.686 + 59.156}{8} = -0.31725
+\end{align}
+
+Obtem-se dessa forma os seguintes efeitos:
+
+```{r efeitos-fatores, echo = FALSE}
+totais <- tapply(y, paste(fa, fb), sum)
+#A = a+ab-b-(1)
+aa <- sum(totais[3:4]-totais[1:2])/(2*n) 
+#B = b+ab-a-(1)
+bb <- sum(totais[c(2,4)]-totais[c(1,3)])/(2*n)
+#AB = ab+(1)-a-b
+ab <- sum(totais[c(1,4)]-totais[c(2,3)])/(2*n)
+
+data.frame(
+  A = aa, B = bb, AB = ab
+)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Análise de variância
+
+É possível observar na tabela de ANOVA a seguir que as diferenças entre níveis dos fatores não são significativas com $\alpha = 0,05$, bem como a interação entre os fatores.
+
+```{r anova, echo = FALSE}
+#A e B como fatores
+
+tabela_aov <- aov(y ~ A*B, data = dados)
+
+tabela_aov %>%
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Fonte de variação", "g.l.", "SQ", "MQ", "Estatística F", "p-valor"),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Modelo de efeitos e estimadores
+
+Considera-se o seguinte modelo de efeitos teórico
+
+\begin{align}
+  y_{ijk} = \mu + \tau_i + \beta_j + (\tau\beta)_{ij} + \varepsilon_{ijk}, \quad
+  \begin{cases}
+    i = 1, ..., a\\
+    j = 1, ..., b\\
+    k = 1, ..., n
+  \end{cases}
+\end{align}
+
+em que $\mu$ é média geral da variável resposta, $\tau_i$ do i-ésimo nível do tratamento A, $\beta_j$ do j-ésimo nível do tratamento B, $(\tau\beta)_{ij}$ é o efeito da interação dos fatores A e B e $\varepsilon_{ijk}$ é o erro aleatório.
+
+Considera-se como hipóteses nulas para a análise de variância a igualdade entre os níveis de cada tratamento e como hipóteses alternativas a existência de pelo menos um nível diferente dos demais.
+
+Conforme a tabela de análise de variância apresentada, não foram rejeitadas as hipóteses nulas para nenhum dos tratamentos e, portanto, poderíamos considerar o modelo reduzido
+
+\begin{align}
+  y_{ijk} = \mu + \varepsilon_{ijk}, \quad
+  \begin{cases}
+    i = 1, ..., a\\
+    j = 1, ..., b\\
+    k = 1, ..., n
+  \end{cases}
+\end{align}
+
+em que a variância pode ser explicada unicamente pelo erro aleatório.
+
+Para efeito de exercício, calculamos os estimadores:
+
+```{r estimadores, echo = FALSE}
+mu <- mean(y)
+qmres <- tidy(tabela_aov)$meansq[4]
+#efeito A
+taus <- tapply(y, fa, mean)-mu
+#efeito b
+betas <- tapply(y, fb, mean)-mu
+#interacao
+taubeta <- tapply(y, fab, mean)-mu
+
+data.frame(mu, qmres)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\hat{\\mu}$", "$\\hat{\\sigma}^2$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(est = c(taus, betas, taubeta), t = c(1:6))%>%
+  pivot_wider(names_from = t, values_from = est)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1$", "$\\tau_2$", "$\\beta_1$", "$\\beta_2$", "$(\\tau\\beta)_1$", "$(\\tau\\beta)_2$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+## Gráfico de interação
+
+O gráfico de interação a seguir sugere uma diferença entre níveis de resposta para o fator A quando o fator B está em nível baixo, mas não sugerem o mesmo para o nível alto do fator B. Além disso, o nível de resposta parece aumentar genericamente quando se aumenta o nível do fator B.
+
+```{r graf-interacao, echo = FALSE, fig.align='center', out.width="60%"}
+interaction.plot(fb, fa, y)
+```
+Já o seguinte sugere haver uma diferença maior entre os níveis de resposta quando se aumenta o fator A. O desempenho com nível baixo do fator B já parece inferior com nível baixo de A e parece decrescer quando se aumenta o nível de A. Já o nível alto de B parece pouco afetado em relação à variação de A.
+
+```{r graf-interacao2, echo = FALSE, fig.align='center', out.width="60%"}
+interaction.plot(fa, fb, y)
+```
+
+
+## Modelo de regressão linear
+
+Considerando as variáveis codificadas $X_1, X_2 \in \{-1, 1\}$ correspondentes a níveis baixos e altos dos fatores A, B e a interação AB ($X_1X_2$), é possível construir um modelo de regressão linear. Seus coeficientes estimados por mínimos quadrados ordinários são obtidos como a metade da magnitude de efeito dos fatores e o intercepto é obtido pela média geral da amostra.
+
+\begin{align}
+  \hat{y} &= \hat{\beta}_0 + \hat{\beta}_1 X_1 + \hat{\beta}_2 X2 + \hat{\beta}_3 X_1X_2 \nonumber \\
+   &= 14.514 - 0.152 X_1 + 0.293 X_2 +  0.14 X_1X_2 \label{modelo_lin}
+\end{align}
+
+
+## Gráfico de superfície
+
+O gráfico de superfície correspondente a (\ref{modelo_lin}) é exibido a seguir:
+
+```{r superficie, echo = FALSE , fig.align='center', out.width="75%"}
+modelo_lin <- lm(y ~ fa*fb)
+
+persp.lm(modelo_lin, ~fa*fb)
+```
+## Projeção de resposta
+
+Para facilitar a análise e identicar níveis de resposta, podemos também avaliar graficamente os níveis de resposta utilizando o gráfico de curvas de nível a seguir.
+
+```{r curvas-nivel, echo = FALSE , fig.align='center', out.width="75%"}
+contour(modelo_lin, ~fa*fb)
+```
+
+Se desejamos obter um valor de 14.5$\mu m$ na variável resposta, podemos inicialmente tentar seguir a curva de nível correspondente no gráfico de curvas. Enquanto não fica claro qual deveria ser o nível do fator B se utilizamos o fator A em nível alto, o gráfico evidencia que ambos os fatores em nível baixo deveriam render a resposta desejada.
+
+Para auxiliar a análise, construimos intervalos de confiança com $\alpha = 0,95$ para a média de cada ponto fatorial. Como já avaliado, o ponto em que ambos os fatores têm nível baixo tem a média centrada exatamente no nível de resposta desejado, enquanto outros dois pontos teriam a média um pouco deslocada porém com IC que conteriam o valor desejado. Conclui-se que a recomendação seria a opção de fatores A e B ambos em nível baixo.
+
+```{r intervalo-de-confianca, echo = FALSE}
+y_matriz <- matrix(y, ncol = 4)
+#medias nos pontos 1, a, b, ab NESTA ORDEM
+medias_pontos <- apply(y_matriz, 1, mean)
+
+n <-  4
+
+s <- qmres
+
+SE = s/sqrt(n)
+
+erro <- qt(.975, df=n-1)*SE #margem de erro
+
+LI <- medias_pontos - erro
+LS <- medias_pontos + erro
+
+data.frame(A = fa[1:4], B = fb[1:4], LI, medias_pontos, LS)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("A", "B", "LI", "$\\bar{Y}$", "LS"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+

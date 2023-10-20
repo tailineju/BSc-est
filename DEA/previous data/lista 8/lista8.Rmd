@@ -1,0 +1,259 @@
+---
+title: "Lista 1 modulo 3"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 9999)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+library(magrittr)
+```
+
+# 
+
+## Modelo e ANOVA
+
+```{r dados, echo = FALSE}
+
+a <- 2 #niveis de glass
+b <- 3 #niveis de phosphor
+n <- 3
+
+glass <- factor(rep(c(1,1,1,2,2,2), 3))
+phosphor <- factor(rep(c(1,2,3), each = 6))
+values <- c(280,290,285,230,235,240,
+            300,310,295,260,240,235,
+            290,285,290,220,225,230)
+
+dados <- data.frame(glass, phosphor, values)
+```
+
+É utilizado o modelo de experimentos fatoriais, representado por:
+
+\begin{align*}
+  y_{ijk} = \mu + \tau_i + \beta_j + \left( \tau\beta \right)_{ij} + e_{ijk}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., b \quad k = 1, 2,..., n
+\end{align*}
+
+em que $\mu$ é a média geral, $\tau_i$ é o efeito do fator **vidro**, $\beta_j$ é o efeito do fator **fósforo**, $(\tau\beta)_{ij}$ é o efeito de interação entre os dois fatores e $e_{ijk}$ é o desvio do elemento. Portanto, existem $a \cdot b = 3 \cdot 2 = 6$ tratamentos possíveis para este experimento.
+
+```{r anova, echo = FALSE}
+tabela_aov <- aov(values ~ phosphor*glass)
+
+tabela_aov %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+  
+```
+
+Pela tabela de ANOVA, os efeitos de ambos os fatores do experimento são significativos considerando mesmo $\alpha = 0,01$. No entanto rejeita-se a hipótese de existência de interação entre os fatores. Ou seja, pode-se considerar os efeitos do tipo de vidro e do tipo de fósforo independentes.
+
+## Estimadores
+
+```{r parametros, echo = FALSE}
+mu <- mean(values)
+qmres <- tidy(tabela_aov)$meansq[4]
+
+taus <- tapply(values, glass, mean)-mu
+betas <- tapply(values, phosphor, mean)-mu
+taubeta <- tapply(values, paste(glass, phosphor), mean)-mu
+
+data.frame(mu, qmres)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\mu$", "$\\sigma^2$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(taus, t = c(1:2))%>%
+  pivot_wider(names_from = t, values_from = taus)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1$", "$\\tau_2$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(betas, b = c(1:3))%>%
+  pivot_wider(names_from = b, values_from = betas)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\beta_1$", "$\\beta_2$", "$\\beta_3$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(taubeta, tb = c(1:6))%>%
+  pivot_wider(names_from = tb, values_from = taubeta)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1\\beta_1$", "$\\tau_1\\beta_2$", "$\\tau_1\\beta_3$", "$\\tau_2\\beta_1$", "$\\tau_2\\beta_2$", "$\\tau_2\\beta_3$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Gráficos de interação
+
+As linhas paralelas do gráfico a seguir sugerem não haver interação entre os fatores, além de indicar possível diferença entre o fósfóro tipo 2 e os demais para vidro tipo 1.
+
+```{r grafico1, echo = FALSE}
+interaction.plot(glass, phosphor, values)
+
+```
+
+O gráfico seguinte também sugere não haver interação entre fatores, mas aparentemente deve haver uma diferença de desempenho quanto ao tipo de vidro, independentemente do tipo de fósforo.
+
+```{r grafico2, echo = FALSE}
+interaction.plot(phosphor, glass, values)
+```
+
+## Decomposição de graus de liberdade
+
+A seguir são decompostos os graus de liberdade para o tipo de fósforo, quando o tipo de vidro é 1.
+
+### Teste F
+
+A seguir, o teste F é realizado para os tipos de fósforo quando o tipo do vidro é 1. Considera-se $H_0$ como a igualdade entre efeitos de fósforo e $H_1$ a diferença de pelo menos um nível em relação aos demais. O p-valor do teste é calculado da seguinte forma: 
+
+\begin{align*}
+  \text{p-valor} = 1-F\left( \frac{QM_{\text{fosf-1}}}{QM_{\text{res}}}, gl1 = 2, gl2 = 12 \right)
+\end{align*}
+
+```{r testef, echo = FALSE}
+#Com teste F
+a_v1 <- 3 #niveis fósforo
+b_v1 <- 1 #niveis vidro
+n_v1 <- 3 #repetições
+
+dados_vidro1 <- dados[glass == 1,]
+
+#modelo aov com dados filtrados
+mod2 <- aov(dados_vidro1$values ~ dados_vidro1$phosphor)
+summary(mod2)
+
+#médias de fósforo com vidro tipo 1
+medias_fosforo_v1 <- tapply(dados_vidro1$values, dados_vidro1$phosphor, mean)
+
+qm_fosforo_v1 <- (mod2 %>% tidy())$meansq[1]
+
+pvalor_v1 <- 1-pf(qm_fosforo_v1/qmres, 2, 12)
+```
+
+Obtém-se p-valor igual a `r round(pvalor_v1, 4)`, o que sugere que há de fato diferença entre os níveis de resposta quando se considera apenas o vidro tipo 1.
+
+### Tukey
+
+O teste de Tukey é realizado utilizando a função `TukeyHDS()` e os resultados são expostos abaixo. Da mesma forma, a hipótese nula é rejeitada e diz-se que não há diferença entre os trsão superiores àqueles do teste F.
+
+```{r, echo = FALSE}
+
+casos <- c("2:1-1:1", "3:1-1:1", "3:1-2:1")
+TukeyHSD(tabela_aov) %>% 
+  tidy() %>%
+  filter(contrast %in% casos)%>%
+  select(-`null.value`)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Probabilidade de erro tipo II para vidros
+
+
+```{r erro2, echo = FALSE}
+
+tau <- c(20, -20)
+
+#phi ajustado para apenas um dos fatores
+phi2 <- n*b*(sum(tau^2))/qmres
+
+mqvidro <-(tabela_aov %>% tidy() %>% pull(meansq))[2]
+
+fvidro <- mqvidro/qmres
+
+perro2 <- pf(fvidro, 1, 12, ncp = phi2)
+
+```
+Calcula-se a probabilidade de erro tipo 2 considerando:
+
+* $\tau = \{20, -20\}$;
+* $n = 3, a = 2, b = 3$;
+* $\phi^2 = nb \frac{\sum \tau^2}{QM_\text{res}}$;
+* $F_{crit} = \frac{QM_{\text{vidro}}}{QM_{\text{Res}}}$ = `r mqvidro`/`r round(qmres,3)` = `r round(fvidro,4)`;
+
+Obtém-se erro tipo II igual a `r round(perro2,3)`.

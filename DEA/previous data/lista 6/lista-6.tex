@@ -1,0 +1,367 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Exercício de laboratório 6},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Exercício de laboratório 6}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Quadrado latino}
+\author{César A. Galvão - 19/0011572}
+\date{2022-08-11}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questuxe3o-1}{%
+\section{Questão 1}\label{questuxe3o-1}}
+
+\hypertarget{modelo}{%
+\subsection{Modelo}\label{modelo}}
+
+Para o experimento de quadrado latino utiliza-se o seguinte modelo de
+efeitos:
+
+\begin{align}
+  y_{ijk} = \mu + \alpha_i + \tau_j + \beta_k + \varepsilon_{ijk}, 
+  \begin{cases} 
+  i, k = 1, 2, 3 \\
+  j = A, B, C
+  \end{cases}
+\end{align}
+
+onde \(y_{ijk}\) é a observação na i-ésima linha, na k-ésima coluna para
+o j-ésimo tratamento. \(\mu\) é a média total, \(\alpha_i\) é o efeito
+da i-ésima linha, \(\tau_j\) é o efeito da j-ésimo tratamento,
+\(\beta_k\) é o efeito da k-ésima coluna e \(\varepsilon_{ijk}\) é o
+erro aleatório. O modelo é completamente aditivo; nesse sentido, não há
+interação entre linhas, colunas e tratamentos. Como só há uma observação
+em cada célula, apenas dois dos três subscritos i, j e k são necessários
+para denotar uma observação em particular.
+
+Dessa forma, testa-se a igualdade dos efeitos de tratamento ou, em
+outras palavras, se o efeito dos tratamentos é igual a zero.
+
+Desse modo, as hipóteses são:
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+ou
+
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+A análise de variância consiste em particionar a soma de quadrados total
+das observações, nos componentes para linhas, colunas, tratamentos e
+erro:
+
+\begin{equation}
+ SQ_\text{Tot} = SQ_\text{{linhas}} + SQ_\text{{Colunas}} + + SQ_\text{{Trat}} + SQ_\text{Res}
+\end{equation}
+
+\noindent com os respectivos graus de liberdade:
+
+\begin{align}
+    (p^2-1) = (p-1) + (p-1) + (p-1) + (p-2)(p-1)
+ \end{align}
+
+Assumindo que \(\varepsilon_{ijk}\) segue uma distribuição
+\(N(0,\sigma^2)\), cada soma de quadrados do lado direito da equação
+apresentada acima é uma variável qui-quadrado independente quando
+dividida por \(\sigma^2\). A estatística de teste apropriada para testar
+as diferenças entre os tratamentos é
+
+\begin{equation}
+    F_0 = \frac{QM_{tratamentos}}{QMRES} \overset{H_0}{\sim} F_{(p-1),(p-2)(p-1)}
+\end{equation}
+
+\hypertarget{tabela-anova}{%
+\subsection{Tabela ANOVA}\label{tabela-anova}}
+
+A tabela de análise de variância é apresentada a seguir, na qual é
+possível observar que todos os efeitos do modelo são significativos.
+Isto significa que, numa futura repetição do experimento, recomenda-se
+repetir a estrutura de casualização.
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{alfa} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{928005.556} & \cellcolor{gray!15}{464002.778} & \cellcolor{gray!15}{103.2315} & \cellcolor{gray!15}{0.0096}\\
+beta & 2 & 261114.889 & 130557.444 & 29.0465 & 0.0333\\
+\cellcolor{gray!15}{trat} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{608890.889} & \cellcolor{gray!15}{304445.444} & \cellcolor{gray!15}{67.7331} & \cellcolor{gray!15}{0.0145}\\
+Residuals & 2 & 8989.556 & 4494.778 & NA & NA\\*
+\end{longtable}
+
+\hypertarget{estimadores}{%
+\subsection{Estimadores}\label{estimadores}}
+
+De acordo com o modelo, os seguintes são os estimadores para média,
+variância:
+
+\begin{longtable}{cc}
+\toprule
+$\mu$ & $\sigma^2$\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\mu$ & $\sigma^2$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{1706.11} & \cellcolor{gray!15}{4494.78}\\*
+\end{longtable}
+
+\begin{longtable}{ccc}
+\toprule
+$\tau_1$ & $\tau_2$ & $\tau_3$\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\tau_1$ & $\tau_2$ & $\tau_3$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{-224.78} & \cellcolor{gray!15}{-139.78} & \cellcolor{gray!15}{364.56}\\*
+\end{longtable}
+
+\begin{longtable}{ccc}
+\toprule
+$\beta_1$ & $\beta_2$ & $\beta_3$\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\beta_1$ & $\beta_2$ & $\beta_3$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{224.56} & \cellcolor{gray!15}{-36.78} & \cellcolor{gray!15}{-187.78}\\*
+\end{longtable}
+
+\begin{longtable}{ccc}
+\toprule
+$\alpha_1$ & $\alpha_2$ & $\alpha_3$\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\alpha_1$ & $\alpha_2$ & $\alpha_3$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{50.56} & \cellcolor{gray!15}{-416.11} & \cellcolor{gray!15}{365.56}\\*
+\end{longtable}
+
+A seguir, testa-se os pressupostos de normalidade e homocedasticidade
+para a utilização da ANOVA como um teste adequado:
+
+\begin{longtable}{ccc}
+\toprule
+statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.7863} & \cellcolor{gray!15}{0.0142} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\*
+\end{longtable}
+
+Pelo teste Shapiro, rejeita-se normalidade. Trata-se de indicativo de
+que um teste não-paramétrico seria mais adequado para avaliar as
+distinções entre tratamentos.
+
+Por fim, verifica-se que os dados são homocedásticos, dados os p-valores
+dos testes Levene aplicados a seguir sobre os resíduos do modelo de
+análise de variância.
+
+\begin{longtable}{ccccc}
+\toprule
+statistic & p.value & df & df.residual & fonte\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & df & df.residual & fonte\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{6} & \cellcolor{gray!15}{tratamento}\\
+0 & 1 & 2 & 6 & bloco\\
+\cellcolor{gray!15}{0} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{6} & \cellcolor{gray!15}{linha}\\*
+\end{longtable}
+
+\hypertarget{questuxe3o-2}{%
+\section{Questão 2}\label{questuxe3o-2}}
+
+\begin{verbatim}
+##                    Df  Sum Sq Mean Sq F value   Pr(>F)    
+## period2             2  727534  363767   1.773  0.19551    
+## trat                2   80264   40132   0.196  0.82390    
+## repeticao           3 8603312 2867771  13.977 3.84e-05 ***
+## repeticao:subject2  8 7750447  968806   4.722  0.00229 ** 
+## Residuals          20 4103618  205181                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  tabela2$residuals
+## W = 0.98396, p-value = 0.8689
+\end{verbatim}
+
+\begin{verbatim}
+## Levene's Test for Homogeneity of Variance (center = median)
+##       Df F value Pr(>F)
+## group 11  0.7485 0.6841
+##       24
+\end{verbatim}
+
+\begin{verbatim}
+## Levene's Test for Homogeneity of Variance (center = median)
+##       Df F value Pr(>F)
+## group  2   0.304 0.7399
+##       33
+\end{verbatim}
+
+\begin{verbatim}
+## Levene's Test for Homogeneity of Variance (center = median)
+##       Df F value Pr(>F)
+## group  2  1.2776 0.2921
+##       33
+\end{verbatim}
+
+\end{document}

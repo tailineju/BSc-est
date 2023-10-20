@@ -1,0 +1,195 @@
+---
+title: "Lista 2 modulo 3"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: false
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 9999)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+library(magrittr)
+library(cowplot)
+library(rsm)
+library(lmtest)
+```
+
+# {.unnumbered}
+
+```{r dados, echo = FALSE}
+#contrastes e niveis dos fatores
+fa <- rep(c(-1,1), 4) %>% rep(2) 
+niveis_A <- c(10, 12)
+fb <- rep(rep(c(-1,1), each = 2), 2)%>% rep(2)
+niveis_B <- c(25, 30)
+fc <-rep(c(-1,1), each = 4)%>% rep(2)
+niveis_C <- c(200,250)
+
+#replicas e fator das réplicas
+n <- 2
+replicas <- factor(rep(c("I", "II"), each = 8))
+
+#vetor de valores
+y <- c(-3, 0, -1, 2, -1, 2, 1, 6,
+           -1, 1, 0, 3, 0, 1, 1, 5)
+
+#fator de interação
+fab <- fa*fb
+fac <- fa*fc
+fbc <- fb*fc
+fabc <- fa*fb*fc
+
+#tabela com dados
+dados <- data.frame(
+  A = as.factor(fa), niveis_A = niveis_A, B = as.factor(fb), niveis_B = niveis_B, C = as.factor(fc), niveis_C = niveis_C, AB = fab, AC = fac, BC = fbc, ABC = fabc, replicas, y
+)
+
+#matriz de desenho
+desenho <- unique(data.frame(fa, fb, fab, fac, fbc, fabc))
+```
+
+## Análise de Variância
+
+A tabela de análise de variância a seguir sugere como significativos apenas para os efeitos principais dos fatores, desconsiderando a interação entre eles. 
+
+```{r anova, echo = FALSE}
+tidy(aov(y ~as.factor(fa)*as.factor(fb)*as.factor(fc))) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Considera-se como modelo, portanto, apenas a análise de variância modelada com os fatores principais:
+
+```{r anova2, echo = FALSE}
+modelo <- aov(y ~as.factor(fa)+as.factor(fb)+as.factor(fc))
+
+tidy(modelo) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Modelo de regressão linear
+
+```{r regressao, echo = FALSE}
+modeloreg <- lm(y ~fa+fb+fc)
+```
+
+O modelo de regressão ajustado é:
+
+\begin{align}
+\hat{y} &= \hat{\beta}_0 + \hat{\beta}_1X_1 + \hat{\beta}_2X_2 + \hat{\beta}_3X_3 \nonumber \\
+&= 1 + 1.5X_1 + 1.125X_2 + 0.875X_3
+\end{align}
+
+## Análise dos resíduos
+
+Testa-se normalidade dos resíduos utilizando o teste de Shapiro-Wilk. É possível observar na tabela abaixo que o teste não rejeita normalidade dos resíduos do modelo.
+
+```{r normalidade-residuos, echo = FALSE}
+shapiro.test(modeloreg$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Além disso, o teste Breusch-Pagan para homocedasticidade não rejeita homocedasticidade dos resíduos.
+
+```{r Teste de Homocedacidade, echo = FALSE}
+homocedast <- bptest(modeloreg)
+
+homocedast %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+Conclui-se pela adequação dos modelos de regressão e anova adotados.
+
+## Curvatura
+
+```{r pontos-centrais, echo = FALSE}
+
+y <- c(y, 0.98, 0.95, 0.93, 0.96)
+fa2 <- c(fa, 0, 0, 0, 0)
+fb2 <- c(fb, 0, 0, 0, 0)
+fc2 <- c(fc, 0, 0, 0, 0)
+
+dadoscent <- data.frame(y, fa2, fb2, fc2)
+mcentral <- mean(y[17:20])
+mfatorial <- mean(y[1:16])
+
+```
+A média dos pontos centrais é 0.955 e a média dos pontos fatoriais é 1, fato que indica que os pontos estão no mesmo plano, já que são valores próximos.
+
+```{r Confirmação de curvatura, echo = FALSE}
+
+mse <- var(y[17:20])
+sqcurv <- 4*16*(mcentral-mfatorial)^2/20
+
+1-pf(sqcurv/mse, 1, 3)
+```
+No entanto, o p-valor obtido para o teste de curatura indica que há sim uma curvatura. 
+
+
+
+

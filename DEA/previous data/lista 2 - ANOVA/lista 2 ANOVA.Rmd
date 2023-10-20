@@ -1,0 +1,363 @@
+---
+title: "Exercício de laboratorio 2"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(car)
+library(dplyr)
+```
+
+# Questao 1
+
+```{r dados, echo = FALSE}
+tipo <- factor(c("I", "II", "III"))
+tempo <- c(19,20,16,
+           22,21,15,
+           20,33,18,
+           18,27,26,
+           25,40,17)
+dados <- data.frame(tipo, tempo)
+
+dados %>% 
+  arrange(tipo)%>%
+  knitr::kable(
+    format = "latex",
+    align = "lc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Determine a forma do modelo e as hipóteses consideradas
+
+A comparação das médias dos grupos, neste caso os tipos de circuito, será realizada mediante análise de variância. O modelo escolhido para tal é o modelo de efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n 
+\end{equation}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os indivíduos de cada grupo indexados por $j$.
+
+As hipóteses do teste são as seguintes:
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+## Qual a forma da estatística de teste e sua distribuição amostral?
+
+A estatística de teste é calculada mediante a média ponderada entre a soma dos quadrados dos tratamentos e a soma dos quadrados dos resíduos (quadrados médios dos tratamentos e dos resíduos respectivamente). Sob $H_0$ a estatística de teste tem distribuição $F(a-1, an-a)$. Os graus de liberdade correspondem aos denominadores dos quadrados médios. Especificamente,
+
+\begin{align}
+  \frac{\frac{\text{SQTRAT}}{a-1}}{\frac{\text{SQRES}}{an-a}} = \frac{\text{QMTRAT}}{\text{QMRES}} \sim F(a-1, an-a)
+\end{align}
+
+## Construa a tabela de análise de variância e conclua o teste considerando alfa = 0,05
+
+O objeto `tabela <- aov(tempo ~ tipo, dados)` é gerado para criação da tabela a seguir.
+
+```{r tabela-anova, echo = FALSE}
+tabela <- aov(tempo ~ tipo, dados)
+
+broom::tidy(tabela) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Com base apenas na ANOVA, cujo p-valor é $< 0,05$, há evidências para rejeitar $H_0$, ou seja, existe pelo menos uma média de grupo diferente das demais.
+
+## Quais são as suposições adotadas para a ANOVA? Essas suposições foram satisfeitas para esse experimento?
+
+Para o teste de análise de variâncias, considerando o modelo de efeitos, supõe-se sobre os resíduos, elemento aleatório do lado direito da expressão do modelo:
+
+* independência;
+* normalidade;
+* homogeneidade de variâncias (homocedasticidade).
+
+Por hipótese, supõe-se que as amostras são independentes. Não há, a priori, como testar independência pois entende-se que isso é derivado do desenho do experimento.
+
+A normalidade da distribuição dos resíduos pode ser testada mediante o teste de Shapiro-Wilk, realizada utilizando `shapiro.test(tabela$residuals)`, em que `tabela` é o modelo de análise de variâncias gerado anteriormente.
+
+```{r normalidade-residuos, echo = FALSE}
+shapiro.test(tabela$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+O teste assume como hipótese nula a normalidade dos dados amostrais. Com base no p-valor obtido, não há evidências para a rejeição de $H_0$. Isto é, supõe-se normalidade dos dados.
+
+Quando à homocedasticidade, utiliza-se o teste de Levene. A hipótese nula supõe homogeneidade de variâncias entre as amostras.
+
+```{r homocedasticidade, echo = FALSE}
+#teste de homocedasticidade sobre resíduos
+car::leveneTest(tempo ~ tipo, dados) %>% 
+  tidy() %>%
+  rename("F statistic" = statistic)%>%
+  mutate(teste = "Teste Levene de Homogeneidade") %>%
+  select(teste, everything())%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+De fato, obtém-se p-valor superior a 0.05, sugerindo a não rejeição de $H_0$.
+  
+## Faça comparações entre os pares de médias pelo teste de Tukey e apresente os resultados.
+
+Opta-se pelo teste de Tukey para comparações múltiplas de médias. Trata-se de um teste unilateral para comparação de médias entre grupos de tratamento. Sob $H_0$, ou seja, a igualdade entre as médias comparadas, a estatística de teste segue uma distribuição Tukey, cujos parâmetros são os graus de liberdade do resíduo e o número de comparações:
+
+\begin{align}
+  \frac{|\bar{y}_i. - \bar{y}_j.|}{\sqrt{\frac{\text{QMRES}}{n}}} \stackrel{H_0}{\sim} \text{Tukey} \left( gl. res., n^o comp. \right)
+\end{align}
+
+```{r comparacoes-multiplas, echo = FALSE}
+TukeyHSD(tabela) %>% 
+  tidy()%>%
+  select(-null.value)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Pelo teste de Tukey, há indícios para rejeição de $H_0$ apenas quando comparados os grupos II e III, corroborando o resultado da análise de variâncias.
+
+## Construa um intervalo de confiança para média do circuito com menores tempos considerando gama = 0,98
+
+```{r medias-grupos, echo = FALSE}
+dados %>%
+  group_by(tipo)%>%
+  summarise(media = mean(tempo))%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+O grupo de menor média de tempo é o grupo III, cuja média é de 18,4. Utiliza-se como variância QMRES, pois $E\left(\text{QMRES}\right) = \sigma^2$. Dessa forma, calcula-se o intervalo de confiança considerando $\gamma = 0,98$:
+
+```{r IC, echo = FALSE, include = FALSE}
+gl <- 3*5 - 3 #(an - a)
+alfa <- (1-0.98)/2
+
+qt(alfa, gl)
+
+IC <- qt(alfa, gl, lower.tail = FALSE)*sqrt(32.56667/5)
+18.4+IC
+18.4-IC
+
+```
+
+
+\begin{align}
+  IC\left( \bar{y}_i.; \gamma \right) &= \bar{y}_i. \pm t_{(an-a; 1-\alpha/2)} \cdot \sqrt{\frac{\text{QMRES}}{n}}\\
+  &= \bar{y}_3. \pm t_{(15-3; 1-0,01)} \cdot \sqrt{\frac{32,56667}{5}}\\
+  &= \bar{y}_3. \pm t_{(12; 0,99)} \cdot \sqrt{\frac{32,56667}{5}}\\
+ IC\left( \bar{y}_3.; 0,98 \right) &= 18,4 \pm 2,68 \cdot \sqrt{\frac{32,56667}{5}}\\
+  &= 18,4 \pm 6,84\\
+  &= \left[ 11,55 ; 25,24 \right]
+\end{align}
+
+# Exercício de simulação
+
+*Faça um experimento de simulação considerando $a = 4$ tratamentos com $n = 4$ repetições e um valor de $\sigma^2 = 25$. Faça $k = 1000$ iterações em que a hipótese nula da ANOVA seja verdadeira e verifique a proporção de casos com pelo menos um erro do tipo I para os testes de comparações múltiplas de médias usando as técnicas de Tukey e Fisher e verificando se existem diferenças entre as técnicas.*
+
+*Caso os testes de comparação múltipla sejam feitos apenas após o teste da anova ser significativo os resultados do item anteiror são alterados?*  
+
+São realizadas 1000 iterações considerando 4 tratamentos e 4 repetições independentes cada -- portanto amostras de um tamanho total de 16 unidades -- advindas de distribuições normais com variância igual a 25. Dessa forma, são satisfeitos os pressupostos da hipótese nula da ANOVA e dos testes de comparações múltiplas: (1) independência, (2) normalidade e (3) homocedasticidade.  
+
+Para as amostras dos tópicos abaixo, primeiramente é gerado um seed para controlar a geração das 1000 seed únicos seguintes (cuja parte inteira apenas é considerada), usadas na geração das amostras. Assim garante-se a replicabilidade do experimento. Como todas as amostras são geradas aleatoreamente sem qualquer dependência, considera-se que são independentes. Por fim, cada $\text{amostra}_k; \, k \in \{1, 2, ..., 1000\}$ de tamanho 16 é gerada com um $\text{seed}_k$ correspondente.
+
+## Erro Tipo I em comparações múltiplas
+
+```{r erro-tipo1-comp-multiplas, echo = FALSE}
+#seed inicial para gerar as seeds das amostras
+set.seed(12)
+
+#seeds para a geracao de amostras nas iteracoes
+random <- unique(as.integer(runif(1000, 1, 500000)))
+
+#um vetor que receberá todos os p-valor
+resultados_tukey <- 0
+resultados_fisher <- 0
+resultados_fisher_bonferroni <- 0
+
+#prepara os resultados de ANOVA para o bloco seguinte:
+resultados_aov <- data.frame()
+
+#geracao das amostras e registro das ocorrencias
+for (k in 1:1000){ #mil iteracoes
+  set.seed(random[k]) #seleciona a seed correspondente
+  amostra <- data.frame( 
+    trat = factor(c('I', 'II', 'III', 'IV')),
+    medidas = rnorm(16, sd = 5)) #gera amostras com o seed configurado
+  
+  #vetor de pvalores do teste de comparacoes multiplas TUKEY
+  pvalores <- TukeyHSD(aov(medidas ~ trat, amostra))$trat[,4]
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_tukey = resultados_tukey + 1}
+  
+  #vetor de pvalores do teste de comparacoes multiplas FISHER sem ajuste
+  pvalores <- pairwise.t.test(amostra$medidas, amostra$trat, p.adjust.method ="none")$p.value
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_fisher = resultados_fisher + 1}
+  
+  #vetor de pvalores do teste de comparacoes multiplas FISHER BONFERRONI
+  pvalores <- pairwise.t.test(amostra$medidas, amostra$trat, p.adjust.method = "bonferroni")$p.value
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_fisher_bonferroni = resultados_fisher_bonferroni + 1}
+  
+  # organizacao dos dados da anova
+  temp_aov <- data.frame(
+    amostra = k,
+    pvalor = broom::tidy( #registra p-valor na tabela
+    aov(medidas~trat, data = amostra))$p.value[1]
+  )
+  
+  resultados_aov <- bind_rows(resultados_aov,temp_aov)
+}
+```
+
+Para realizar os testes de comparações múltiplas de médias, foram utilizadas as seguintes funções e seus testes correspondentes:  
+
+* Teste de Tukey - `TukeyHSD()`;
+* Teste de Fisher - `pairwise.t.test()`, sem correção para $\alpha$; 
+* Teste de Fisher - `pairwise.t.test(..., p.adjust.method = "bonferroni")`, utilizando a correção de Bonferroni para $\alpha$.  
+
+Para o primeiro, foi observado `r resultados_tukey/10`% de ocorrência de erro tipo I. Para o segundo foi observado `r resultados_fisher/10`% e para o terceiro `r resultados_fisher_bonferroni/10`%. \
+
+## Comparações como proteção contra Erro Tipo I
+
+
+```{r geracao-amostras, echo = FALSE}
+
+erro_tipo1 <- which(resultados_aov$pvalor <= 0.05)
+n_erro_tipo_I <- length(erro_tipo1)
+
+#um vetor que receberá todos os p-valor
+resultados_tukey2 <- 0
+resultados_fisher2 <- 0
+resultados_fisher_bonferroni2 <- 0
+
+#geracao das amostras e registro das ocorrencias
+for (k in erro_tipo1){ #iteracoes com erro tipo 1
+  set.seed(random[k]) #seleciona a seed correspondente
+  amostra <- data.frame( 
+    trat = factor(c('I', 'II', 'III', 'IV')),
+    medidas = rnorm(16, sd = 5)) #gera amostras com o seed configurado
+  
+  #vetor de pvalores do teste de comparacoes multiplas TUKEY
+  pvalores <- TukeyHSD(aov(medidas ~ trat, amostra))$trat[,4]
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_tukey2 = resultados_tukey2 + 1}
+  
+  #vetor de pvalores do teste de comparacoes multiplas FISHER sem ajuste
+  pvalores <- pairwise.t.test(amostra$medidas, amostra$trat, p.adjust.method ="none")$p.value
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_fisher2 = resultados_fisher2 + 1}
+  
+  #vetor de pvalores do teste de comparacoes multiplas FISHER BONFERRONI
+  pvalores <- pairwise.t.test(amostra$medidas, amostra$trat, p.adjust.method = "bonferroni")$p.value
+  if(sum(pvalores < 0.05, na.rm = TRUE) >0){resultados_fisher_bonferroni2 = resultados_fisher_bonferroni2 + 1}
+}
+
+tabela_erros <- data.frame(
+  Testes = c("Tukey", "Fisher", "Fisher (Bonferroni)"),
+  `ET1 dos testes` = c(resultados_tukey2, resultados_fisher2, resultados_fisher_bonferroni2),
+  `Redução (%)` = (n_erro_tipo_I-c(resultados_tukey2, resultados_fisher2, resultados_fisher_bonferroni2))/10
+)
+
+```
+
+Observa-se da simulação da análise de variância que em `r n_erro_tipo_I` casos houve erro do tipo 1 considerando $\alpha = 0,05$, o que representa `r length(erro_tipo1)/10`% dos casos. Para testar se um teste seguinte de comparações múltiplas auxiliaria em reduzir a incidência de erro tipo I, realizou-se os mesmos testes do tópico anterior apenas sobre as amostras em que houve esse erro de acordo com a ANOVA. O ganho de precisao, ou redução do erro tipo I, é exposto na tabela a seguir:  
+
+
+```{r tabela-correcao-erros, echo = FALSE}
+tabela_erros%>%
+  knitr::kable(
+    format = "latex",
+    align = "lrr",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Nota-se portanto que, realizando os pós-testes de Tukey ou Fisher com correção de Bonferroni, que controlam para esse tipo de erro, é possível aumentar a precisão da análise em pelo menos 1%. Isso significa que, de `r n_erro_tipo_I` casos, reduzimos para `r tabela_erros$ET1.dos.testes[1]` ou `r tabela_erros$ET1.dos.testes[3]` casos em 1000. Contrariamente, o teste de Fisher sem ajuste no p-valor não fornece qualquer melhoria na análise, o que é esperado pois tipicamente há inflacionamento de erro tipo I.
+

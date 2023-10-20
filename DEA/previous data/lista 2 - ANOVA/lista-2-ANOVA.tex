@@ -1,0 +1,451 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Exercício de laboratorio 2},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Exercício de laboratorio 2}
+\author{César A. Galvão - 19/0011572}
+\date{2022-07-08}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questao-1}{%
+\section{Questao 1}\label{questao-1}}
+
+\begin{longtable}{lc}
+\toprule
+tipo & tempo\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+tipo & tempo\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{I} & \cellcolor{gray!15}{19}\\
+I & 22\\
+\cellcolor{gray!15}{I} & \cellcolor{gray!15}{20}\\
+I & 18\\
+\cellcolor{gray!15}{I} & \cellcolor{gray!15}{25}\\
+II & 20\\
+\cellcolor{gray!15}{II} & \cellcolor{gray!15}{21}\\
+II & 33\\
+\cellcolor{gray!15}{II} & \cellcolor{gray!15}{27}\\
+II & 40\\
+\cellcolor{gray!15}{III} & \cellcolor{gray!15}{16}\\
+III & 15\\
+\cellcolor{gray!15}{III} & \cellcolor{gray!15}{18}\\
+III & 26\\
+\cellcolor{gray!15}{III} & \cellcolor{gray!15}{17}\\*
+\end{longtable}
+
+\hypertarget{determine-a-forma-do-modelo-e-as-hipuxf3teses-consideradas}{%
+\subsection{Determine a forma do modelo e as hipóteses
+consideradas}\label{determine-a-forma-do-modelo-e-as-hipuxf3teses-consideradas}}
+
+A comparação das médias dos grupos, neste caso os tipos de circuito,
+será realizada mediante análise de variância. O modelo escolhido para
+tal é o modelo de efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n 
+\end{equation}
+
+em que \(\mu\) é a média geral, \(\tau_i\) é a média ou efeito dos
+grupos e \(e_{ij}\) é o desvio do elemento. Os grupos são indexados por
+\(i\) e os indivíduos de cada grupo indexados por \(j\).
+
+As hipóteses do teste são as seguintes: \begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+\hypertarget{qual-a-forma-da-estatuxedstica-de-teste-e-sua-distribuiuxe7uxe3o-amostral}{%
+\subsection{Qual a forma da estatística de teste e sua distribuição
+amostral?}\label{qual-a-forma-da-estatuxedstica-de-teste-e-sua-distribuiuxe7uxe3o-amostral}}
+
+A estatística de teste é calculada mediante a média ponderada entre a
+soma dos quadrados dos tratamentos e a soma dos quadrados dos resíduos
+(quadrados médios dos tratamentos e dos resíduos respectivamente). Sob
+\(H_0\) a estatística de teste tem distribuição \(F(a-1, an-a)\). Os
+graus de liberdade correspondem aos denominadores dos quadrados médios.
+Especificamente,
+
+\begin{align}
+  \frac{\frac{\text{SQTRAT}}{a-1}}{\frac{\text{SQRES}}{an-a}} = \frac{\text{QMTRAT}}{\text{QMRES}} \sim F(a-1, an-a)
+\end{align}
+
+\hypertarget{construa-a-tabela-de-anuxe1lise-de-variuxe2ncia-e-conclua-o-teste-considerando-alfa-005}{%
+\subsection{Construa a tabela de análise de variância e conclua o teste
+considerando alfa =
+0,05}\label{construa-a-tabela-de-anuxe1lise-de-variuxe2ncia-e-conclua-o-teste-considerando-alfa-005}}
+
+O objeto
+\texttt{tabela\ \textless{}-\ aov(tempo\ \textasciitilde{}\ tipo,\ dados)}
+é gerado para criação da tabela a seguir.
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{tipo} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{260.9333} & \cellcolor{gray!15}{130.46667} & \cellcolor{gray!15}{4.006141} & \cellcolor{gray!15}{0.0464845}\\
+Residuals & 12 & 390.8000 & 32.56667 & NA & NA\\*
+\end{longtable}
+
+Com base apenas na ANOVA, cujo p-valor é \(< 0,05\), há evidências para
+rejeitar \(H_0\), ou seja, existe pelo menos uma média de grupo
+diferente das demais.
+
+\hypertarget{quais-suxe3o-as-suposiuxe7uxf5es-adotadas-para-a-anova-essas-suposiuxe7uxf5es-foram-satisfeitas-para-esse-experimento}{%
+\subsection{Quais são as suposições adotadas para a ANOVA? Essas
+suposições foram satisfeitas para esse
+experimento?}\label{quais-suxe3o-as-suposiuxe7uxf5es-adotadas-para-a-anova-essas-suposiuxe7uxf5es-foram-satisfeitas-para-esse-experimento}}
+
+Para o teste de análise de variâncias, considerando o modelo de efeitos,
+supõe-se sobre os resíduos, elemento aleatório do lado direito da
+expressão do modelo:
+
+\begin{itemize}
+\tightlist
+\item
+  independência;
+\item
+  normalidade;
+\item
+  homogeneidade de variâncias (homocedasticidade).
+\end{itemize}
+
+Por hipótese, supõe-se que as amostras são independentes. Não há, a
+priori, como testar independência pois entende-se que isso é derivado do
+desenho do experimento.
+
+A normalidade da distribuição dos resíduos pode ser testada mediante o
+teste de Shapiro-Wilk, realizada utilizando
+\texttt{shapiro.test(tabela\$residuals)}, em que \texttt{tabela} é o
+modelo de análise de variâncias gerado anteriormente.
+
+\begin{longtable}{ccc}
+\toprule
+statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.9423982} & \cellcolor{gray!15}{0.4134853} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\*
+\end{longtable}
+
+O teste assume como hipótese nula a normalidade dos dados amostrais. Com
+base no p-valor obtido, não há evidências para a rejeição de \(H_0\).
+Isto é, supõe-se normalidade dos dados.
+
+Quando à homocedasticidade, utiliza-se o teste de Levene. A hipótese
+nula supõe homogeneidade de variâncias entre as amostras.
+
+\begin{longtable}{ccccc}
+\toprule
+teste & F statistic & p.value & df & df.residual\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+teste & F statistic & p.value & df & df.residual\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{Teste Levene de Homogeneidade} & \cellcolor{gray!15}{2.24147} & \cellcolor{gray!15}{0.1488948} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{12}\\*
+\end{longtable}
+
+De fato, obtém-se p-valor superior a 0.05, sugerindo a não rejeição de
+\(H_0\).
+
+\hypertarget{fauxe7a-comparauxe7uxf5es-entre-os-pares-de-muxe9dias-pelo-teste-de-tukey-e-apresente-os-resultados.}{%
+\subsection{Faça comparações entre os pares de médias pelo teste de
+Tukey e apresente os
+resultados.}\label{fauxe7a-comparauxe7uxf5es-entre-os-pares-de-muxe9dias-pelo-teste-de-tukey-e-apresente-os-resultados.}}
+
+Opta-se pelo teste de Tukey para comparações múltiplas de médias.
+Trata-se de um teste unilateral para comparação de médias entre grupos
+de tratamento. Sob \(H_0\), ou seja, a igualdade entre as médias
+comparadas, a estatística de teste segue uma distribuição Tukey, cujos
+parâmetros são os graus de liberdade do resíduo e o número de
+comparações:
+
+\begin{align}
+  \frac{|\bar{y}_i. - \bar{y}_j.|}{\sqrt{\frac{\text{QMRES}}{n}}} \stackrel{H_0}{\sim} \text{Tukey} \left( gl. res., n^o comp. \right)
+\end{align}
+
+\begin{longtable}{cccccc}
+\toprule
+term & contrast & estimate & conf.low & conf.high & adj.p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & contrast & estimate & conf.low & conf.high & adj.p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{tipo} & \cellcolor{gray!15}{II-I} & \cellcolor{gray!15}{7.4} & \cellcolor{gray!15}{-2.22898} & \cellcolor{gray!15}{17.0289799} & \cellcolor{gray!15}{0.1425885}\\
+tipo & III-I & -2.4 & -12.02898 & 7.2289799 & 0.7876393\\
+\cellcolor{gray!15}{tipo} & \cellcolor{gray!15}{III-II} & \cellcolor{gray!15}{-9.8} & \cellcolor{gray!15}{-19.42898} & \cellcolor{gray!15}{-0.1710201} & \cellcolor{gray!15}{0.0459970}\\*
+\end{longtable}
+
+Pelo teste de Tukey, há indícios para rejeição de \(H_0\) apenas quando
+comparados os grupos II e III, corroborando o resultado da análise de
+variâncias.
+
+\hypertarget{construa-um-intervalo-de-confianuxe7a-para-muxe9dia-do-circuito-com-menores-tempos-considerando-gama-098}{%
+\subsection{Construa um intervalo de confiança para média do circuito
+com menores tempos considerando gama =
+0,98}\label{construa-um-intervalo-de-confianuxe7a-para-muxe9dia-do-circuito-com-menores-tempos-considerando-gama-098}}
+
+\begin{longtable}{cc}
+\toprule
+tipo & media\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+tipo & media\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{I} & \cellcolor{gray!15}{20.8}\\
+II & 28.2\\
+\cellcolor{gray!15}{III} & \cellcolor{gray!15}{18.4}\\*
+\end{longtable}
+
+O grupo de menor média de tempo é o grupo III, cuja média é de 18,4.
+Utiliza-se como variância QMRES, pois
+\(E\left(\text{QMRES}\right) = \sigma^2\). Dessa forma, calcula-se o
+intervalo de confiança considerando \(\gamma = 0,98\):
+
+\begin{align}
+  IC\left( \bar{y}_i.; \gamma \right) &= \bar{y}_i. \pm t_{(an-a; 1-\alpha/2)} \cdot \sqrt{\frac{\text{QMRES}}{n}}\\
+  &= \bar{y}_3. \pm t_{(15-3; 1-0,01)} \cdot \sqrt{\frac{32,56667}{5}}\\
+  &= \bar{y}_3. \pm t_{(12; 0,99)} \cdot \sqrt{\frac{32,56667}{5}}\\
+ IC\left( \bar{y}_3.; 0,98 \right) &= 18,4 \pm 2,68 \cdot \sqrt{\frac{32,56667}{5}}\\
+  &= 18,4 \pm 6,84\\
+  &= \left[ 11,55 ; 25,24 \right]
+\end{align}
+
+\hypertarget{exercuxedcio-de-simulauxe7uxe3o}{%
+\section{Exercício de simulação}\label{exercuxedcio-de-simulauxe7uxe3o}}
+
+\emph{Faça um experimento de simulação considerando \(a = 4\)
+tratamentos com \(n = 4\) repetições e um valor de \(\sigma^2 = 25\).
+Faça \(k = 1000\) iterações em que a hipótese nula da ANOVA seja
+verdadeira e verifique a proporção de casos com pelo menos um erro do
+tipo I para os testes de comparações múltiplas de médias usando as
+técnicas de Tukey e Fisher e verificando se existem diferenças entre as
+técnicas.}
+
+\emph{Caso os testes de comparação múltipla sejam feitos apenas após o
+teste da anova ser significativo os resultados do item anteiror são
+alterados?}
+
+São realizadas 1000 iterações considerando 4 tratamentos e 4 repetições
+independentes cada -- portanto amostras de um tamanho total de 16
+unidades -- advindas de distribuições normais com variância igual a 25.
+Dessa forma, são satisfeitos os pressupostos da hipótese nula da ANOVA e
+dos testes de comparações múltiplas: (1) independência, (2) normalidade
+e (3) homocedasticidade.
+
+Para as amostras dos tópicos abaixo, primeiramente é gerado um seed para
+controlar a geração das 1000 seed únicos seguintes (cuja parte inteira
+apenas é considerada), usadas na geração das amostras. Assim garante-se
+a replicabilidade do experimento. Como todas as amostras são geradas
+aleatoreamente sem qualquer dependência, considera-se que são
+independentes. Por fim, cada
+\(\text{amostra}_k; \, k \in \{1, 2, ..., 1000\}\) de tamanho 16 é
+gerada com um \(\text{seed}_k\) correspondente.
+
+\hypertarget{erro-tipo-i-em-comparauxe7uxf5es-muxfaltiplas}{%
+\subsection{Erro Tipo I em comparações
+múltiplas}\label{erro-tipo-i-em-comparauxe7uxf5es-muxfaltiplas}}
+
+Para realizar os testes de comparações múltiplas de médias, foram
+utilizadas as seguintes funções e seus testes correspondentes:
+
+\begin{itemize}
+\tightlist
+\item
+  Teste de Tukey - \texttt{TukeyHSD()};
+\item
+  Teste de Fisher - \texttt{pairwise.t.test()}, sem correção para
+  \(\alpha\);
+\item
+  Teste de Fisher -
+  \texttt{pairwise.t.test(...,\ p.adjust.method\ =\ "bonferroni")},
+  utilizando a correção de Bonferroni para \(\alpha\).
+\end{itemize}
+
+Para o primeiro, foi observado 5.3\% de ocorrência de erro tipo I. Para
+o segundo foi observado 19.4\% e para o terceiro 3.9\%.\\
+
+\hypertarget{comparauxe7uxf5es-como-proteuxe7uxe3o-contra-erro-tipo-i}{%
+\subsection{Comparações como proteção contra Erro Tipo
+I}\label{comparauxe7uxf5es-como-proteuxe7uxe3o-contra-erro-tipo-i}}
+
+Observa-se da simulação da análise de variância que em 57 casos houve
+erro do tipo 1 considerando \(\alpha = 0,05\), o que representa 5.7\%
+dos casos. Para testar se um teste seguinte de comparações múltiplas
+auxiliaria em reduzir a incidência de erro tipo I, realizou-se os mesmos
+testes do tópico anterior apenas sobre as amostras em que houve esse
+erro de acordo com a ANOVA. O ganho de precisao, ou redução do erro tipo
+I, é exposto na tabela a seguir:
+
+\begin{longtable}{lrr}
+\toprule
+Testes & ET1.dos.testes & Redução....\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+Testes & ET1.dos.testes & Redução....\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{Tukey} & \cellcolor{gray!15}{46} & \cellcolor{gray!15}{1.1}\\
+Fisher & 57 & 0.0\\
+\cellcolor{gray!15}{Fisher (Bonferroni)} & \cellcolor{gray!15}{38} & \cellcolor{gray!15}{1.9}\\*
+\end{longtable}
+
+Nota-se portanto que, realizando os pós-testes de Tukey ou Fisher com
+correção de Bonferroni, que controlam para esse tipo de erro, é possível
+aumentar a precisão da análise em pelo menos 1\%. Isso significa que, de
+57 casos, reduzimos para 46 ou 38 casos em 1000. Contrariamente, o teste
+de Fisher sem ajuste no p-valor não fornece qualquer melhoria na
+análise, o que é esperado pois tipicamente há inflacionamento de erro
+tipo I.
+
+\end{document}

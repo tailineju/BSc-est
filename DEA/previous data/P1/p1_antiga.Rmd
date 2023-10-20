@@ -1,0 +1,398 @@
+---
+title: "P1 antiga"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questao 1
+
+```{r dados-q1, echo = FALSE}
+
+a <- 3
+n <- 4
+
+dosagem <- factor(c("20g", "30g", "40g"))
+obs <- factor(rep(c("obs1", "obs2", "obs3", "obs4"), each = 3))
+bioatividade <- c(24, 37, 42,
+                  28, 44, 47,
+                  37, 39, 52,
+                  30, 35, 38)
+
+dados <- data.frame(dosagem, obs, bioatividade)
+
+dados %>% 
+  pivot_wider(names_from = dosagem, values_from = bioatividade) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+
+
+```
+
+## Modelo
+
+O modelo escolhido para a avaliação dos tratamentos é o modelo de efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{equation}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os indivíduos de cada grupo indexados por $j$.
+
+Considera-se para utilização do modelo de efeitos:
+
+* independência entre realizações dos testes;
+* normalidade de distribuição dos resíduos;
+* homogeneidade de variâncias (homocedasticidade) dos resíduos.
+
+Estima-se, considerando $\bar{x}$ o estimador natural para $\mu$ e QMRES $= \hat{\sigma}^2$:
+
+```{r estimadores-anova, echo = FALSE}
+mu <- mean(bioatividade)
+medias <- tapply(bioatividade, rep(dosagem,4), mean)
+qmres <- summary(aov(bioatividade ~ rep(dosagem,4)))[[1]]$`Mean Sq`[2]
+
+estimadores <- data.frame(
+  mu = mu,
+  t1 = medias[1],
+  t2 = medias[2],
+  t3 = medias[3],
+  qmres = qmres
+)
+
+rownames(estimadores) <- NULL
+
+estimadores %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\bar{x}$", "$\\tau_1$", "$\\tau_2$", "$\\tau_3$", "$\\hat{\\sigma}^2$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
+## ANOVA
+
+As hipóteses do teste de análise de variância são as seguintes:
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+A tabela de análise de variâncias é apresentada a seguir:
+
+```{r anova, echo = FALSE}
+tabela <- aov(bioatividade ~ dosagem, dados)
+
+#tabela %>% summary()
+
+broom::tidy(tabela) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Considerando $\alpha = 0,05$, rejeita-se a hipótese nula. Isto é, rejeita-se a hipótese de que há igualdade entre as médias de cada tratamento.
+
+De fato, realizando testes diagnósticos para normalidade e igualdade de variâncias, não se rejeita a hipótese de normalidade dos resíduos e considera-se a variância igual entre grupos, conforme apresentado na tabela a seguir:
+
+```{r diagnostico-anova, echo = FALSE}
+
+shapiro <- shapiro.test(tabela$residuals) %>% tidy()
+
+levene <- car::leveneTest(bioatividade ~ dosagem, dados) %>% 
+  tidy() %>%
+  select(statistic, p.value) %>%
+  mutate(method = "Levene igual. vars.")
+
+bind_rows(shapiro, levene) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Estatística de teste", "p-valor", "Método")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+## Teste de Fisher
+
+O teste é realizado utilizando as estatísticas de teste $t_0$
+
+\begin{align}
+  t_0 = \frac{|\bar{y}_{i.} - \bar{y}_{j.}|}{\sqrt{\text{QMRES} \left( \frac{1}{n_i}+\frac{1}{n_j} \right)}}
+\end{align}
+
+com $an-a$ graus de liberdade sob a hipótese nula. Seus p-valores são apresentados na tabela a seguir:
+
+```{r fisher, echo = FALSE}
+t12 <- abs(medias[1] - medias[2])/sqrt(2*qmres/4)
+t13 <- abs(medias[1] - medias[3])/sqrt(2*qmres/4)
+t23 <- abs(medias[2] - medias[3])/sqrt(2*qmres/4)
+
+#pvalores
+p12 <- pt(t12, df = (a*n)-a, lower.tail = FALSE)*2
+p13 <- pt(t13, df = a*n-a, lower.tail = FALSE)*2
+p23 <- pt(t23, df = a*n-a, lower.tail = FALSE)*2
+
+pvalores <- data.frame(
+  `Grupo 1` = factor(c("20g", "20g", "30g")),
+  `Grupo 2` = factor(c("30g", "40g", "40g")),
+  `p-valores` = c(p12, p13, p23)
+)
+
+pvalores  %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+Considerando $\alpha = 0,05$ se rejeita a hipótese de igualdade entre as médias do grupo de 20g com o grupo 30g pelo teste de Fisher.
+
+
+## Teste de Tukey
+
+```{r teste-tukey, echo = FALSE}
+
+tuk <- TukeyHSD(aov(bioatividade ~ dosagem, dados))$dosagem
+
+comparacoes <- rownames(tuk)
+pval <- as.data.frame(tuk)$`p adj`
+
+data.frame(comparacoes,pval)  %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Comparações", "p.valores")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Pelo teste de Tukey, apenas se rejeita a hipótese de igualdade entre as médias dos grupos de 40g e 20g, com o mesmo nível de confiança.
+
+## Maximização da bioatividade
+
+Considerando que pelo teste de Tukey os grupos de 20g e 40g têm médias estatisticamente diferentes e que este apresenta maior bioatividade, opta-se pelo tratamento de 40g. O intervalo de confiança é construído da seguinte forma:
+
+\begin{align}
+  IC(\bar{x}; 0,9) &= \bar{x} \pm t_{(an-a; 1-\alpha/2)} \cdot \sqrt{\frac{\text{QMRES}}{n}} \\
+  &= 44,75 \pm 1,83 \cdot  2,61 \\
+  &= \left[39,9737; 49,5263  \right]
+\end{align}
+
+## Calcule e22
+
+\begin{align}
+  y_{22} &= \mu + \tau_2 + e_{22}\\
+  44 &= 37.75 + 1 + e_{22} \\
+  e_{22} &= 5.25
+\end{align}
+
+## Erro tipo II
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \bigg| \phi^2 =  \frac{n}{\sigma^2} \sum\limits_{i=1}^{3} \tau_i^2  \right),
+\end{align}
+
+considerando a variância para os resíduos. Portanto,  
+
+\begin{align}
+  \phi^2 &= \frac{n}{\text{QMRES}} 30 \\
+  &= \frac{3}{27,139} 30 \\
+  &= 4,42
+\end{align}
+
+é o parâmetro de não-centralidade (pnc ou, em inglês, *ncp*) da distribuição $F$ e, sob $H_0$, $\phi^2 = 0$.
+
+```{r erro-tipo-2, echo = FALSE}
+phi2 <- (30*n)/qmres
+fcrit <- qf(0.95,a-1,a*n-a)
+beta <- pf(fcrit, a-1,a*n-a, ncp = phi2)
+```
+O valor $F_\text{crit} = F( \gamma = 0,95; gl_1 = 2; gl_2 = 9, \phi^2 = 0)$ é de `r round(qf(0.95,2,9),3)`. Considerando $\phi^2 =$ `r round(phi2, 4)`, obtém-se 
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \big| \phi^2 \text{ sob } H_1 \right) &= P\left( F_{\text{obs}} < 4,256 \big| \phi^2 = 4,422 \right) \\
+  &= 0,662.
+\end{align}
+
+## Probabilidade erro tipo II inferior a 50%
+
+```{r n-beta-menor-5%, echo = FALSE}
+
+erro_tipo2 <- data.frame(
+  n = c(4:6)) %>%
+  mutate(
+    phi2 = (30*n)/(qmres),
+    phi = sqrt(phi2),
+    gl2 = a*n-a,
+    fcrit = qf(0.95,a-1,a*n-a),
+    beta = pf(fcrit, a-1, a*n-a, ncp = phi2),
+    poder = 1-beta
+    )
+```
+
+Considerando os métodos de cálculo já utilizados, constroi-se a tabela a seguir:
+
+```{r tabela-erro-tipoII, echo = FALSE}
+erro_tipo2  %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("n", "$\\phi^2$", "$\\phi$", "g.l.", "$F_{\\text{crit}}$", "$\\beta$", "Poder"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Considerando os valores da tabela, para que o erro tipo II seja menor que 50% são necessários 6 repetições para cada tratamento nesse experimento.
+
+# Questão 2
+
+Na tabela, $D1$ representa a diferença entre as datas 2 e 1 e $D2$ o mesmo para datas 4 e 3. 
+
+```{r tabela-arvores, echo = FALSE}
+arvores <- factor(rep(c("arvore 1", "arvore 2", "arvore 3", "arvore 4", "arvore 5"),4))
+circ <- c(30,33,30,32,30, 
+58,69,51,62,49, 
+115,156,108,167,125, 
+120,172,115,179,142)
+datas <- factor(rep(c("data 1", "data 2", "data 3", "data 4"), each = 5))
+
+tabela_arvores <- data.frame(
+  arvores, circ, datas
+) %>%
+  pivot_wider(names_from = datas, values_from = circ) %>%
+  mutate(D1 = `data 2` - `data 1`,
+         D2 = `data 4` - `data 3`)
+
+tabela_arvores %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Árvores", "Data 1", "Data 2", "Data 3", "Data 4", "D1", "D2"),
+    escape = FALSE
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Deseja-se testar se o crescimento entre os períodos é diferente. Interessa testar portanto se as médias de $D1$ e $D2$ são diferentes. Antes de realizar um teste de comparaçao de médias para medidas repetidas, i.e. um teste $t$ pareado, testa-se para igualdade de variâncias.
+
+```{r igualdade-variâncias, echo = FALSE, message = FALSE}
+pvalor_variancias <- var.test(tabela_arvores$D1, tabela_arvores$D2) %>% tidy() %>%
+  pull(p.value)
+```
+Considerando $H_0$ sendo a igualdade entre as variâncias, obtém-se p-valor `r round(pvalor_variancias,3)`. Ou seja, não se rejeita a hipótese de igualdade de variâncias.
+
+Tomando a hipótese de normalidade dos dados como verdadeira, realiza-se o teste $t$ pareado, para variâncias iguais, com nível de confiança $\gamma = 0,95$. A hipótese nula do teste é a igualdade entre as médias, de modo que o teste realizado é bilateral.
+
+```{r teste-t, echo = FALSE}
+tabela_testet <- t.test(tabela_arvores$D1, tabela_arvores$D2,
+       alternativo = "two.sided",
+       paired = TRUE,
+       var.equal = TRUE,
+       conf.level = 0.95
+       ) %>% tidy()
+```
+
+O p-valor obtido no teste é de `r round(tabela_testet$p.value, 3)`, de modo que é possível rejeitar a hipótese nula a $\alpha = 0,05$. Ou seja, pode-se dizer que há uma diferença estatisticamente diferente entre os crescimentos nos dois períodos.
+
+
+
+
+

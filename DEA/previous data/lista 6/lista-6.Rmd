@@ -1,0 +1,271 @@
+---
+title: "Exercício de laboratório 6"
+subtitle: "Quadrado latino"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questão 1
+
+## Modelo
+
+Para o experimento de quadrado latino utiliza-se o seguinte modelo de efeitos:
+
+\begin{align}
+  y_{ijk} = \mu + \alpha_i + \tau_j + \beta_k + \varepsilon_{ijk}, 
+  \begin{cases} 
+  i, k = 1, 2, 3 \\
+  j = A, B, C
+  \end{cases}
+\end{align}
+
+
+onde $y_{ijk}$ é a observação na i-ésima linha, na k-ésima coluna para o j-ésimo tratamento. $\mu$ é a média total, $\alpha_i$ é o efeito da i-ésima linha, $\tau_j$ é o efeito da j-ésimo tratamento, $\beta_k$ é o efeito da k-ésima coluna e $\varepsilon_{ijk}$ é o erro aleatório. O modelo é completamente aditivo; nesse sentido, não há interação entre linhas, colunas e tratamentos. Como só há uma observação em cada célula, apenas dois dos três subscritos i, j e k são necessários para denotar uma observação em particular.
+
+Dessa forma, testa-se a igualdade dos efeitos de tratamento ou, em outras palavras, se o efeito dos tratamentos é igual a zero. 
+
+Desse modo, as hipóteses são:
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+ou
+
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+A análise de variância consiste em particionar a soma de quadrados total das observações, nos componentes para linhas, colunas, tratamentos e erro:
+
+\begin{equation}
+ SQ_\text{Tot} = SQ_\text{{linhas}} + SQ_\text{{Colunas}} + + SQ_\text{{Trat}} + SQ_\text{Res}
+\end{equation}
+ 
+\noindent com os respectivos graus de liberdade:
+ 
+ \begin{align}
+    (p^2-1) = (p-1) + (p-1) + (p-1) + (p-2)(p-1)
+ \end{align}
+ 
+Assumindo que $\varepsilon_{ijk}$ segue uma distribuição $N(0,\sigma^2)$, cada soma de quadrados do lado direito da equação apresentada acima é uma variável qui-quadrado independente quando dividida por $\sigma^2$. A estatística de teste apropriada para testar as diferenças entre os tratamentos é 
+
+\begin{equation}
+    F_0 = \frac{QM_{tratamentos}}{QMRES} \overset{H_0}{\sim} F_{(p-1),(p-2)(p-1)}
+\end{equation}
+
+```{r q1-estimadores, echo = FALSE}
+trat <- factor(c("A", "C", "B", "C", "B", "A", "B", "A", "C"))
+alfa <- factor(rep(c(1, 2, 3), 3)) #linha
+beta <- factor(rep(c(1, 2, 3), each = 3)) #coluna
+valores <- c(1799, 1846, 2147,2075,1156,1777,1396,868,2291)
+
+dados <- data.frame(
+  trat,alfa,beta, valores
+)
+
+mu <- mean(valores)
+
+taus <- tapply(valores, trat, mean) - mu
+betas <- tapply(valores, beta, mean) - mu
+alfas <- tapply(valores, alfa, mean) - mu
+
+
+tabela_aov <- aov(valores ~ alfa+beta+trat)
+
+variancia <- tidy(tabela_aov)$meansq[4] #QMRES
+
+```
+
+## Tabela ANOVA
+
+A tabela de análise de variância é apresentada a seguir, na qual é possível observar que todos os efeitos do modelo são significativos. Isto significa que, numa futura repetição do experimento, recomenda-se repetir a estrutura de casualização.
+
+```{r q1-anova, echo = FALSE}
+
+tabela_aov %>% tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Estimadores
+
+De acordo com o modelo, os seguintes são os estimadores para média, variância:
+
+```{r estimadores, echo = FALSE}
+data.frame(mu, variancia)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\mu$", "$\\sigma^2$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(taus, t = c(1:3))%>%
+  pivot_wider(names_from = t, values_from = taus)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1$", "$\\tau_2$", "$\\tau_3$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(betas, b = c(1:3))%>%
+  pivot_wider(names_from = b, values_from = betas)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\beta_1$", "$\\beta_2$", "$\\beta_3$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(alfas, b = c(1:3))%>%
+  pivot_wider(names_from = b, values_from = alfas)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\alpha_1$", "$\\alpha_2$", "$\\alpha_3$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+A seguir, testa-se os pressupostos de normalidade e homocedasticidade para a utilização da ANOVA como um teste adequado:
+
+```{r q1-normalidade, echo = FALSE}
+
+shapiro.test(tabela_aov$residuals) %>% tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Pelo teste Shapiro, rejeita-se normalidade. Trata-se de indicativo de que um teste não-paramétrico seria mais adequado para avaliar as distinções entre tratamentos. 
+
+Por fim, verifica-se que os dados são homocedásticos, dados os p-valores dos testes Levene aplicados a seguir sobre os resíduos do modelo de análise de variância.
+
+```{r homo, echo = FALSE}
+tidy(car::leveneTest(valores ~ trat))%>%
+  bind_rows(tidy(car::leveneTest(valores ~ beta)),
+            tidy(car::leveneTest(valores ~ alfa)))%>%
+  mutate(fonte = c("tratamento", "bloco", "linha"))
+```
+
+
+# Questão 2
+
+```{r dados-q2}
+
+trat <- factor(c("A", "C", "B", "B", "C", "A", "C", "A", "B", "C", "A", "B",
+                        "C", "B", "A", "A", "B", "C", "A", "B", "C", "A", "B", "C",
+                        "B", "A", "C", "C", "A", "B", "B", "C", "A", "B", "C", "A" ))
+
+repeticao <- factor(rep(rep(c(1, 2, 3, 4), each = 3), 3))
+
+subject2 <- factor(rep(c(1, 2, 3), 12))
+period2 <- factor(rep(c(1, 2, 3), each = 12))
+conc2 <- c(1799, 2075, 1396, 3100, 1451, 3174, 1430, 1186, 1135, 873, 2061, 1053, 
+           1846, 1156, 868, 3065, 1217, 1714, 863, 642, 1305, 1426, 2433, 1534,
+           2147, 1777, 2291, 4077, 1288, 2919, 1063, 1183, 984, 1540, 1337, 1583)
+
+dados2 <- data.frame(conc2, repeticao, subject2, period2)
+
+tabela2 <- aov(conc2 ~ period2 + trat + repeticao/subject2)
+
+summary(tabela2)
+
+shapiro.test(tabela2$residuals)
+car::leveneTest(conc2 ~ repeticao*subject2)
+car::leveneTest(conc2 ~ period2)
+car::leveneTest(conc2 ~ trat)
+
+#variancia é o qmres
+#mu é a média geral
+#taus
+#betas
+#alfas
+
+```
+

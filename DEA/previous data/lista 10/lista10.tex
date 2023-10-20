@@ -1,0 +1,226 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Lista 2 modulo 3},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Lista 2 modulo 3}
+\author{César A. Galvão - 19/0011572}
+\date{2022-09-20}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{section}{%
+\section*{}\label{section}}
+\addcontentsline{toc}{section}{}
+
+\hypertarget{anuxe1lise-de-variuxe2ncia}{%
+\subsection{Análise de Variância}\label{anuxe1lise-de-variuxe2ncia}}
+
+A tabela de análise de variância a seguir sugere como significativos
+apenas para os efeitos principais dos fatores, desconsiderando a
+interação entre eles.
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{as.factor(fa)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{36.00} & \cellcolor{gray!15}{36.000} & \cellcolor{gray!15}{57.6} & \cellcolor{gray!15}{0.0001}\\
+as.factor(fb) & 1 & 20.25 & 20.250 & 32.4 & 0.0005\\
+\cellcolor{gray!15}{as.factor(fc)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{12.25} & \cellcolor{gray!15}{12.250} & \cellcolor{gray!15}{19.6} & \cellcolor{gray!15}{0.0022}\\
+as.factor(fa):as.factor(fb) & 1 & 2.25 & 2.250 & 3.6 & 0.0943\\
+\cellcolor{gray!15}{as.factor(fa):as.factor(fc)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.25} & \cellcolor{gray!15}{0.250} & \cellcolor{gray!15}{0.4} & \cellcolor{gray!15}{0.5447}\\
+as.factor(fb):as.factor(fc) & 1 & 1.00 & 1.000 & 1.6 & 0.2415\\
+\cellcolor{gray!15}{as.factor(fa):as.factor(fb):as.factor(fc)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{1.00} & \cellcolor{gray!15}{1.000} & \cellcolor{gray!15}{1.6} & \cellcolor{gray!15}{0.2415}\\
+Residuals & 8 & 5.00 & 0.625 & NA & NA\\*
+\end{longtable}
+
+Considera-se como modelo, portanto, apenas a análise de variância
+modelada com os fatores principais:
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{as.factor(fa)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{36.00} & \cellcolor{gray!15}{36.0000} & \cellcolor{gray!15}{45.4737} & \cellcolor{gray!15}{0.0000}\\
+as.factor(fb) & 1 & 20.25 & 20.2500 & 25.5789 & 0.0003\\
+\cellcolor{gray!15}{as.factor(fc)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{12.25} & \cellcolor{gray!15}{12.2500} & \cellcolor{gray!15}{15.4737} & \cellcolor{gray!15}{0.0020}\\
+Residuals & 12 & 9.50 & 0.7917 & NA & NA\\*
+\end{longtable}
+
+\hypertarget{modelo-de-regressuxe3o-linear}{%
+\subsection{Modelo de regressão
+linear}\label{modelo-de-regressuxe3o-linear}}
+
+O modelo de regressão ajustado é:
+
+\begin{align}
+\hat{y} &= \hat{\beta}_0 + \hat{\beta}_1X_1 + \hat{\beta}_2X_2 + \hat{\beta}_3X_3 \nonumber \\
+&= 1 + 1.5X_1 + 1.125X_2 + 0.875X_3
+\end{align}
+
+\hypertarget{anuxe1lise-dos-resuxedduos}{%
+\subsection{Análise dos resíduos}\label{anuxe1lise-dos-resuxedduos}}
+
+Testa-se normalidade dos resíduos utilizando o teste de Shapiro-Wilk. É
+possível observar na tabela abaixo que o teste não rejeita normalidade
+dos resíduos do modelo.
+
+\begin{longtable}{ccc}
+\toprule
+statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.9270108} & \cellcolor{gray!15}{0.2185152} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\*
+\end{longtable}
+
+Além disso, o teste Breusch-Pagan para homocedasticidade não rejeita
+homocedasticidade dos resíduos.
+
+\begin{longtable}{cccc}
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.3629} & \cellcolor{gray!15}{0.9478} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{studentized Breusch-Pagan test}\\*
+\end{longtable}
+
+Conclui-se pela adequação dos modelos de regressão e anova adotados.
+
+\hypertarget{curvatura}{%
+\subsection{Curvatura}\label{curvatura}}
+
+A média dos pontos centrais é 0.955 e a média dos pontos fatoriais é 1,
+fato que indica que os pontos estão no mesmo plano, já que são valores
+próximos.
+
+\begin{verbatim}
+## [1] 0.03058837
+\end{verbatim}
+
+No entanto, o p-valor obtido para o teste de curatura indica que há sim
+uma curvatura.
+
+\end{document}

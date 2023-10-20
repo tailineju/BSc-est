@@ -1,0 +1,403 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Exercício de laboratorio 11},
+  pdfauthor={César Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Exercício de laboratorio 11}
+\author{César Galvão - 19/0011572}
+\date{2022-09-21}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questuxe3o-1}{%
+\section{Questão 1}\label{questuxe3o-1}}
+
+\hypertarget{entrada-de-dados}{%
+\subsection{Entrada de dados}\label{entrada-de-dados}}
+
+\hypertarget{curvatura}{%
+\subsection{Curvatura}\label{curvatura}}
+
+\begin{longtable}{cc}
+\toprule
+$\bar{X}_{Fatorial}$ & $\bar{X}_{central}$\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\bar{X}_{Fatorial}$ & $\bar{X}_{central}$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{84} & \cellcolor{gray!15}{84.2}\\*
+\end{longtable}
+
+Pelo valor observado nas médias dos pontos fatoriais e dos pontos
+centrais, há um indicativo de que não há curvatura, já que os valores
+são muito próximos.
+
+O teste F resulta em p-valor igual a 0.3534. Dessa forma há evidências
+para concluir que não há curvatura.
+
+Analogamente, o teste de ANOVA sugere que há apenas efeito da
+temperatura na resposta obtida.
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{as.factor(aa11)} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{0.33} & \cellcolor{gray!15}{0.1650} & \cellcolor{gray!15}{2.475} & \cellcolor{gray!15}{0.2318}\\
+as.factor(bb11) & 1 & 2.89 & 2.8900 & 43.350 & 0.0071\\
+\cellcolor{gray!15}{as.factor(aa11):as.factor(bb11)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.04} & \cellcolor{gray!15}{0.0400} & \cellcolor{gray!15}{0.600} & \cellcolor{gray!15}{0.4950}\\
+Residuals & 3 & 0.20 & 0.0667 & NA & NA\\*
+\end{longtable}
+
+O modelo de regressão corrobora o resultado anterior de que apenas a
+temperatura tem efeito na resposta do experimento.
+
+\begin{longtable}{ccccc}
+\toprule
+term & estimate & std.error & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & estimate & std.error & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{(Intercept)} & \cellcolor{gray!15}{84.10} & \cellcolor{gray!15}{0.0935} & \cellcolor{gray!15}{899.0668} & \cellcolor{gray!15}{0.0000}\\
+aa11 & 0.25 & 0.1323 & 1.8898 & 0.1318\\
+\cellcolor{gray!15}{bb11} & \cellcolor{gray!15}{0.85} & \cellcolor{gray!15}{0.1323} & \cellcolor{gray!15}{6.4254} & \cellcolor{gray!15}{0.0030}\\
+aa11:bb11 & -0.10 & 0.1323 & -0.7559 & 0.4918\\*
+\end{longtable}
+
+Com base neste resultado, o modelo de regressão será ajustado para:
+
+\begin{align}
+\hat{y} = \beta_0 + \beta_1X_1
+\end{align}
+
+onde:
+
+\begin{align}
+\hat{y} = 84.10 - 0.85X_1
+\end{align}
+
+\hypertarget{caminho-de-maior-subida}{%
+\subsection{Caminho de maior subida}\label{caminho-de-maior-subida}}
+
+\hypertarget{questuxe3o-2}{%
+\section{Questão 2}\label{questuxe3o-2}}
+
+\hypertarget{entrada-de-dados-1}{%
+\subsection{Entrada de dados}\label{entrada-de-dados-1}}
+
+\begin{verbatim}
+##                                                                                  Df
+## as.factor(laserpower)                                                             1
+## as.factor(cellsize)                                                               1
+## as.factor(pulsefreq)                                                              1
+## as.factor(wspeed)                                                                 1
+## as.factor(laserpower):as.factor(cellsize)                                         1
+## as.factor(laserpower):as.factor(pulsefreq)                                        1
+## as.factor(cellsize):as.factor(pulsefreq)                                          1
+## as.factor(laserpower):as.factor(wspeed)                                           1
+## as.factor(cellsize):as.factor(wspeed)                                             1
+## as.factor(pulsefreq):as.factor(wspeed)                                            1
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq)                    1
+## as.factor(laserpower):as.factor(cellsize):as.factor(wspeed)                       1
+## as.factor(laserpower):as.factor(pulsefreq):as.factor(wspeed)                      1
+## as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed)                        1
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed)  1
+##                                                                                   Sum Sq
+## as.factor(laserpower)                                                            0.10240
+## as.factor(cellsize)                                                              0.07022
+## as.factor(pulsefreq)                                                             0.00160
+## as.factor(wspeed)                                                                0.05063
+## as.factor(laserpower):as.factor(cellsize)                                        0.01210
+## as.factor(laserpower):as.factor(pulsefreq)                                       0.00123
+## as.factor(cellsize):as.factor(pulsefreq)                                         0.00250
+## as.factor(laserpower):as.factor(wspeed)                                          0.00040
+## as.factor(cellsize):as.factor(wspeed)                                            0.00562
+## as.factor(pulsefreq):as.factor(wspeed)                                           0.00040
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq)                   0.00203
+## as.factor(laserpower):as.factor(cellsize):as.factor(wspeed)                      0.00160
+## as.factor(laserpower):as.factor(pulsefreq):as.factor(wspeed)                     0.00123
+## as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed)                       0.00160
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed) 0.00002
+##                                                                                  Mean Sq
+## as.factor(laserpower)                                                            0.10240
+## as.factor(cellsize)                                                              0.07022
+## as.factor(pulsefreq)                                                             0.00160
+## as.factor(wspeed)                                                                0.05063
+## as.factor(laserpower):as.factor(cellsize)                                        0.01210
+## as.factor(laserpower):as.factor(pulsefreq)                                       0.00123
+## as.factor(cellsize):as.factor(pulsefreq)                                         0.00250
+## as.factor(laserpower):as.factor(wspeed)                                          0.00040
+## as.factor(cellsize):as.factor(wspeed)                                            0.00562
+## as.factor(pulsefreq):as.factor(wspeed)                                           0.00040
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq)                   0.00203
+## as.factor(laserpower):as.factor(cellsize):as.factor(wspeed)                      0.00160
+## as.factor(laserpower):as.factor(pulsefreq):as.factor(wspeed)                     0.00123
+## as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed)                       0.00160
+## as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed) 0.00002
+\end{verbatim}
+
+\begin{longtable}{cccc}
+\toprule
+term & df & sumsq & meansq\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{as.factor(laserpower)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.1024} & \cellcolor{gray!15}{0.1024}\\
+as.factor(cellsize) & 1 & 0.0702 & 0.0702\\
+\cellcolor{gray!15}{as.factor(pulsefreq)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0016} & \cellcolor{gray!15}{0.0016}\\
+as.factor(wspeed) & 1 & 0.0506 & 0.0506\\
+\cellcolor{gray!15}{as.factor(laserpower):as.factor(cellsize)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0121} & \cellcolor{gray!15}{0.0121}\\
+as.factor(laserpower):as.factor(pulsefreq) & 1 & 0.0012 & 0.0012\\
+\cellcolor{gray!15}{as.factor(cellsize):as.factor(pulsefreq)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0025} & \cellcolor{gray!15}{0.0025}\\
+as.factor(laserpower):as.factor(wspeed) & 1 & 0.0004 & 0.0004\\
+\cellcolor{gray!15}{as.factor(cellsize):as.factor(wspeed)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0056} & \cellcolor{gray!15}{0.0056}\\
+as.factor(pulsefreq):as.factor(wspeed) & 1 & 0.0004 & 0.0004\\
+\cellcolor{gray!15}{as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0020} & \cellcolor{gray!15}{0.0020}\\
+as.factor(laserpower):as.factor(cellsize):as.factor(wspeed) & 1 & 0.0016 & 0.0016\\
+\cellcolor{gray!15}{as.factor(laserpower):as.factor(pulsefreq):as.factor(wspeed)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0012} & \cellcolor{gray!15}{0.0012}\\
+as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed) & 1 & 0.0016 & 0.0016\\
+\cellcolor{gray!15}{as.factor(laserpower):as.factor(cellsize):as.factor(pulsefreq):as.factor(wspeed)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0000} & \cellcolor{gray!15}{0.0000}\\*
+\end{longtable}
+
+Como o experimento tem apenas uma observação para casa combinação de
+fatores, não há como calcular a variabilidade dentro de cada tratamento.
+Desse modo, a contribuição de cada fator é avaliada pela contribuição
+que cada soma de quadrados de cada fator tem na soma de quadrados total.
+Pela ANOVA inicial, nota-se que os fatores que contribuem mais para a
+soma de quadrados total são Laser Power, Cell Size e Writing Speed, bem
+como a interação entre Laser Power e Cell Size. dessa forma, o modelo
+foi ajustado levando em consideração esses fatores.
+
+\begin{verbatim}
+##                                           Df  Sum Sq Mean Sq F value   Pr(>F)
+## as.factor(laserpower)                      1 0.10240 0.10240  61.594 1.39e-05
+## as.factor(cellsize)                        1 0.07022 0.07022  42.241 6.90e-05
+## as.factor(pulsefreq)                       1 0.00160 0.00160   0.962 0.349719
+## as.factor(wspeed)                          1 0.05063 0.05063  30.451 0.000255
+## as.factor(laserpower):as.factor(cellsize)  1 0.01210 0.01210   7.278 0.022397
+## Residuals                                 10 0.01663 0.00166                 
+##                                              
+## as.factor(laserpower)                     ***
+## as.factor(cellsize)                       ***
+## as.factor(pulsefreq)                         
+## as.factor(wspeed)                         ***
+## as.factor(laserpower):as.factor(cellsize) *  
+## Residuals                                    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{as.factor(laserpower)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.1024} & \cellcolor{gray!15}{0.1024} & \cellcolor{gray!15}{61.5940} & \cellcolor{gray!15}{0.0000}\\
+as.factor(cellsize) & 1 & 0.0702 & 0.0702 & 42.2406 & 0.0001\\
+\cellcolor{gray!15}{as.factor(pulsefreq)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0016} & \cellcolor{gray!15}{0.0016} & \cellcolor{gray!15}{0.9624} & \cellcolor{gray!15}{0.3497}\\
+as.factor(wspeed) & 1 & 0.0506 & 0.0506 & 30.4511 & 0.0003\\
+\cellcolor{gray!15}{as.factor(laserpower):as.factor(cellsize)} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{0.0121} & \cellcolor{gray!15}{0.0121} & \cellcolor{gray!15}{7.2782} & \cellcolor{gray!15}{0.0224}\\
+Residuals & 10 & 0.0166 & 0.0017 & NA & NA\\*
+\end{longtable}
+
+Com base na nova análise de variancia, pode-se observar que o fator
+Pulse Frequncy não afeta o resultado do experimento.
+
+Assim, ajustamos o modelo de regressão para:
+
+\begin{longtable}{ccccc}
+\toprule
+term & estimate & std.error & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & estimate & std.error & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{(Intercept)} & \cellcolor{gray!15}{0.7313} & \cellcolor{gray!15}{0.0228} & \cellcolor{gray!15}{32.1369} & \cellcolor{gray!15}{0.0000}\\
+as.factor(laserpower)1 & 0.2150 & 0.0288 & 7.4699 & 0.0000\\
+\cellcolor{gray!15}{as.factor(cellsize)1} & \cellcolor{gray!15}{-0.0775} & \cellcolor{gray!15}{0.0288} & \cellcolor{gray!15}{-2.6926} & \cellcolor{gray!15}{0.0209}\\
+as.factor(wspeed)1 & -0.1125 & 0.0204 & -5.5277 & 0.0002\\
+\cellcolor{gray!15}{as.factor(laserpower)1:as.factor(cellsize)1} & \cellcolor{gray!15}{-0.1100} & \cellcolor{gray!15}{0.0407} & \cellcolor{gray!15}{-2.7024} & \cellcolor{gray!15}{0.0206}\\*
+\end{longtable}
+
+\begin{align}
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1X_1 + \hat{\beta}_2X_2 + \hat{\beta}_3X_3 + \hat{\beta}_4X_1X_2 
+\end{align}
+
+onde:
+
+\begin{align}
+\hat{y} = 0.73125 + 0.215X_1 - 0.0775X_2 - 0.1125X_3 - 0.11X_1X_2
+\end{align}
+
+\hypertarget{anuxe1lise-de-resuxedduos-do-modelo-final}{%
+\subsection{Análise de resíduos do modelo
+final}\label{anuxe1lise-de-resuxedduos-do-modelo-final}}
+
+\begin{longtable}{ccc}
+\toprule
+statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.9278807} & \cellcolor{gray!15}{0.2256039} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\*
+\end{longtable}
+
+\begin{longtable}{cccc}
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{6.4083} & \cellcolor{gray!15}{0.1707} & \cellcolor{gray!15}{4} & \cellcolor{gray!15}{studentized Breusch-Pagan test}\\*
+\end{longtable}
+
+\end{document}

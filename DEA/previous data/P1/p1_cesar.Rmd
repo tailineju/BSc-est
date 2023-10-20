@@ -1,0 +1,486 @@
+---
+title: "Prova 1"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questao 1
+
+```{r dados-q1, echo = FALSE}
+
+a <- 4
+n <- 4
+
+empresa <- factor(rep(c("Emb1", "Emb2", "Iac2022", "IacSP"), each = 4))
+rep <- factor(c("Rep_1", "Rep_2", "Rep_3", "Rep_4"))
+produtividade <- c(517, 521, 516, 522,
+                  504, 515, 502,506,
+                  499, 493, 497, 487,
+                  485, 477, 487, 496)
+
+dados <- data.frame(empresa, rep, produtividade)
+
+dados %>% 
+  pivot_wider(names_from = empresa, values_from = produtividade) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+## 
+
+A comparação das médias dos grupos, neste caso as empresas, será realizada mediante análise de variância. O modelo escolhido para tal é o modelo de efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n 
+\end{equation}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os indivíduos de cada grupo indexados por $j$.
+
+As hipóteses do teste são as seguintes:
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+Realiza-se inicialmente a análise de variância, cujos resultados são expostos na tabela a seguir:
+
+```{r anova_item1, echo = FALSE}
+tabela <- aov(produtividade ~ empresa, dados)
+
+broom::tidy(tabela) %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "", digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Pelo p-valor ínfimo (arredondado para 0 considerando 3 digitos decimais) constante na tabela de análise de variância, pode-se rejeitar a hipótese de que não há diferença entre as médias dos grupos. Isto quer dizer que há pelo menos uma média diferente das demais a $\alpha = 0,05$. 
+
+## 
+
+Para confirmar esses resultados, realiza-se testes diagnósticos de normalidade e homocedasticidade sobre os resíduos, para verificar os pressupostos necessários para a análise de variância. 
+
+Na tabela a seguir, considerando que a hipótese nula do teste de Shapiro-Wilk é a normalidade dos dados -- neste caso dos resíduos -- não se pode rejeitar normalidade dos dados com o nível de confiança desejado.
+
+```{r normalidade-residuos, echo = FALSE}
+shapiro.test(tabela$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Pode-se dizer pelo p-valor da tabela a seguir, em que constam os resultados do teste de Levene para homocedasticidade cuja hipótese nula é a igualdade de variâncias, que as variâncias entre os grupos são iguais.
+
+```{r homocedasticidade, echo = FALSE}
+#teste de homocedasticidade sobre resíduos
+car::leveneTest(produtividade ~ empresa, dados) %>% 
+  tidy() %>%
+  rename("F statistic" = statistic)%>%
+  mutate(teste = "Teste Levene de Homogeneidade") %>%
+  select(teste, everything())%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Conclui-se portanto que os pressupostos para a realização da ANOVA estã cumpridos e, conforme a tabela desta análise, existe pelo menos uma média de grupo diferente das demais.
+
+## 
+
+Estima-se, considerando $\bar{x}$ o estimador natural para $\mu$ e QMRES $= \hat{\sigma}^2$:
+
+```{r estimadores-anova, echo = FALSE}
+mu <- mean(produtividade)
+medias <- tapply(produtividade, empresa, mean)
+qmres <- summary(aov(produtividade ~ empresa, dados))[[1]]$`Mean Sq`[2]
+
+estimadores <- data.frame(
+  mu = mu,
+  t1 = medias[1],
+  t2 = medias[2],
+  t3 = medias[3],
+  t4 = medias[4],
+  qmres = qmres
+)
+
+rownames(estimadores) <- NULL
+
+estimadores %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\bar{x}$", "$\\tau_1$", "$\\tau_2$", "$\\tau_3$", "$\\tau_4$", "$\\hat{\\sigma}^2$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+## 
+
+
+Compararemos dois subgrupos, formados a partir do conjunto inicial de tratamentos, para realizar o teste de comparação de médias utilizando contrastes. A saber, compararemos a média das medidas de IAC2022 com a média dos demais. Construimos os seguintes contrastes:
+
+\begin{align}
+  &\Gamma_1 = \sum\limits_{i = 1}^{a} c_i \mu_i \quad \text{em que} \sum\limits_{i = 1}^{4} c_i = 0; \text{ e } c_i = \left\{-\frac{1}{3}, -\frac{1}{3}, 1,  -\frac{1}{3}\right\}
+\end{align}
+
+Para a construção dos demais contrastes ortogonais, fazemos
+
+\begin{align*}
+  &\Gamma_2 = \sum\limits_{i = 1}^{3} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{1, -\frac{1}{2}, 0, -\frac{1}{2}\right\} \\
+  &\Gamma_3 = \sum\limits_{i = 1}^{2} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{0, 1, 0, -1\right\}
+\end{align*}
+
+de modo que todos os $c_i, i = 1, 2, 3$ são ortogonais entre si. Dessa forma, as hipóteses testadas são as seguintes:
+
+\begin{align*}
+  \text{Contraste 1: }&\begin{cases}
+    H_0: \mu_3 = \frac{\mu_1+\mu_2+\mu_4}{3}\\
+    H_1: \mu_3 \neq \frac{\mu_1+\mu_2+\mu_4}{3}
+  \end{cases}\\
+  \text{Contraste 2: }&\begin{cases}
+    H_0: \mu_1 = \frac{\mu_2+\mu_4}{2}\\
+    H_1: \mu_1 \neq \frac{\mu_2+\mu_4}{2}
+  \end{cases} 
+  \text{ e }\\
+  \text{Contraste 3: }&\begin{cases}
+    H_0: \mu_2 = \mu_4\\
+    H_1: \mu_2 \neq \mu_4
+  \end{cases}
+\end{align*}
+
+A estatística de teste para a realização dos contrastes é definida conforme a expressão a seguir, em que $\text{QMRES}$ é a soma de quadrados dos resíduos da ANOVA exposta anteriormente:
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{ \sum\limits_{i = 1}^n c_i^2 \, \frac{\text{QMRES}}{n}} \sim F(1, an-a = 12)
+\end{align}
+
+Além disso, considera-se
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{\frac{\sum\limits_{i = 1}^n c_i^2}{n}} = \frac{\text{SQContraste}_i}{1 \, (g.l.)} = \text{QMContraste}_i
+\end{align}
+
+tal que, se os contrastes forem calculados da forma correta, a soma dos quadrados médios dos contrastes deve ser igual ao quadrado médio dos tratamentos.
+
+As estatísticas são expostas na tabela de análise de variância a seguir, decomposta em seus contrastes.
+
+
+```{r contrastes, echo = FALSE}
+
+#medias e QMRES ja existem
+
+#vetores de contrastes
+c1 <- c(-1/3, -1/3, 1, -1/3)
+c2 <- c(1, -1/2, 0, -1/2)
+c3 <- c(0,1,0,-1)
+
+#estatisticas de teste
+statistic <- c( # (soma de ci bar(y).)^2 / soma(ci^2)*(qmres/n)
+  ((sum(medias*c1))^2)/(sum(c1^2*qmres/n)),
+  ((sum(medias*c2))^2)/(sum(c2^2*qmres/n)),
+  ((sum(medias*c3))^2)/(sum(c3^2*qmres/n))
+)
+
+#soma dos quadrados dos contrastes
+sumsq <- c( # (soma de ci bar(y).)^2 / soma(ci^2)
+  (sum(medias*c1)^2)/(sum(c1^2)/n),
+  (sum(medias*c2)^2)/(sum(c2^2)/n),
+  (sum(medias*c3)^2)/(sum(c3^2)/n)
+)
+
+#pvalores dos contrastes
+p.value <- c(
+  1-pf(statistic, df1 = 1, df2 = a*n-a)
+)
+
+#tabela com informacoes dos contrastes para a aov
+tabela_contrastes <- data.frame(
+  term = c("C1", "C2", "C3"),
+  df = 1,
+  sumsq, meansq = sumsq, statistic, p.value
+)
+
+#aov discriminada
+aov_contrastes <- bind_rows(
+  tidy(tabela)[1,],
+  tabela_contrastes,
+  tidy(tabela)[2,]
+)
+
+aov_contrastes %>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Fonte de variação", "g.l.", "SQ", "MQ", "Estatística F", "p-valor"),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Dessa forma, pode-se dizer que há diferença entre as médias de todas as empresas listadas.
+
+## 
+
+Calcula-se a DHS de Tukey da seguinte forma:
+
+USAR qtukey sqres(qmres/n)
+
+\begin{align}
+  q_s = \frac{Y_A-Y_B}{\sqrt{\text{QMRES}/n}}
+\end{align}
+
+```{r HSD, echo = FALSE}
+HSD <- (max(medias)-min(medias))/sqrt((qmres/n))
+```
+
+
+Tal que o numerador seja a diferença entre a maior e a menor das médias e o denominador seja o erro padrão. Encontra-se o valor da DHS de `r round(HSD, 3)`.
+
+A tabela do teste de Tukey é exposta a seguir:
+
+```{r tukey, echo = FALSE}
+TukeyHSD(aov(produtividade ~ empresa, dados)) %>% 
+  tidy() %>%
+  select(-term, -null.value)%>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccl",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Contraste", "D. estimada.", "LI", "LS", "p-valor ajust."),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+A um nível de significância de 5%, de fato parece não haver diferença significativa apenas entre IacSP e Iac2022. Isso é evidenciado na tabela do teste de Tukey tanto pelo p-valor quanto pela distância estimada, maior que a DHS calculada.
+
+##
+
+Desejamos calcular $\beta(\tau_1 = 507, \, \tau_2 = 501, \, \tau_3 = 497, \, \tau_4 = 495)$. Para isso, utilizaremos $n = 4$, $\alpha = 0,05$ e $\sigma^2 = \frac{\text{QMRES}}{n}$. A probabilidade será calculada da seguinte forma:
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \bigg| \phi^2 =  \frac{n}{\sigma^2} \sum\limits_{i=1}^{4} \tau_i^2  \right),
+\end{align}
+
+considerando a variância para os resíduos. Portanto,  
+
+\begin{align}
+  \hat{\phi}^2 &= \frac{n}{\text{QMRES}} \sum\limits_{i=1}^{4} \tau_i^2
+\end{align}
+
+é o parâmetro de não-centralidade (pnc ou, em inglês, *ncp*) da distribuição $F$ e, sob $H_0$, $\phi^2 = 0$.
+
+```{r calculo-fi-errotipoII, echo = FALSE}
+tau <- c(507, 501, 497, 495)
+tau <- tau-mean(tau)
+phi2 <- (sum(tau^2)*n)/qmres
+fcrit <- qf(0.95,a-1,a*n-a)
+beta <- pf(fcrit, 3, 12, ncp = phi2)
+```
+
+O valor $F_\text{crit} = F( \gamma = 0,95; gl_1 = 3; gl_2 = 12, \phi^2 = 0)$ é de `r round(qf(0.95,3,12),3)`. Considerando $\phi^2 =$ `r round(phi2, 4)`, obtém-se 
+
+\begin{align*}
+  P\left( F_{\text{obs}} < F_\text{crit} \big| \phi^2 \text{ sob } H_1 \right) &= P\left( F_{\text{obs}} < 3,49 \big| \hat{\phi}^2 = 10,299 \right) \\
+  &= 0,38
+\end{align*}
+
+# Questão 2
+
+##
+```{r dadosq2, echo = FALSE}
+SP <- c(6062,6116,6070,5942,5990,6034,6004,5969,5950,5941)
+RJ <- c(5682,5714,5716,5665,5589,5702,5688,5720,5804,5850)
+
+dados2 <- data.frame(SP, RJ)
+
+dados2%>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccl",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Deseja-se realizar o seguinte teste de hipóteses:
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_{SP} \leq \mu_{RJ}; \text{ou } \quad \mu_{SP} - \mu_{RJ} \leq 0\\
+    H_A: \mu_{SP} > \mu_{RJ} ; \text{ou } \mu_{SP} - \mu_{RJ}  > 0
+  \end{cases}
+\end{align}
+
+Trata-se de um teste de comparação de médias simples. Avalia-se inicialmente teste de normalidade e igualdade de variâncias sobre os dados. A tabela a seguir exibe resultados de testes Shapiro-Wilk, de acordo com os quais não há evidências para se rejeitar normalidade.
+
+```{r diagnostico_q2, echo = FALSE}
+shaprj <- shapiro.test(RJ) %>% tidy() %>% mutate(UF = "RJ")
+shapsp <- shapiro.test(SP) %>% tidy() %>% mutate(UF = "SP")
+
+shapiro <- bind_rows(shaprj, shapsp) %>%
+  select(UF, everything())
+
+shapiro%>%
+  knitr::kable(
+    format = "latex",
+    align = "lcc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
+
+
+```{r igualdade_var, echo = FALSE}
+pvalor_variancias <- var.test(RJ, SP) %>% tidy() %>%
+  pull(p.value)
+```
+
+Ao se realizar teste de igualdade de variâncias, obtém-se p-valor de `r round(pvalor_variancias, 3)`. Dessa forma, pode-se considerar que ambas as amostras advém de populações com variâncias iguais.
+
+Finalmente, realiza-se o teste de comparação de médias. Será considerado um teste não pareado, com amostras de variâncias iguais.
+
+```{r teste-t, echo = FALSE}
+tabela_testet <- t.test(SP, RJ,
+       alternative = "greater",
+       paired = FALSE,
+       var.equal = TRUE,
+       conf.level = 0.95
+       )
+```
+
+Obtém-se estatística de teste $t = 9,9086$ com 18 graus de liberdade e p-valor significante a nível de significância inferior a 0,001. Pode-se dizer portanto que de fato a média salarial de SP é superior à do RJ. Um intervalo de confiança para essa diferença compreende o intervalo $[243,21; \, +\infty)$.
+
+
+##
+
+```{r echo = FALSE}
+scomb <- sqrt((9*var(RJ)+ 9*var(SP))/18)
+tcrit <- ((mean(SP) - mean(RJ))-100)/(scomb*sqrt(2/10))
+```
+
+
+\begin{align}
+  P\left( t_{\text{obs}} > t_\text{crit} \big| \mu_A =  100 \right)
+\end{align}
+
+\begin{align}
+  t_\text{crit} &= \frac{294-100}{S_{comb}\sqrt{\frac{1}{n_a}+ \frac{1}{n_b}}}\\
+  &= \frac{294-100}{66,527 \cdot \sqrt{\frac{2}{10}}}\\
+  &= 6,547
+\end{align}
+
+```{r prob_t, echo = FALSE}
+options(scipen = 9999)
+erro2 <- pt(tcrit, 18, lower.tail = FALSE)
+```
+
+Calcula-se portanto a probabilidade de se observar um valor $t_{\text{obs}} > 6,547$ usando `pt(tcrit, 18, lower.tail = FALSE)`. Obtem-se `r erro2`.
+
+
+
+

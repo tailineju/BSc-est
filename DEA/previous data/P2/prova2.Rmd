@@ -1,0 +1,334 @@
+---
+title: "Prova 2"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: false
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen = 9999)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questão 1
+
+```{r dados, echo = FALSE}
+blocos <- factor(rep(c("b1", "b2", "b3", "b4"), each = 4))
+tratamentos <- factor(rep(c('1', '2', '3', '4'),4))
+values <- c(105.17,97.42,100.78,102.09,
+            102.21,89.36,99.26,99.45,
+            99.43,90.16,96.77,102.63,
+            107.74,100.04,102.50,107.63)
+
+dados <- data.frame(blocos, tratamentos, values)
+
+dados %>%
+  pivot_wider(id_cols = tratamentos, names_from = blocos, values_from = values)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Tratamento", "Bloco 1", "Bloco 2","Bloco3", "Bloco 4")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+É utilizado o RCBD, *randomized complete block design*, representado por:
+
+\begin{align*}
+  y_{ij} = \mu + \tau_i + \beta_j + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{align*}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos -- cada químico sendo considerado um tratamento --, $\beta_j$ é o bloco e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os blocos indexados por $j$.
+
+As hipóteses do teste são as seguintes:
+\begin{align*}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align*}
+
+que equivale dizer
+
+\begin{align*}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align*}
+
+Mesmo que o interesse do estudo não seja sobre o efeito dos blocos, é interessante testá-los para avaliar se é necessário manter a estrutura de blocos e futuras replicações do experimento.
+
+```{r q1-analise, echo = FALSE}
+
+# tabela anova ----
+tabela_aov <- aov(values ~ blocos + tratamentos) #bloco importante e trat sig
+
+# diagnostico ----
+## suposicoes
+normalidade <- shapiro.test(tabela_aov$residuals) #normal
+levene1 <- car::leveneTest(values ~ blocos)
+levene2 <- car::leveneTest(values ~ tratamentos)
+
+## aditividade
+qij <- tabela_aov$fitted.values^2
+mod2 <- aov(qij~blocos+tratamentos)
+PP <- sum((values-tabela_aov$fitted.values)*(qij-mod2$fitted.values))
+Q <- sum((qij-mod2$fitted.values)^2)
+sqnao <- PP^2/Q
+sqres <- summary(tabela_aov)[[1]][3,2]
+sqres2 <- sqres - sqnao
+fobs <- sqnao/(sqres2/12)
+
+pvalor_aditividade <- 1 - pf(fobs,1,12) #não se rejeita h0
+
+# estimadores ----
+
+b <- 4
+a <- 4
+
+mediatot <- mean(values)
+
+mediatrat <- tapply(values, tratamentos, mean)
+mediabloco <- tapply(values, blocos, mean)
+
+taus <- mediatrat - mediatot
+betas <- mediabloco - mediatot
+
+qmres <- tidy(tabela_aov)$meansq[3]
+
+# tukey para multiplas ----
+
+tukey <- TukeyHSD(tabela_aov)$tratamentos
+```
+
+Apresenta-se inicialmente a tabela de ANOVA, na qual é possível observar níveis de significância suficientes para se considerar tanto o efeito de blocos quanto o efeito de tratamentos como significativos. Isso quer dizer que de fato a blocagem teve efeito sobre os resultados do experimento e que há pelo menos um tratamento que difere dos demais.
+
+```{r tabela-aov, echo = FALSE}
+tabela_aov %>% tidy %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 5
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Procede-se portante para o teste diagnóstico da análise de variância. Especificamente, o teste para normalidade dos resíduos, conduzido utilizando o teste de Shapiro, apresenta p-valor de `r round(normalidade$p.value, 2)`. Ou seja, não se rejeita a hipótese de normalidade dos dados. Além disso, o teste de Levene para homocedasticidade apresenta, para blocos e tratamentos, p-valores de `r round(levene1[1,3], 2)` e `r round(levene2[1,3], 2)` respectivamente, de modo que pode-se considerar a homocedasticidade da amostra em ambas as dimensões.
+
+Ainda, realiza-se teste de aditividade, para o qual a hipótese nula é de que o experimento é completamente aditivo. Obtem-se p-valor `r round(pvalor_aditividade, 3)`, de modo que não se rejeita a aditividade considerando $\alpha = 0.05$.
+
+Apresenta-se os parâmetros estimados a seguir:
+
+```{r tabelas-parametros, echo = FALSE}
+data.frame(mediatot, qmres)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\mu$", "$\\sigma^2$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(taus, t = c(1:4))%>%
+  pivot_wider(names_from = t, values_from = taus)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1$", "$\\tau_2$", "$\\tau_3$", "$\\tau_4$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(betas, b = c(1:4))%>%
+  pivot_wider(names_from = b, values_from = betas)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\beta_1$", "$\\beta_2$", "$\\beta_3$", "$\\beta_4$"),
+    escape = FALSE,
+    digits = 3
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Por fim, realiza-se teste de Tukey para avaliar quais tratamentos diferem entre si. Considerando significância de 0.05, não haveria diferença apenas entre o tratamento 4 e os tratamentos 1 e 3.
+
+```{r q1-tukey, echo = FALSE}
+tukey%>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+O erro tipo II deste modelo é calculado com o seguite parâmetro de não centralidade:
+
+\begin{align}
+  NCP = \phi^2 &= n \cdot \frac{\sum\limits_{i = 1}^{4} \tau_i^2}{\sigma^2} \quad \tau_i = \{ -2, 0, 0, 2\} \\
+  &= 4 \cdot \frac{8}{3.857}\\
+  &= 8.296
+\end{align}
+
+Considera-se ainda $(a-1)(b-1) = 3 \cdot 3 = 9$ graus de liberdade para o denominador e $a-1 = 3$ graus de liberdade para o numerador da estatística F.
+
+```{r q1-erro2, echo = FALSE}
+
+taus2 <- c(-2, 0, 0, 2)
+
+F_critico2 <- qf(0.95, 3, 9) #gl = (a-1)*(b-1)
+erro2_2 <- pf(F_critico2, 3, 9 ,ncp = 4*sum(taus2^2)/qmres)
+
+```
+
+Obtém-se uma probabilidade de erro tipo II de `r round(erro2_2,3)`
+
+
+# Questão 2
+
+Na simulação exposta, estão sendo comparadas as ocorrências de erro tipo II para os dois modelos, considerando ou não blocos, quando de fato não existe diferença entre blocos. Pela forma como a simulação é desenhada, entende-se que a blocagem não deve ser importante para a replicação do experimento (o vetor de efeitos de bloco é nulo) e, sendo utilizada no modelo, reduz-se os graus de liberdade do resíduo e consequentemente aumenta-se o QMRES, que é o denominador da estatística de teste. De fato, observa-se pelas probabilidades encontradas que o segundo modelo apresenta uma maior probabilidade de erro tipo II, conforme esperado.
+
+# Questão 3
+
+O teste de Friedman considera a média dos ranks dentro de cada bloco, $k$ tratamentos e $n$ unidades dentro de cada tratamento. A estatística de teste é a $Q$ seguinte, que segue uma distribuição $\chi^2_{(k-1)}$:
+
+\begin{align}
+  Q = \frac{12n}{k(k+1)} \sum\limits^k_{j = 1}\left( \bar{r}_{.j} - \frac{k+1}{2} \right)^2
+\end{align}
+
+A seguir estão expostas duas tabelas: uma com a maior variabilidade possível dentro dos blocos mas uniforme entre blocos, outra sem variabilidade de rank dentro dos blocos, mas maior variabilidade entre blocos. 
+
+É possível observar que a tabela cujos valores apresentam estatística de teste igual a doze possui pvalor muito baixo e de fato avaliam os tratamentos como consistentemente posicionados de forma ranqueada entre os blocos. Em contrapartida, a tabela cujos valores apresentam estatística de teste igual a zero (aqui apresentado pelo teste implementado como `NaN`), apresentam o maior p-valor, o qual calculado manualmente corresponde a 1. De fato, faz sentido com a interpretação de que não há um posicionamento consistente dos rankings dos tratamentos entre os blocos.
+
+```{r friedman, echo = FALSE}
+blocos <- factor(rep(c("b1", "b2", "b3", "b4"), each = 4))
+tratamentos <- factor(rep(c('1', '2', '3', '4'),4))
+values <- rep(1:4, 4)
+
+dados <- data.frame(blocos, tratamentos, values)
+
+data.frame(blocos, tratamentos, values)%>%
+  pivot_wider(id_cols = tratamentos, names_from = blocos, values_from = values)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Tratamento", "Bloco 1", "Bloco 2","Bloco3", "Bloco 4")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+tidy(friedman.test(values ~ tratamentos | blocos, data = dados))%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+blocos <- factor(rep(c("b1", "b2", "b3", "b4"), each = 4))
+tratamentos <- factor(rep(c('1', '2', '3', '4'),4))
+values <- rep(1:4, each = 4)
+
+dados <- data.frame(blocos, tratamentos, values)
+
+data.frame(blocos, tratamentos, values)%>%
+  pivot_wider(id_cols = tratamentos, names_from = blocos, values_from = values)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Tratamento", "Bloco 1", "Bloco 2","Bloco3", "Bloco 4")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+
+tidy(friedman.test(values ~ tratamentos | blocos, data = dados))%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = ""
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+

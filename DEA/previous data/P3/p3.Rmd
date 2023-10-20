@@ -1,0 +1,226 @@
+---
+title: "Prova 3"
+author: "César Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(kableExtra)
+library(broom)
+library(car)
+library(tidyverse)
+library(dae)
+library(magrittr)
+library(rsm)
+library(lmtest)
+```
+
+
+# Questão 1
+
+## Modelo e estimativas
+
+```{r Entrada de dados, echo = FALSE}
+y <- c(86.3,88.5,89.1,84.0,87.3,90.2,85.8,89.0,91.3,
+86.1,89.4,91.7,85.2,89.9,93.2,87.3,90.3,93.7)
+
+dia <- factor(rep(c(1, 2), each  = 9))
+pressao <- (rep(c(250,260,270), 2, each  = 3))
+temp_label <- factor(rep(c("lo", "mid", "hi"),6))
+temp <- factor(rep(c(-1, 0, 1),6))
+
+dados1 <- data.frame(dia, pressao, temp, y)
+
+```
+
+Utiliza-se o modelo de experimento fatorial com parcela dividida, expresso da seguinte forma
+
+\begin{align}
+  y_{ijk} = \mu + \tau_i + \beta_j + (\tau\beta)_{ij} + \gamma_k + (\beta\gamma)_{jk} + \epsilon_{ijk}
+\end{align}
+
+Em que $\tau_i$ representa o efeito do bloco ou repetição (dia) $i$, $\beta_j$ o efeito de parcela do fator Temperatura, $(\tau\beta)_{ij}$ o resíduo da parcela Temperatura, $\gamma_k$ o efeito de subparcela do fator Pressão, $(\beta\gamma)_{jk}$ a interação entre Pressão e Temperatura e, finalmente, $\epsilon_{ijk}$ é o resíduo.
+
+Nas tabelas de estimadores a seguir, a variância é o quadrado médio do resíduo combinado, que é uma ponderação entre os quadrados médios dentro e entre blocos. Ponderação semelhante é feita para os graus de liberdade do resíduo combinado.
+
+```{r 1-estimativas, echo = FALSE, warning=FALSE, message=FALSE}
+media <- mean(y)
+medias_temp <- tapply(y, temp, mean)
+medias_press <- tapply(y, pressao, mean)
+media_interacao <- tapply(y, paste(temp, pressao), mean)
+
+modelo <- aov(y ~ pressao*temp + Error(dia/temp))
+
+qmres_comb <- (tidy(modelo)$meansq[3]+2*tidy(modelo)$meansq[6])/3
+
+data.frame(nomes = c("mu","var", "temp_low", "temp_med", "temp_hi", "press_250", "press_260", "press_270"),
+           valores = c(media, qmres_comb, medias_temp, medias_press))%>%
+  pivot_wider(names_from = nomes, values_from = valores)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4,
+    col.names = c("$\\bar{X}$", "$S^2$", "$\\beta_1$", "$\\beta_2$", "$\\beta_3$", "$\\gamma_1$", "$\\gamma_2$", "$\\gamma_3$")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+
+data.frame(interacoes = paste(temp_label,pressao),
+           medias = media_interacao)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## ANOVA
+
+A tabela de análise variância é apresentada a seguir. A primeira hipótese testada é se há, na estrutura de temperatura/bloco ou temperatura/dia, diferença entre nos níveis de temperatura. A segunda hipótese testada ocorre na estrutura dentro dos blocos/dias, na qual se avalia se há efeito significativo do fator pressão e se há efeito significativo na interação entre pressão e temperatura dentro dos blocos.
+
+```{r anova}
+summary(modelo)
+```
+
+De fato, para a divisão em parcelas do experimento, parece haver efeito do fator principal temperatura, dado seu pvalor de 0,0248. Para a divisão em subparcelas, nenhum dos fatores parece ter efeito significativo. No entanto, pressão tem p-valor próximo a 0,05, o que poderia sinalizar a necessidade de avaliação mais acurada desse fator em uma etapa subsequente.
+
+
+## Erro tipo 2
+
+```{r erro2, echo = FALSE}
+
+tau <- c(0,1,-1)
+n<-1
+a<-3
+b<-3
+
+#phi ajustado para apenas um dos fatores
+phi2 <- n*a*b*(sum(tau^2))/qmres_comb
+
+glcomb <- ((tidy(modelo)$meansq[3]+2*tidy(modelo)$meansq[6])^2)/ #numerador
+  ((tidy(modelo)$meansq[3]^2/2)+(tidy(modelo)$meansq[6]^2/9))#denominador
+
+fcrit <- qf(.95, 1, glcomb)
+
+perro2 <- pf(fcrit, 4, glcomb, ncp = phi2)
+
+```
+Calcula-se a probabilidade de erro tipo 2 considerando:
+
+* $\tau_i = \{0,1,-1\}, i = 1, 2, 3$;
+* $n = 1, a = 3, b = 3$;
+* $\phi^2 = n\cdot a\cdot b \cdot \frac{\sum \tau^2}{QM_\text{res Comb}}$;
+* $gl_{comb} = \frac{[QMres_A + (k+1)QMres_B]^2}{\frac{QMres_A^2}{gl res_A} + \frac{QMres_B^2}{gl res_B}}$
+
+Obtém-se erro tipo II igual a `r round(perro2,3)` utilizando a distribuição F com graus de liberdade $(a-1)(b-1)$ e $gl_{comb}$ e $\phi^2$ como parâmetro de não centralidade.
+
+
+
+# Questão 2
+
+```{r}
+y <- c(107,89,116,101,90,96, #por linha
+117,101,136,110,112,89,
+122,98,139,104,99,92,
+111,101,122,91,105,78,
+90,95,117,100,110,90,
+116,90,114,94,114,93)
+
+blocos <- factor(rep(c("I", "II", "III", "IV", "V", "VI"), each = 6))
+
+racao <- rep(rep(c("A", "B", "C"), each = 2),6)
+
+suplemento <- rep(c("M", "P"), 18)
+
+dados2 <- data.frame(y, blocos, racao, suplemento)
+
+modelo <- aov(y ~ racao*suplemento + Error(blocos/racao))
+
+```
+
+## Análise do experimento e descrição dos componentes
+
+Trata-se de novamente de um modelo de efeitos em parcelas divididas. Existe uma restrição da casualização dada por blocos $\tau_i$, três tratamentos de parcela $\beta_j$ (rações) e dois tratamentos de subparcela $\gamma_k$ (suplementos). A interação entre suplemento e ração é representada por $(\beta\gamma)_{jk}$.
+
+\begin{align}
+  y_{ijk} = \mu + \tau_i + \beta_j + (\tau\beta)_{ij} + \gamma_k + (\beta\gamma)_{jk} + \epsilon_{ijk}
+\end{align}
+
+As hipóteses testadas na análise de variância são análogas àquelas do exercício 1: a primeira hipótese testada é se há, na estrutura de suplemento/bloco diferença entre nos níveis de suplemento. A segunda hipótese testada ocorre na estrutura dentro dos blocos/racao, na qual se avalia se há efeito significativo do fator racao e se há efeito significativo na interação entre ração e suplemento dentro dos blocos.
+
+Pela tabela de análise de variância, é significativa a diferença entre os tratamentos principais de ração. Além disso, é significativa também a diferença entre os tipos de suplementação.
+
+```{r anova2}
+summary(modelo)
+```
+## Tukey
+
+Calcula-se novamente o QMRES combinado e os graus de liberdade combinados. Supondo exclusivamente o tipo M de suplemento, utiliza-se o modelo `aov(y ~ racao + blocos, data = dados_m)` como input do teste de Tukey, que tem como hipótese nula que a distância entre os grupos testados não é significativamente diferente. As estatísticas são expostas a seguir, sugerindo que as rações C e A não diferem entre si, mas que B é diferente tanto de B quanto de A
+
+```{r tukey}
+
+qmres_comb <- (tidy(modelo)$meansq[3]+tidy(modelo)$meansq[6])/2
+
+glcomb <- ((tidy(modelo)$meansq[3]+tidy(modelo)$meansq[6])^2)/ #numerador
+  ((tidy(modelo)$meansq[3]^2/10)+(tidy(modelo)$meansq[6]^2/15))#denominador
+
+qtukey(.95, 2,glcomb)*sqrt(qmres_comb/2)
+
+dados_m <- dados2 %>% filter(suplemento == "M")
+
+# tapply(y[suplemento == "M"], racao[suplemento == "M"], mean)
+# 
+# dist(tapply(y[suplemento == "M"], racao[suplemento == "M"], mean))
+
+modelo <- aov(y ~ racao + blocos, data = dados_m)
+
+TukeyHSD(modelo) %>% tidy() %>%
+  filter(term == "racao")%>%
+  select(-`null.value`)
+
+```
+
+## Maximização da resposta
+
+Com base exclusivamente no teste de Tukey e as médias para cada ração, expostas na tabela abaixo, opta-se pela Ração B, já que possui maior média e é a única que testou como significativamente diferente das demais.
+
+```{r}
+dados_m %>% group_by(racao) %>% summarise(media = mean(y))
+```
+
+
+

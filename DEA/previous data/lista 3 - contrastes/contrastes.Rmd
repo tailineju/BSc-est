@@ -1,0 +1,333 @@
+---
+title: "Exercício de laboratorio 3"
+subtitle: "Contrastes"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questao 1
+
+```{r dados, echo = FALSE}
+chemist <- factor(c("I", "II", "III", "IV"))
+medida <- factor(rep(c("x1", "x2", "x3"), each = 4))
+pmeth <- c(84.99,85.15,84.72,84.20,
+           84.04,85.13, 84.48, 84.10,
+           84.38, 84.88, 85.16, 84.55)
+dados <- data.frame(chemist, medida, pmeth)
+
+dados %>% 
+  arrange(chemist)%>%
+  pivot_wider(id_cols = chemist, names_from = medida, values_from = pmeth)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Químico", "", "% de álcool metílico", "")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Analise o experimento para avaliar se os funcionários diferem significativamente. Apresente o modelo, as hipóteses e a tabela da análise de variância. Use alfa = 0,05.
+  
+A comparação das médias dos grupos será realizada mediante análise de variância. O modelo escolhido para tal é o modelo de efeitos, expresso na equação a seguir
+
+\begin{align*}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{align*}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos -- cada químico sendo considerado um tratamento -- e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os indivíduos de cada grupo indexados por $j$.
+
+As hipóteses do teste são as seguintes:
+\begin{align*}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align*}
+
+que equivale dizer
+
+\begin{align*}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align*}
+
+Neste exercício, pressupõe-se normalidade dos dados -- e consequentemente dos resíduos -- e igualdade de variâncias. Não sendo necessário proceder com os testes diagnósticos, apresenta-se tabela de análise de variância a seguir:
+
+```{r analise_variancia, echo = FALSE}
+
+n <- 3
+a <- 4
+
+tabela_aov <- aov(pmeth ~ chemist, dados)
+
+tabela_aov %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Fonte de variação", "g.l.", "SQ", "MQ", "Estatística F", "p-valor"),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+  
+
+```
+
+
+Considerando $\alpha = 0,05$ não se rejeita a hipótese nula. Ou seja, não se pode dizer que há um químico cuja média de percentual de álcool metílico é diferente dos demais.
+
+## Considere que o funcionário 2 é novo na empresa e construa um conjunto de contrastes ortogonais a partir dessa informação. Apresente as hipóteses que serão testadas, as conclusões e a estatística de teste considerada.
+
+Compararemos dois subgrupos, formados a partir do conjunto inicial de tratamentos, para realizar o teste de comparação de médias utilizando contrastes. A saber, compararemos a média das medidas do químico 2 com a média dos demais. Construimos os seguintes contrastes:
+
+\begin{align}
+  &\Gamma_1 = \sum\limits_{i = 1}^{a} c_i \mu_i \quad \text{em que} \sum\limits_{i = 1}^{4} c_i = 0; \text{ e } c_i = \left\{-\frac{1}{3}, 1, -\frac{1}{3}, -\frac{1}{3}\right\}
+\end{align}
+
+Para a construção dos demais contrastes ortogonais, fazemos
+
+\begin{align*}
+  &\Gamma_2 = \sum\limits_{i = 1}^{3} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{1, 0, -\frac{1}{2}, -\frac{1}{2}\right\} \\
+  &\Gamma_3 = \sum\limits_{i = 1}^{2} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{0, 0, 1, -1\right\}
+\end{align*}
+
+de modo que todos os $c_i, i = 1, 2, 3$ são ortogonais entre si. Dessa forma, as hipóteses testadas são as seguintes:
+
+\begin{align*}
+  \text{Contraste 1: }&\begin{cases}
+    H_0: \mu_2 = \frac{\mu_1+\mu_3+\mu_4}{3}\\
+    H_1: \mu_2 \neq \frac{\mu_1+\mu_3+\mu_4}{3}
+  \end{cases}\\
+  \text{Contraste 2: }&\begin{cases}
+    H_0: \mu_1 = \frac{\mu_3+\mu_4}{2}\\
+    H_1: \mu_2 \neq \frac{\mu_3+\mu_4}{2}
+  \end{cases} 
+  \text{ e }\\
+  \text{Contraste 3: }&\begin{cases}
+    H_0: \mu_3 = \mu_4\\
+    H_1: \mu_3 \neq \mu_4
+  \end{cases}
+\end{align*}
+
+A estatística de teste para a realização dos contrastes é definida conforme a expressão a seguir, em que $\text{QMRES}$ é a soma de quadrados dos resíduos da ANOVA exposta anteriormente:
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{ \sum\limits_{i = 1}^n c_i^2 \, \frac{\text{QMRES}}{n}} \sim F(1, an-a = 8)
+\end{align}
+
+Além disso, considera-se
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{\sum\limits_{i = 1}^n c_i^2} = \frac{\text{SQContraste}_i}{1 \, (g.l.)} = \text{QMContraste}_i
+\end{align}
+
+tal que, se os contrastes forem calculados da forma correta, a soma dos quadrados médios dos contrastes deve ser igual ao quadrado médio dos tratamentos.
+
+As estatísticas são expostas na tabela de análise de variância a seguir, decomposta em seus contrastes.
+
+```{r contrastes, echo = FALSE}
+# calculo do QMRES
+qmres <- pull(tidy(tabela_aov)[2,4])
+
+#vetores de contrastes
+c1 <- c(-1/3, 1, -1/3, -1/3)
+c2 <- c(1, 0, -1/2, -1/2)
+c3 <- c(0,0,1,-1)
+
+#medias dos tratamentos
+medias <- tapply(pmeth, dados$chemist, mean)
+
+#estatisticas de teste
+statistic <- c( # (soma de ci bar(y).)^2 / soma(ci^2)*(qmres/n)
+  ((sum(medias*c1))^2)/(sum(c1^2*qmres/n)),
+  ((sum(medias*c2))^2)/(sum(c2^2*qmres/n)),
+  ((sum(medias*c3))^2)/(sum(c3^2*qmres/n))
+)
+
+#soma dos quadrados dos contrastes
+sumsq <- c( # (soma de ci bar(y).)^2 / soma(ci^2)
+  (sum(medias*c1)^2)/sum(c1^2),
+  (sum(medias*c2)^2)/sum(c2^2),
+  (sum(medias*c3)^2)/sum(c3^2)
+)
+
+#pvalores dos contrastes
+p.value <- c(
+  1-pf(statistic, df1 = 1, df2 = a*n-a)
+)
+
+#tabela com informacoes dos contrastes para a aov
+tabela_contrastes <- data.frame(
+  term = c("C1", "C2", "C3"),
+  df = 1,
+  sumsq, meansq = sumsq, statistic, p.value
+)
+
+#aov discriminada
+aov_contrastes <- bind_rows(
+  tidy(tabela_aov)[1,],
+  tabela_contrastes,
+  tidy(tabela_aov)[2,]
+)
+
+aov_contrastes %>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Fonte de variação", "g.l.", "SQ", "MQ", "Estatística F", "p-valor"),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+De fato, sob $\alpha = 0,05$, só se pode rejeitar a hipótese nula sob o Contraste 1. Isso significa que, se o químico 2 for comparado aos demais químicos, sua média de concentração de álcool é estatisticamente diferente. Além disso, é possível verificar que a soma dos quadrados médios dos contrastes equivale ao quadrado médio dos tratamentos, o que confere validade aos cálculos.
+
+
+## Calcule a probabilidade do erro tipo 2 considerando que a diferença entre dois funcionários seja de 1 unidade
+
+Desejamos calcular $\beta(\tau_1 = 0.5, \, \tau_2 = -0.5, \, \tau_3 = 0, \, \tau_4 = 0)$. Para isso, utilizaremos $n = 3$, $\alpha = 0,05$ e $\sigma^2 = \frac{\text{QMRES}}{n}$. A probabilidade será calculada da seguinte forma:
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \bigg| \phi^2 =  \frac{n}{\sigma^2} \sum\limits_{i=1}^{4} \tau_i^2  \right),
+\end{align}
+
+considerando a variância para os resíduos. Portanto,  
+
+\begin{align}
+  \phi^2 &= \frac{n}{\text{QMRES}} \sum\limits_{i=1}^{4} \tau_i^2
+\end{align}
+
+é o parâmetro de não-centralidade (pnc ou, em inglês, *ncp*) da distribuição $F$ e, sob $H_0$, $\phi^2 = 0$.
+
+```{r calculo-fi-errotipoII, echo = FALSE}
+tau <- c(.5, -.5, 0, 0)
+phi2 <- (sum(tau^2)*n)/qmres
+fcrit <- qf(0.95,a-1,a*n-a)
+beta <- pf(fcrit, 3, 8, ncp = phi2)
+```
+
+
+O valor $F_\text{crit} = F( \gamma = 0,95; gl_1 = 3; gl_2 = 8, \phi^2 = 0)$ é de `r round(qf(0.95,3,8),3)`. Considerando $\phi^2 =$ `r round(phi2, 4)`, obtém-se 
+
+\begin{align*}
+  P\left( F_{\text{obs}} < F_\text{crit} \big| \phi^2 \text{ sob } H_1 \right) &= P\left( F_{\text{obs}} < 4,066 \big| \phi^2 = 13,982 \right) \\
+  &= 0,312
+\end{align*}
+
+## Qual deve ser o número de repetições nesse experimento para que o erro seja menor que 5%?
+
+```{r n-beta-menor-5%, echo = FALSE}
+
+erro_tipo2 <- data.frame(
+  n = c(3:5)) %>%
+  mutate(
+    phi2 = (sum(tau^2)*n)/(qmres),
+    phi = round(sqrt(phi2),2),
+    gl2 = a*n-a,
+    fcrit = qf(0.95,a-1,gl2),
+    beta = round(pf(fcrit, a-1, gl2, ncp = phi2),2),
+    poder = 1-beta
+    )
+```
+
+Considerando os métodos de cálculo já utilizados, constroi-se a tabela a seguir:
+
+```{r tabela-erro-tipoII, echo = FALSE}
+erro_tipo2  %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("n", "$\\phi^2$", "$\\phi$", "g.l.", "$F_{\\text{crit}}$", "$\\beta$", "Poder"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Considerando os valores da tabela, para que o erro tipo II seja menor que 5% são necessários 5 repetições para cada tratamento nesse experimento.
+
+# Exercício de simulação
+
+```{r simulacao-erro2, echo = FALSE}
+# info padrao para todos as rodadas da simulação
+tau <- c(.5, -.5, 0, 0)
+
+mu <- mean(pmeth)
+
+chemist <- rep(chemist, 3)
+
+pvalores <- c()
+# começam os ciclos
+for (i in 1:1000){
+  yij <- mu + rep(tau,3) + rnorm(12, mean = 0, sd = sqrt(qmres))
+  
+  pvalores <- c(pvalores, tidy(aov(yij ~ chemist))$p.value[1])
+}
+# se estatistica menos que fcrit, somar
+erros_2_simulados <- mean(pvalores > 0.05)
+
+```
+
+Considerando uma diferença já conhecida entre os efeitos de tratamento, $(\tau_1 = 0.5, \, \tau_2 = -0.5, \, \tau_3 = 0, \, \tau_4 = 0)$, foram realizadas 1000 iterações da expressão a seguir, visando obter empiricamente a probabilidade de erro tipo II.
+
+\begin{align}
+  y_{ij} &= \mu + \tau_i + \varepsilon_{ij}
+\end{align}
+
+em que $\varepsilon_{ij} \sim N(0, \text{QMRES})$ representa o erro aleatório, cuja variância e distribuição são os mesmos de $y_{ij}$.
+
+Sabe-se que há uma diferença entre os tratamentos, motivo pelo qual uma análise de variância para cada conjunto $y_{ij}, i = 1, 2, 3, 4, j = 1,2,3$ deveria apontar p-valor inferior a 0,05. Considera-se portanto a probabilidade desejada como a proporção dos casos em que não se rejeitaria a hipótese nula, que tem valor `r round(erros_2_simulados,3)`.
+
+

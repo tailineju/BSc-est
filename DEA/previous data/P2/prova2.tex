@@ -1,0 +1,397 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Prova 2},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Prova 2}
+\author{César A. Galvão - 19/0011572}
+\date{2022-08-12}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questuxe3o-1}{%
+\section{Questão 1}\label{questuxe3o-1}}
+
+\begin{longtable}{ccccc}
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{1} & \cellcolor{gray!15}{105.17} & \cellcolor{gray!15}{102.21} & \cellcolor{gray!15}{99.43} & \cellcolor{gray!15}{107.74}\\
+2 & 97.42 & 89.36 & 90.16 & 100.04\\
+\cellcolor{gray!15}{3} & \cellcolor{gray!15}{100.78} & \cellcolor{gray!15}{99.26} & \cellcolor{gray!15}{96.77} & \cellcolor{gray!15}{102.50}\\
+4 & 102.09 & 99.45 & 102.63 & 107.63\\*
+\end{longtable}
+
+É utilizado o RCBD, \emph{randomized complete block design},
+representado por:
+
+\begin{align*}
+  y_{ij} = \mu + \tau_i + \beta_j + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{align*}
+
+em que \(\mu\) é a média geral, \(\tau_i\) é a média ou efeito dos
+grupos -- cada químico sendo considerado um tratamento --, \(\beta_j\) é
+o bloco e \(e_{ij}\) é o desvio do elemento. Os grupos são indexados por
+\(i\) e os blocos indexados por \(j\).
+
+As hipóteses do teste são as seguintes: \begin{align*}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align*}
+
+que equivale dizer
+
+\begin{align*}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align*}
+
+Mesmo que o interesse do estudo não seja sobre o efeito dos blocos, é
+interessante testá-los para avaliar se é necessário manter a estrutura
+de blocos e futuras replicações do experimento.
+
+Apresenta-se inicialmente a tabela de ANOVA, na qual é possível observar
+níveis de significância suficientes para se considerar tanto o efeito de
+blocos quanto o efeito de tratamentos como significativos. Isso quer
+dizer que de fato a blocagem teve efeito sobre os resultados do
+experimento e que há pelo menos um tratamento que difere dos demais.
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{blocos} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{141.1339} & \cellcolor{gray!15}{47.04465} & \cellcolor{gray!15}{12.19711} & \cellcolor{gray!15}{0.00160}\\
+tratamentos & 3 & 219.8991 & 73.29972 & 19.00417 & 0.00031\\
+\cellcolor{gray!15}{Residuals} & \cellcolor{gray!15}{9} & \cellcolor{gray!15}{34.7133} & \cellcolor{gray!15}{3.85703} & \cellcolor{gray!15}{NA} & \cellcolor{gray!15}{NA}\\*
+\end{longtable}
+
+Procede-se portante para o teste diagnóstico da análise de variância.
+Especificamente, o teste para normalidade dos resíduos, conduzido
+utilizando o teste de Shapiro, apresenta p-valor de 0.62. Ou seja, não
+se rejeita a hipótese de normalidade dos dados. Além disso, o teste de
+Levene para homocedasticidade apresenta, para blocos e tratamentos,
+p-valores de 0.91 e 0.17 respectivamente, de modo que pode-se considerar
+a homocedasticidade da amostra em ambas as dimensões.
+
+Ainda, realiza-se teste de aditividade, para o qual a hipótese nula é de
+que o experimento é completamente aditivo. Obtem-se p-valor 0.098, de
+modo que não se rejeita a aditividade considerando \(\alpha = 0.05\).
+
+Apresenta-se os parâmetros estimados a seguir:
+
+\begin{longtable}{cc}
+\toprule
+$\mu$ & $\sigma^2$\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\mu$ & $\sigma^2$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{100.165} & \cellcolor{gray!15}{3.857}\\*
+\end{longtable}
+
+\begin{longtable}{cccc}
+\toprule
+$\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{3.472} & \cellcolor{gray!15}{-5.92} & \cellcolor{gray!15}{-0.338} & \cellcolor{gray!15}{2.785}\\*
+\end{longtable}
+
+\begin{longtable}{cccc}
+\toprule
+$\beta_1$ & $\beta_2$ & $\beta_3$ & $\beta_4$\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\beta_1$ & $\beta_2$ & $\beta_3$ & $\beta_4$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{1.2} & \cellcolor{gray!15}{-2.595} & \cellcolor{gray!15}{-2.918} & \cellcolor{gray!15}{4.312}\\*
+\end{longtable}
+
+Por fim, realiza-se teste de Tukey para avaliar quais tratamentos
+diferem entre si. Considerando significância de 0.05, não haveria
+diferença apenas entre o tratamento 4 e os tratamentos 1 e 3.
+
+\begin{longtable}{lcccc}
+\toprule
+  & diff & lwr & upr & p adj\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+  & diff & lwr & upr & p adj\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{2-1} & \cellcolor{gray!15}{-9.39} & \cellcolor{gray!15}{-13.73} & \cellcolor{gray!15}{-5.06} & \cellcolor{gray!15}{0.00}\\
+3-1 & -3.81 & -8.15 & 0.53 & 0.09\\
+\cellcolor{gray!15}{4-1} & \cellcolor{gray!15}{-0.69} & \cellcolor{gray!15}{-5.02} & \cellcolor{gray!15}{3.65} & \cellcolor{gray!15}{0.96}\\
+3-2 & 5.58 & 1.25 & 9.92 & 0.01\\
+\cellcolor{gray!15}{4-2} & \cellcolor{gray!15}{8.70} & \cellcolor{gray!15}{4.37} & \cellcolor{gray!15}{13.04} & \cellcolor{gray!15}{0.00}\\
+4-3 & 3.12 & -1.21 & 7.46 & 0.18\\*
+\end{longtable}
+
+O erro tipo II deste modelo é calculado com o seguite parâmetro de não
+centralidade:
+
+\begin{align}
+  NCP = \phi^2 &= n \cdot \frac{\sum\limits_{i = 1}^{4} \tau_i^2}{\sigma^2} \quad \tau_i = \{ -2, 0, 0, 2\} \\
+  &= 4 \cdot \frac{8}{3.857}\\
+  &= 8.296
+\end{align}
+
+Considera-se ainda \((a-1)(b-1) = 3 \cdot 3 = 9\) graus de liberdade
+para o denominador e \(a-1 = 3\) graus de liberdade para o numerador da
+estatística F.
+
+Obtém-se uma probabilidade de erro tipo II de 0.525
+
+\hypertarget{questuxe3o-2}{%
+\section{Questão 2}\label{questuxe3o-2}}
+
+Na simulação exposta, estão sendo comparadas as ocorrências de erro tipo
+II para os dois modelos, considerando ou não blocos, quando de fato não
+existe diferença entre blocos. Pela forma como a simulação é desenhada,
+entende-se que a blocagem não deve ser importante para a replicação do
+experimento (o vetor de efeitos de bloco é nulo) e, sendo utilizada no
+modelo, reduz-se os graus de liberdade do resíduo e consequentemente
+aumenta-se o QMRES, que é o denominador da estatística de teste. De
+fato, observa-se pelas probabilidades encontradas que o segundo modelo
+apresenta uma maior probabilidade de erro tipo II, conforme esperado.
+
+\hypertarget{questuxe3o-3}{%
+\section{Questão 3}\label{questuxe3o-3}}
+
+O teste de Friedman considera a média dos ranks dentro de cada bloco,
+\(k\) tratamentos e \(n\) unidades dentro de cada tratamento. A
+estatística de teste é a \(Q\) seguinte, que segue uma distribuição
+\(\chi^2_{(k-1)}\):
+
+\begin{align}
+  Q = \frac{12n}{k(k+1)} \sum\limits^k_{j = 1}\left( \bar{r}_{.j} - \frac{k+1}{2} \right)^2
+\end{align}
+
+A seguir estão expostas duas tabelas: uma com a maior variabilidade
+possível dentro dos blocos mas uniforme entre blocos, outra sem
+variabilidade de rank dentro dos blocos, mas maior variabilidade entre
+blocos.
+
+É possível observar que a tabela cujos valores apresentam estatística de
+teste igual a doze possui pvalor muito baixo e de fato avaliam os
+tratamentos como consistentemente posicionados de forma ranqueada entre
+os blocos. Em contrapartida, a tabela cujos valores apresentam
+estatística de teste igual a zero (aqui apresentado pelo teste
+implementado como \texttt{NaN}), apresentam o maior p-valor, o qual
+calculado manualmente corresponde a 1. De fato, faz sentido com a
+interpretação de que não há um posicionamento consistente dos rankings
+dos tratamentos entre os blocos.
+
+\begin{longtable}{ccccc}
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{1} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{1}\\
+2 & 2 & 2 & 2 & 2\\
+\cellcolor{gray!15}{3} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{3}\\
+4 & 4 & 4 & 4 & 4\\*
+\end{longtable}
+
+\begin{longtable}{cccc}
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{12} & \cellcolor{gray!15}{0.0073832} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{Friedman rank sum test}\\*
+\end{longtable}
+
+\begin{longtable}{ccccc}
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+Tratamento & Bloco 1 & Bloco 2 & Bloco3 & Bloco 4\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{1} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{4}\\
+2 & 1 & 2 & 3 & 4\\
+\cellcolor{gray!15}{3} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{2} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{4}\\
+4 & 1 & 2 & 3 & 4\\*
+\end{longtable}
+
+\begin{longtable}{cccc}
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & parameter & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{NaN} & \cellcolor{gray!15}{NaN} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{Friedman rank sum test}\\*
+\end{longtable}
+
+\end{document}

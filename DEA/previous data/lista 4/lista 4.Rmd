@@ -1,0 +1,409 @@
+---
+title: "Exercício de laboratório 4"
+subtitle: "Blocos completos"
+author: "César A. Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(tidyverse)
+```
+
+# Questao 1
+
+```{r dados, echo = FALSE}
+bolts <- factor(rep(c("b1", "b2", "b3", "b4", "b5"), each = 4))
+chem <- factor(rep(c('1', '2', '3', '4'),5))
+values <- c(73,73,75,73,
+            68,67,68,71,
+            74,75,78,75,
+            71,72,73,75,
+            67,70,68,69)
+
+dados <- data.frame(bolts, chem, values)
+
+dados %>% 
+  arrange(chem)%>%
+  pivot_wider(id_cols = chem, names_from = bolts, values_from = values)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Químico", "Bolt 1", "Bolt 2","Bolt3", "Bolt 4", "Bolt 5")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+## Modelo e hipóteses
+  
+É utilizado o RCBD, *randomized complete block design*, representado por:
+
+\begin{align*}
+  y_{ij} = \mu + \tau_i + \beta_j + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n
+\end{align*}
+
+em que $\mu$ é a média geral, $\tau_i$ é a média ou efeito dos grupos -- cada químico sendo considerado um tratamento --, $\beta_j$ é a bloco -- aqui cada *bolt* ou o equivalente a lote -- e $e_{ij}$ é o desvio do elemento. Os grupos são indexados por $i$ e os blocos indexados por $j$.
+
+As hipóteses do teste são as seguintes:
+\begin{align*}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align*}
+
+que equivale dizer
+
+\begin{align*}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align*}
+
+Mesmo que o interesse do estudo não seja sobre o efeito dos blocos, é interessante testá-los para avaliar se é necessário manter a estrutura de blocos e futuras replicações do experimento.
+
+## Tabela de ANOVA
+
+De acordo com a tabela a seguir, de fato os blocos apresentam efeito significativo sobre a variância do experimento, o que não ocorre para os tratamentos, evidenciado pelo p-valor de 0.121.
+
+```{r analise_variancia, echo = FALSE}
+a <- 4
+b <- 5
+
+tabela_aov <- aov(values ~ bolts+chem, dados)
+
+tabela_aov %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "lcccc",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("Fonte de variação", "g.l.", "SQ", "MQ", "Estatística F", "p-valor"),
+     digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Mediante realização do teste Shapiro para normalidade, obtém-se p-valor de `r round(shapiro.test(tabela_aov$residuals)$p.value,3)`. Como ANOVA é um teste paramétrico, devemos utilizar outro teste para a avaliação da diferença estatística entre os tratamentos.
+
+
+## Estimativa dos parâmetros do modelo
+
+
+```{r estimativa-parametros, echo = FALSE}
+media_geral <- mean(values)
+taus <- tapply(values, chem, mean) - media_geral
+betas <- tapply(values, bolts, mean) - media_geral
+
+dados <- cbind(dados,
+               betas = rep(betas, each = 4),
+               taus = rep(taus, 5))
+
+sqres <- sum((dados$values-dados$taus-dados$betas-media_geral)^2)
+
+variancia <- sqres/((a-1)*(b-1))
+
+data.frame(media_geral, variancia)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\mu$", "$\\sigma^2$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(taus, t = c(1:4))%>%
+  pivot_wider(names_from = t, values_from = taus)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\tau_1$", "$\\tau_2$", "$\\tau_3$", "$\\tau_4$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+data.frame(betas, b = c(1:5))%>%
+  pivot_wider(names_from = b, values_from = betas)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\beta_1$", "$\\beta_2$", "$\\beta_3$", "$\\beta_4$", "$\\beta_5$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+## Qual elemento químico deve ser recomendado?
+
+Considerando apenas a análise de variância, tanto faz o elemento utilizado, já que não há diferença entre tratamentos. Procede-se ao teste de Tukey para avaliação de pares de tratamentos.
+
+```{r tukey, echo = FALSE}
+
+TukeyHSD(tabela_aov)$bolts %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+TukeyHSD(tabela_aov)$chem %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+
+De forma similar, o teste não aponta diferença significativa entre grupos de tratamento, mas sim entre quase todos os blocos, considerando $\alpha = 0,05$. São as exceções de significância: bloco 1 com blocos 3 e 4 e bloco 5 com bloco 2.
+
+## Conferencia manual das contas
+
+```{r anova-manual, echo = FALSE}
+b <- 5
+a <- 4
+
+mediatrat <- tapply(values, chem, mean)
+mediabloco <- tapply(values, bolts, mean)
+mediatot <- mean(dados$values)
+
+sstrat <- b*(sum((mediatrat-mediatot)^2))
+ssbloco <- a*(sum((mediabloco-mediatot)^2))
+sstot <- sum((values-mediatot)^2)
+
+sse <- sstot -(sstrat + ssbloco)
+
+MStrat <- sstrat/(a-1)
+MSbloco <- ssbloco/(b-1)
+MSe <- sse/((a-1)*(b-1))
+
+fobs <- MStrat/MSe
+fobsbloc <- MSbloco/MSe
+
+1-pf(fobs,3,12)
+1-pf(fobsbloc,4,12)
+
+fontes <- c("bolts", "chemicals", "residuals")
+gl <- c(4, 3, 12)
+sumsq <- c(157, 12.95, 21.8)
+meansq <- c(39.25, 4.32, 1.82)
+Festat <- c(21.606, 2.376, NA)
+pvalor <- c(1-pf(fobs,3,12), 1-pf(fobsbloc,4,12), NA)
+
+aov_manual <- data.frame (fontes, gl, sumsq, meansq, Festat, pvalor)
+
+aov_manual %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
+Calcula-se inicialmente o valor crítico para a distância entre as médias das amostras, considerando a distribuição de Tukey:
+
+\begin{align}
+    T_\alpha &= q_\alpha(a, f) \sqrt{\frac{MS_E}{n}}\\
+    &= 4.19 \cdot \sqrt{\frac{MS_E}{4}}\\
+    &= 2.829
+\end{align}
+
+```{r tukey-manual, echo = FALSE}
+
+ref <- qtukey(.95, 4, 12)*(sqrt(variancia/4))
+
+medtrat1 <- mediatrat[1]
+medtrat2 <- mediatrat[2]
+medtrat3 <- mediatrat[3]
+medtrat4 <- mediatrat[4]
+
+t12 <- abs(medtrat1 - medtrat2)
+t13 <- abs(medtrat1 - medtrat3)
+t14 <- abs(medtrat1 - medtrat4)
+t23 <- abs(medtrat2 - medtrat3)
+t24 <- abs(medtrat2 - medtrat4)
+t34 <- abs(medtrat3 - medtrat4)
+
+medbloc1 <- mediabloco[1]
+medbloc2 <- mediabloco[2]
+medbloc3 <- mediabloco[3]
+medbloc4 <- mediabloco[4]
+medbloc5 <- mediabloco[5]
+
+tb12 <- abs(medbloc1 - medbloc2)
+tb13 <- abs(medbloc1 - medbloc3)
+tb14 <- abs(medbloc1 - medbloc4)
+tb15 <- abs(medbloc1 - medbloc5)
+tb23 <- abs(medbloc2 - medbloc3)
+tb24 <- abs(medbloc2 - medbloc4)
+tb25 <- abs(medbloc2 - medbloc5)
+tb34 <- abs(medbloc3 - medbloc4)
+tb35 <- abs(medbloc3 - medbloc5)
+tb45 <- abs(medbloc4 - medbloc5)
+
+comparacao <- c("media trat 12", "media trat 13", "media trat 14", "media trat 23", "media trat 24", "media trat 34", "media bloco 12","media bloco 13","media bloco 14","media bloco 15","media bloco 23","media bloco 24","media bloco 25","media bloco 34","media bloco 35","media bloco 45")
+distancias <- c(t12, t13, t14, t23, t24, t34,
+                tb12,tb13,tb14,tb15,tb23,tb24,tb25,tb34,tb35,tb45)
+
+data.frame(comparacao, distancias) %>%
+  mutate(n = c(rep(4, 6),rep(5, 10)),
+         pvalor = round(1-ptukey(distancias/(sqrt(variancia/4)), n, 12),5)) %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+## Normalidade e homocedasticidade
+
+Conforme ja testado sobre os resíduos do modelo de análise variância, os dados de fato não cumprem o pressuposto de normalidade.  No entanto, são homocedásticos.
+
+```{r homo, echo = FALSE}
+tidy(car::leveneTest(values ~ chem)) %>% 
+  bind_rows(tidy(car::leveneTest(values ~ bolts)))%>%
+  mutate(fonte = c("Chem - trat", "Bolts - bloco")) %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Por último, verifica-se possível aditividade de efeito de tratamento com efeito de bloco. Conforme o p-valor obtido a seguir para o teste de aditividade, cuja hipótese nula é a aditividade completa do modelo (isto é, não há um $\lambda_{ij}$ diferente de zero, o qual representaria interação de efeitos), pode-se considerar que o modelo é completamente aditivo.
+
+```{r aditividade, echo = FALSE}
+#aditividade
+qij <- tabela_aov$fitted.values^2
+mod2 <- aov(qij~bolts+chem)
+PP <- sum((values-tabela_aov$fitted.values)*(qij-mod2$fitted.values))
+Q <- sum((qij-mod2$fitted.values)^2)
+sqnao <- PP^2/Q
+sqres <- summary(tabela_aov)[[1]][3,2]
+sqres2 <- sqres - sqnao
+fobs <- sqnao/(sqres2/12)
+
+1 - pf(fobs,1,12)
+
+#install.packages("dae")
+library(dae)
+tukey.1df(tabela_aov, data = dados)$Tukey.p #CLOSE ENOUGH
+```
+
+Como foi rejeitada a hipótese de normalidade, realiza-se o teste de Friendman, não paramétrico, para avaliação da diferença entre os tratamentos. Pelo p-valor rejeita-se a diferença entre tratamentos.
+
+```{r friedman, echo = FALSE}
+
+tidy(friedman.test(values, group = chem, blocks = bolts)) %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4,
+    col.names = c("chi-squared","p-value", "df", "method")
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+

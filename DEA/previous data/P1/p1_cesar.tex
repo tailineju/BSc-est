@@ -1,0 +1,513 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Prova 1},
+  pdfauthor={César A. Galvão - 19/0011572},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage{helvet} \renewcommand\familydefault{\sfdefault}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Prova 1}
+\author{César A. Galvão - 19/0011572}
+\date{2022-07-11}
+
+\begin{document}
+\maketitle
+
+\newpage{}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+\hypertarget{questao-1}{%
+\section{Questao 1}\label{questao-1}}
+
+\begin{longtable}{ccccc}
+\toprule
+rep & Emb1 & Emb2 & Iac2022 & IacSP\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+rep & Emb1 & Emb2 & Iac2022 & IacSP\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{Rep\_1} & \cellcolor{gray!15}{517} & \cellcolor{gray!15}{504} & \cellcolor{gray!15}{499} & \cellcolor{gray!15}{485}\\
+Rep\_2 & 521 & 515 & 493 & 477\\
+\cellcolor{gray!15}{Rep\_3} & \cellcolor{gray!15}{516} & \cellcolor{gray!15}{502} & \cellcolor{gray!15}{497} & \cellcolor{gray!15}{487}\\
+Rep\_4 & 522 & 506 & 487 & 496\\*
+\end{longtable}
+
+\hypertarget{section}{%
+\subsection{}\label{section}}
+
+A comparação das médias dos grupos, neste caso as empresas, será
+realizada mediante análise de variância. O modelo escolhido para tal é o
+modelo de efeitos, expresso na equação a seguir
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., n 
+\end{equation}
+
+em que \(\mu\) é a média geral, \(\tau_i\) é a média ou efeito dos
+grupos e \(e_{ij}\) é o desvio do elemento. Os grupos são indexados por
+\(i\) e os indivíduos de cada grupo indexados por \(j\).
+
+As hipóteses do teste são as seguintes: \begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+que equivale dizer
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+Realiza-se inicialmente a análise de variância, cujos resultados são
+expostos na tabela a seguir:
+
+\begin{longtable}{cccccc}
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+term & df & sumsq & meansq & statistic & p.value\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{empresa} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{2490.5} & \cellcolor{gray!15}{830.167} & \cellcolor{gray!15}{25.446} & \cellcolor{gray!15}{0}\\
+Residuals & 12 & 391.5 & 32.625 & NA & NA\\*
+\end{longtable}
+
+Pelo p-valor ínfimo (arredondado para 0 considerando 3 digitos decimais)
+constante na tabela de análise de variância, pode-se rejeitar a hipótese
+de que não há diferença entre as médias dos grupos. Isto quer dizer que
+há pelo menos uma média diferente das demais a \(\alpha = 0,05\).
+
+\hypertarget{section-1}{%
+\subsection{}\label{section-1}}
+
+Para confirmar esses resultados, realiza-se testes diagnósticos de
+normalidade e homocedasticidade sobre os resíduos, para verificar os
+pressupostos necessários para a análise de variância.
+
+Na tabela a seguir, considerando que a hipótese nula do teste de
+Shapiro-Wilk é a normalidade dos dados -- neste caso dos resíduos -- não
+se pode rejeitar normalidade dos dados com o nível de confiança
+desejado.
+
+\begin{longtable}{ccc}
+\toprule
+statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{3}{@{}l}{\textit{(continued)}}\\
+\toprule
+statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{0.9816996} & \cellcolor{gray!15}{0.9756089} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\*
+\end{longtable}
+
+Pode-se dizer pelo p-valor da tabela a seguir, em que constam os
+resultados do teste de Levene para homocedasticidade cuja hipótese nula
+é a igualdade de variâncias, que as variâncias entre os grupos são
+iguais.
+
+\begin{longtable}{ccccc}
+\toprule
+teste & F statistic & p.value & df & df.residual\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+teste & F statistic & p.value & df & df.residual\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{Teste Levene de Homogeneidade} & \cellcolor{gray!15}{0.4} & \cellcolor{gray!15}{0.7555447} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{12}\\*
+\end{longtable}
+
+Conclui-se portanto que os pressupostos para a realização da ANOVA estã
+cumpridos e, conforme a tabela desta análise, existe pelo menos uma
+média de grupo diferente das demais.
+
+\hypertarget{section-2}{%
+\subsection{}\label{section-2}}
+
+Estima-se, considerando \(\bar{x}\) o estimador natural para \(\mu\) e
+QMRES \(= \hat{\sigma}^2\):
+
+\begin{longtable}{cccccc}
+\toprule
+$\bar{x}$ & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$ & $\hat{\sigma}^2$\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+$\bar{x}$ & $\tau_1$ & $\tau_2$ & $\tau_3$ & $\tau_4$ & $\hat{\sigma}^2$\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{501.5} & \cellcolor{gray!15}{519} & \cellcolor{gray!15}{506.75} & \cellcolor{gray!15}{494} & \cellcolor{gray!15}{486.25} & \cellcolor{gray!15}{32.62}\\*
+\end{longtable}
+
+\hypertarget{section-3}{%
+\subsection{}\label{section-3}}
+
+Compararemos dois subgrupos, formados a partir do conjunto inicial de
+tratamentos, para realizar o teste de comparação de médias utilizando
+contrastes. A saber, compararemos a média das medidas de IAC2022 com a
+média dos demais. Construimos os seguintes contrastes:
+
+\begin{align}
+  &\Gamma_1 = \sum\limits_{i = 1}^{a} c_i \mu_i \quad \text{em que} \sum\limits_{i = 1}^{4} c_i = 0; \text{ e } c_i = \left\{-\frac{1}{3}, -\frac{1}{3}, 1,  -\frac{1}{3}\right\}
+\end{align}
+
+Para a construção dos demais contrastes ortogonais, fazemos
+
+\begin{align*}
+  &\Gamma_2 = \sum\limits_{i = 1}^{3} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{1, -\frac{1}{2}, 0, -\frac{1}{2}\right\} \\
+  &\Gamma_3 = \sum\limits_{i = 1}^{2} c_i \mu_i \quad \longrightarrow
+  c_i = \left\{0, 1, 0, -1\right\}
+\end{align*}
+
+de modo que todos os \(c_i, i = 1, 2, 3\) são ortogonais entre si. Dessa
+forma, as hipóteses testadas são as seguintes:
+
+\begin{align*}
+  \text{Contraste 1: }&\begin{cases}
+    H_0: \mu_3 = \frac{\mu_1+\mu_2+\mu_4}{3}\\
+    H_1: \mu_3 \neq \frac{\mu_1+\mu_2+\mu_4}{3}
+  \end{cases}\\
+  \text{Contraste 2: }&\begin{cases}
+    H_0: \mu_1 = \frac{\mu_2+\mu_4}{2}\\
+    H_1: \mu_1 \neq \frac{\mu_2+\mu_4}{2}
+  \end{cases} 
+  \text{ e }\\
+  \text{Contraste 3: }&\begin{cases}
+    H_0: \mu_2 = \mu_4\\
+    H_1: \mu_2 \neq \mu_4
+  \end{cases}
+\end{align*}
+
+A estatística de teste para a realização dos contrastes é definida
+conforme a expressão a seguir, em que \(\text{QMRES}\) é a soma de
+quadrados dos resíduos da ANOVA exposta anteriormente:
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{ \sum\limits_{i = 1}^n c_i^2 \, \frac{\text{QMRES}}{n}} \sim F(1, an-a = 12)
+\end{align}
+
+Além disso, considera-se
+
+\begin{align}
+  \frac{\left( \sum\limits_{i = 1}^n c_i \, \bar{y}_{i.}\right)^2}{\frac{\sum\limits_{i = 1}^n c_i^2}{n}} = \frac{\text{SQContraste}_i}{1 \, (g.l.)} = \text{QMContraste}_i
+\end{align}
+
+tal que, se os contrastes forem calculados da forma correta, a soma dos
+quadrados médios dos contrastes deve ser igual ao quadrado médio dos
+tratamentos.
+
+As estatísticas são expostas na tabela de análise de variância a seguir,
+decomposta em seus contrastes.
+
+\begin{longtable}{lccccl}
+\toprule
+Fonte de variação & g.l. & SQ & MQ & Estatística F & p-valor\\
+\midrule
+\endfirsthead
+\multicolumn{6}{@{}l}{\textit{(continued)}}\\
+\toprule
+Fonte de variação & g.l. & SQ & MQ & Estatística F & p-valor\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{empresa} & \cellcolor{gray!15}{3} & \cellcolor{gray!15}{2490.5} & \cellcolor{gray!15}{830.1667} & \cellcolor{gray!15}{25.4457} & \cellcolor{gray!15}{0.0000}\\
+C1 & 1 & 300.0 & 300.0000 & 9.1954 & 0.0104\\
+\cellcolor{gray!15}{C2} & \cellcolor{gray!15}{1} & \cellcolor{gray!15}{1350.0} & \cellcolor{gray!15}{1350.0000} & \cellcolor{gray!15}{41.3793} & \cellcolor{gray!15}{0.0000}\\
+C3 & 1 & 840.5 & 840.5000 & 25.7625 & 0.0003\\
+\cellcolor{gray!15}{Residuals} & \cellcolor{gray!15}{12} & \cellcolor{gray!15}{391.5} & \cellcolor{gray!15}{32.6250} & \cellcolor{gray!15}{NA} & \cellcolor{gray!15}{NA}\\*
+\end{longtable}
+
+Dessa forma, pode-se dizer que há diferença entre as médias de todas as
+empresas listadas.
+
+\hypertarget{section-4}{%
+\subsection{}\label{section-4}}
+
+Calcula-se a DHS de Tukey da seguinte forma:
+
+USAR qtukey sqres(qmres/n)
+
+\begin{align}
+  q_s = \frac{Y_A-Y_B}{\sqrt{\text{QMRES}/n}}
+\end{align}
+
+Tal que o numerador seja a diferença entre a maior e a menor das médias
+e o denominador seja o erro padrão. Encontra-se o valor da DHS de
+11.467.
+
+A tabela do teste de Tukey é exposta a seguir:
+
+\begin{longtable}{lcccl}
+\toprule
+Contraste & D. estimada. & LI & LS & p-valor ajust.\\
+\midrule
+\endfirsthead
+\multicolumn{5}{@{}l}{\textit{(continued)}}\\
+\toprule
+Contraste & D. estimada. & LI & LS & p-valor ajust.\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{Emb2-Emb1} & \cellcolor{gray!15}{-12.25} & \cellcolor{gray!15}{-24.241} & \cellcolor{gray!15}{-0.259} & \cellcolor{gray!15}{0.0448}\\
+Iac2022-Emb1 & -25.00 & -36.991 & -13.009 & 0.0002\\
+\cellcolor{gray!15}{IacSP-Emb1} & \cellcolor{gray!15}{-32.75} & \cellcolor{gray!15}{-44.741} & \cellcolor{gray!15}{-20.759} & \cellcolor{gray!15}{0.0000}\\
+Iac2022-Emb2 & -12.75 & -24.741 & -0.759 & 0.0361\\
+\cellcolor{gray!15}{IacSP-Emb2} & \cellcolor{gray!15}{-20.50} & \cellcolor{gray!15}{-32.491} & \cellcolor{gray!15}{-8.509} & \cellcolor{gray!15}{0.0013}\\
+IacSP-Iac2022 & -7.75 & -19.741 & 4.241 & 0.2711\\*
+\end{longtable}
+
+A um nível de significância de 5\%, de fato parece não haver diferença
+significativa apenas entre IacSP e Iac2022. Isso é evidenciado na tabela
+do teste de Tukey tanto pelo p-valor quanto pela distância estimada,
+maior que a DHS calculada.
+
+\hypertarget{section-5}{%
+\subsection{}\label{section-5}}
+
+Desejamos calcular
+\(\beta(\tau_1 = 507, \, \tau_2 = 501, \, \tau_3 = 497, \, \tau_4 = 495)\).
+Para isso, utilizaremos \(n = 4\), \(\alpha = 0,05\) e
+\(\sigma^2 = \frac{\text{QMRES}}{n}\). A probabilidade será calculada da
+seguinte forma:
+
+\begin{align}
+  P\left( F_{\text{obs}} < F_\text{crit} \bigg| \phi^2 =  \frac{n}{\sigma^2} \sum\limits_{i=1}^{4} \tau_i^2  \right),
+\end{align}
+
+considerando a variância para os resíduos. Portanto,
+
+\begin{align}
+  \hat{\phi}^2 &= \frac{n}{\text{QMRES}} \sum\limits_{i=1}^{4} \tau_i^2
+\end{align}
+
+é o parâmetro de não-centralidade (pnc ou, em inglês, \emph{ncp}) da
+distribuição \(F\) e, sob \(H_0\), \(\phi^2 = 0\).
+
+O valor
+\(F_\text{crit} = F( \gamma = 0,95; gl_1 = 3; gl_2 = 12, \phi^2 = 0)\) é
+de 3.49. Considerando \(\phi^2 =\) 10.2989, obtém-se
+
+\begin{align*}
+  P\left( F_{\text{obs}} < F_\text{crit} \big| \phi^2 \text{ sob } H_1 \right) &= P\left( F_{\text{obs}} < 3,49 \big| \hat{\phi}^2 = 10,299 \right) \\
+  &= 0,38
+\end{align*}
+
+\hypertarget{questuxe3o-2}{%
+\section{Questão 2}\label{questuxe3o-2}}
+
+\hypertarget{section-6}{%
+\subsection{}\label{section-6}}
+
+\begin{longtable}{lc}
+\toprule
+SP & RJ\\
+\midrule
+\endfirsthead
+\multicolumn{2}{@{}l}{\textit{(continued)}}\\
+\toprule
+SP & RJ\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{6062} & \cellcolor{gray!15}{5682}\\
+6116 & 5714\\
+\cellcolor{gray!15}{6070} & \cellcolor{gray!15}{5716}\\
+5942 & 5665\\
+\cellcolor{gray!15}{5990} & \cellcolor{gray!15}{5589}\\
+6034 & 5702\\
+\cellcolor{gray!15}{6004} & \cellcolor{gray!15}{5688}\\
+5969 & 5720\\
+\cellcolor{gray!15}{5950} & \cellcolor{gray!15}{5804}\\
+5941 & 5850\\*
+\end{longtable}
+
+Deseja-se realizar o seguinte teste de hipóteses:
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_{SP} \leq \mu_{RJ}; \text{ou } \quad \mu_{SP} - \mu_{RJ} \leq 0\\
+    H_A: \mu_{SP} > \mu_{RJ} ; \text{ou } \mu_{SP} - \mu_{RJ}  > 0
+  \end{cases}
+\end{align}
+
+Trata-se de um teste de comparação de médias simples. Avalia-se
+inicialmente teste de normalidade e igualdade de variâncias sobre os
+dados. A tabela a seguir exibe resultados de testes Shapiro-Wilk, de
+acordo com os quais não há evidências para se rejeitar normalidade.
+
+\begin{longtable}{lccl}
+\toprule
+UF & statistic & p.value & method\\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{(continued)}}\\
+\toprule
+UF & statistic & p.value & method\\
+\midrule
+\endhead
+
+\endfoot
+\bottomrule
+\endlastfoot
+\cellcolor{gray!15}{RJ} & \cellcolor{gray!15}{0.9262958} & \cellcolor{gray!15}{0.4124612} & \cellcolor{gray!15}{Shapiro-Wilk normality test}\\
+SP & 0.9238969 & 0.3906054 & Shapiro-Wilk normality test\\*
+\end{longtable}
+
+\begin{verbatim}
+## Multiple parameters; naming those columns num.df, den.df
+\end{verbatim}
+
+Ao se realizar teste de igualdade de variâncias, obtém-se p-valor de
+0.623. Dessa forma, pode-se considerar que ambas as amostras advém de
+populações com variâncias iguais.
+
+Finalmente, realiza-se o teste de comparação de médias. Será considerado
+um teste não pareado, com amostras de variâncias iguais.
+
+Obtém-se estatística de teste \(t = 9,9086\) com 18 graus de liberdade e
+p-valor significante a nível de significância inferior a 0,001. Pode-se
+dizer portanto que de fato a média salarial de SP é superior à do RJ. Um
+intervalo de confiança para essa diferença compreende o intervalo
+\([243,21; \, +\infty)\).
+
+\hypertarget{section-7}{%
+\subsection{}\label{section-7}}
+
+\begin{align}
+  P\left( t_{\text{obs}} > t_\text{crit} \big| \mu_A =  100 \right)
+\end{align}
+
+\begin{align}
+  t_\text{crit} &= \frac{294-100}{S_{comb}\sqrt{\frac{1}{n_a}+ \frac{1}{n_b}}}\\
+  &= \frac{294-100}{66,527 \cdot \sqrt{\frac{2}{10}}}\\
+  &= 6,547
+\end{align}
+
+Calcula-se portanto a probabilidade de se observar um valor
+\(t_{\text{obs}} > 6,547\) usando
+\texttt{pt(tcrit,\ 18,\ lower.tail\ =\ FALSE)}. Obtem-se 0.0000019.
+
+\end{document}

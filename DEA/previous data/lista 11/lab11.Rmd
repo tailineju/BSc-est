@@ -1,0 +1,307 @@
+---
+title: "Exercício de laboratorio 11"
+author: "César Galvão - 19/0011572"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+
+library(kableExtra)
+library(broom)
+library(car)
+library(tidyverse)
+library(dae)
+library(magrittr)
+library(rsm)
+library(lmtest)
+```
+
+
+# Questão 1
+
+## Entrada de dados
+
+```{r Entrada de dados, echo = FALSE}
+#dados de pureza
+pur <- c(82.8, 83.5,84.7, 85, 84.1, 84.5, 83.9, 84.3)
+
+aa <- rep(c(-1, 1),2) #pressure codificada
+bb <- c(-1,-1, 1, 1) #temperature codificada
+
+aa11 <- c(aa, 0, 0, 0, 0) #pressure central codificada
+bb11 <- c(bb, 0, 0, 0, 0) #temperature central codificada
+
+
+dados11 <- data.frame (pur, aa11, bb11)
+
+```
+
+## Curvatura
+
+```{r Checando a curvatura, echo = FALSE}
+
+mediafat <- mean(pur[1:4]) #media dos pontos fatoriais
+mediacen <- mean(pur[5:8]) #media dos pontos centrais
+
+data.frame(mediafat, mediacen)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    col.names = c("$\\bar{X}_{Fatorial}$", "$\\bar{X}_{central}$"),
+    escape = FALSE,
+    digits = 2
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+Pelo valor observado nas médias dos pontos fatoriais e dos pontos centrais, há um indicativo de que não há curvatura, já que os valores são muito próximos.
+
+```{r teste F para curvatura, echo = FALSE}
+mse <- var(pur[5:8]) #QMRES é a variância dos pontos centrais
+sqcurv <- 4*4*(mediacen-mediafat)^2/8 #SQ curvatura, com 1 gl
+
+pvalor <- 1-pf(sqcurv/mse, 1, 3)
+```
+
+O teste F  resulta em p-valor igual a `r round(pvalor, 4)`. Dessa forma há evidências para concluir que não há curvatura.
+
+Analogamente, o teste de ANOVA sugere que há apenas efeito da temperatura na resposta obtida. 
+
+```{r ANOVA, echo = FALSE}
+modelo11 <- aov(pur ~ as.factor(aa11)*as.factor(bb11))
+
+modelo11 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+O modelo de regressão corrobora o resultado anterior de que apenas a temperatura tem efeito na resposta do experimento.
+
+```{r Modelo de regressão, echo = FALSE}
+
+modreg11 <- lm(pur ~ aa11*bb11)
+
+modreg11 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+
+Com base neste resultado, o modelo de regressão será ajustado  para:
+
+\begin{align}
+\hat{y} = \beta_0 + \beta_1X_1
+\end{align}
+
+onde:
+
+\begin{align}
+\hat{y} = 84.10 - 0.85X_1
+\end{align}
+
+## Caminho de maior subida
+
+```{r Convertendo na variável original, echo = FALSE}
+
+temp <- c(-225,-215,-220)
+press <- c(1.1, 1.3, 1.2)
+
+passo_temp <- 5 #delta em unidades naturais
+passo_pressao <- 0.1 *
+  abs(coefficients(modreg11)[2])/(abs(coefficients(modreg11)[3])/1) #passo da pressao em unidades naturais
+
+centro <- c(-220, 1.2)
+passos <-  c(passo_temp, passo_pressao)
+p1 <- centro + passos
+p2 <- p1 + passos
+p3 <- p2 + passos
+```
+
+# Questão 2
+
+## Entrada de dados
+```{r Entrada de dados2, echo = FALSE}
+
+laserpower <- c(1, 1, 1, -1, -1, -1, 1, 1, 1, -1, -1, 1, -1, -1, 1, -1)
+pulsefreq <-  c(1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, -1, -1, 1, 1, 1)
+cellsize <- c(1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1, 1, -1, -1, -1, -1)
+wspeed <- c(-1, 1, 1, 1, -1, 1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1)
+UEC <- c(0.8, 0.81, 0.79, 0.6, 0.65, 0.55, 0.98, 0.67, 0.69, 0.56, 0.63, 0.65, 0.75, 0.72, 0.98, 0.63)
+
+dados112 <- data.frame(UEC, laserpower,pulsefreq, cellsize, wspeed) 
+```
+
+```{r ANOVA2, echo = FALSE}
+
+modelo112 <- aov(UEC ~ as.factor(laserpower)*as.factor(cellsize)*as.factor(pulsefreq)*as.factor(wspeed))
+
+summary(modelo112)
+
+modelo112 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+Como o experimento tem apenas uma observação para casa combinação de fatores, não há como calcular a variabilidade dentro de cada tratamento. Desse modo, a contribuição de cada fator é avaliada pela contribuição que cada soma de quadrados de cada fator tem na soma de quadrados total. Pela ANOVA inicial, nota-se que os fatores que contribuem mais para a soma de quadrados total são Laser Power, Cell Size e Writing Speed, bem como a interação entre Laser Power e Cell Size. dessa forma, o modelo foi ajustado levando em consideração esses fatores.
+
+```{r ANOVA final, echo = FALSE}
+
+modelof11 <- aov(UEC ~ as.factor(laserpower)*as.factor(cellsize) + as.factor(pulsefreq) + as.factor(wspeed))
+
+summary(modelof11)
+
+modelof11 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+Com base na nova análise de variancia, pode-se observar que o fator Pulse Frequncy não afeta o resultado do experimento.
+
+Assim, ajustamos o modelo de regressão para:
+
+```{r Modelo de regressão2, echo = FALSE}
+
+modreg112 <- lm(UEC ~ as.factor(laserpower)*as.factor(cellsize) + as.factor(wspeed))
+
+modreg112 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+\begin{align}
+\hat{y} = \hat{\beta}_0 + \hat{\beta}_1X_1 + \hat{\beta}_2X_2 + \hat{\beta}_3X_3 + \hat{\beta}_4X_1X_2 
+\end{align}
+
+onde:
+
+\begin{align}
+\hat{y} = 0.73125 + 0.215X_1 - 0.0775X_2 - 0.1125X_3 - 0.11X_1X_2
+\end{align}
+
+##  Análise de resíduos do modelo final 
+
+```{r Análise de resíduos do modelo final, echo = FALSE}
+
+shapiro.test(modreg112$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+
+```{r Teste de Homocedacidade, echo = FALSE}
+
+homo <- bptest(modreg112)
+
+homo %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+

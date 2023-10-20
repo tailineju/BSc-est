@@ -1,0 +1,208 @@
+---
+title: "Exercício de laboratorio 7"
+author: "Gabriela Carneiro - 18/0120816"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: 
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    keep_tex: yes
+latex_engine: pdflatex
+header-includes:
+  \usepackage{helvet}
+  \renewcommand\familydefault{\sfdefault}
+include-before:
+- '`\newpage{}`{=latex}'
+---
+
+\let\oldsection\section
+\renewcommand\section{\clearpage\oldsection}
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(kableExtra)
+library(broom)
+library(car)
+library(tidyverse)
+library(dae)
+```
+
+```{r entrada de dados, echo=FALSE}
+trat <- factor(rep(c("1", "2", "3", "4", "5", "6", "7", "8", "9"), 3))
+bloc <- factor(rep(c("B1", "B2", "B3"), each = 9))
+prod <- c(145, 200, 183, 190, 180, 130, 206, 250, 164, 
+               155, 190, 186, 175, 160, 160, 165, 271, 190,
+               166, 190, 208, 186, 156, 130, 170, 230, 193)
+dados7 <- data.frame(trat, bloc, prod)
+```
+
+O modelo mais apropriado para testar a igualdade de várias médias é por meio da análise de variâncias, conforme a equação:
+
+\begin{equation}
+  y_{ij} = \mu + \tau_i + \beta_j + e_{ij}, \quad i = 1, 2,..., a; \quad j = 1, 2,..., b 
+\end{equation}
+
+Supondo $a$ tratamentos e $b$ blocos. Cada $y_{ij}$ corresponde a j-ésima observação medida sob o fator ou nível de tratamento $i$.
+Na equação $\mu$ é a média geral, comum para todos os tratamentos, $\tau$ é o efeito dos tratamentos, que é único para cada um dos tratamentos ou níveis, $\beta$ é o efeito dos blocos e $e_{ij}$ é o erro aleatório de cada observação.
+
+Dessa forma, iremos testar a igualdade dos efeitos de tratamento ou, em outras palavras, testar que o efeito dos tratamentos é igual a zero.
+
+Desse modo, as hipóteses são:
+
+\begin{align}
+  \begin{cases}
+    H_0: \mu_1 = ... = \mu_a\\
+    H_1: \exists \mu_i \neq \mu_j, \, i \neq j.
+  \end{cases}
+\end{align}
+
+ou
+
+\begin{align}
+  \begin{cases}
+    H_0: \tau_1 = ... = \tau_a = 0, \quad \text{(O efeito de tratamento é nulo)}\\
+    H_1: \exists \tau_i \neq 0
+  \end{cases}
+\end{align}
+
+Também é interessante comparar as médias dos blocos. Se as médias não diferirem entre si, a estrutura de blocos não precisa ser repetida em experimentos futuros. A partir da esperança dos quadrados médios, a hipótese $H_0: \beta_j = 0$ pode ser testada comparando:
+
+\begin{equation}
+    F_0 = \frac{QM_{blocos}}{QMRES} \quad \text{com } F_{\alpha,(b-1),(a-1)(b-1)}
+\end{equation}
+
+Porém, deve-se levar em consideração que a randomização é aplicada apenas nos tratamentos dentro dos blocos, ou seja, a estrutura de blocos representa uma restrição na randomização.
+Na prática, como a presunção de normalidade é muitas vezes questionável, assumir que $F_0$, nesse caso, é um teste $F$ para a igualdade das médias dos blocos não é muito aconselhado. No entanto, o teste pode ser utilizado como uma aproximação para verificar o efeito dos blocos. Se a razão $F_0$ for grande, isso implica que o efeitos dos blocos é grande e que dividir o experimento em blocos foi uma boa estratégia.
+
+
+```{r ANOVA, echo = FALSE}
+modelo7 <- aov(prod ~ trat+bloc)
+summary(modelo7)
+
+modelo7 %>% 
+  tidy() %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+
+```
+Pelo reultado da analise de variâncias, pode-se observar que não há evidências para concluir que existe efeito de blocos, mas há evidências de efeito de tratamentos.
+
+
+Para o teste de análise de variâncias, considerando o modelo de efeitos, supõe-se sobre os resíduos, elemento aleatório do lado direito da expressão do modelo:
+
+* independência;
+* normalidade;
+* homogeneidade de variâncias (homocedasticidade).
+
+Por hipótese, supõe-se que as amostras são independentes. Não há, a priori, como testar independência pois entende-se que isso é derivado do desenho do experimento.
+
+A normalidade da distribuição dos resíduos pode ser testada mediante o teste de Shapiro-Wilk.
+
+```{r Normalidade, echo = FALSE}
+shapiro.test(modelo7$residuals) %>% 
+  tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
+O teste assume como hipótese nula a normalidade dos dados amostrais. Com base no p-valor obtido, não há evidências para a rejeição de $H_0$. Isto é, supõe-se normalidade dos dados.
+
+Quando à homocedasticidade, utiliza-se o teste de Levene. A hipótese nula supõe homogeneidade de variâncias entre as amostras.
+
+```{r homo, echo = FALSE}
+tidy(car::leveneTest(prod ~ trat, dados7)) %>% 
+  bind_rows(tidy(car::leveneTest(prod ~ bloc, dados7)))%>%
+  mutate(fonte = c("tratramentos", "blocos")) %>%
+knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    escape = FALSE,
+    digits = 4
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+o teste de Levene é aplicado separadamente para os tratamentos e para os blocos. Nos dois casos não há evidencias para rejeição de $H_0$. Isto é, supõe-se que os dados são homogêneos.
+
+verifica-se possível aditividade de efeito de tratamento com efeito de bloco. Conforme o p-valor obtido a seguir para o teste de aditividade, cuja hipótese nula é a aditividade completa do modelo (isto é, $\lambda_{ij}$ são iguais a zero, o qual representaria interação de efeitos), pode-se considerar que o modelo é aditivo.
+
+```{r teste aditividade, echo = FALSE}
+#aditividade
+qij7 <- modelo7$fitted.values^2
+mod27 <- aov(qij7~bloc+trat)
+PP <- sum((prod-modelo7$fitted.values)*(qij7-mod27$fitted.values))
+Q <- sum((qij7-mod27$fitted.values)^2)
+sqnao7 <- PP^2/Q
+sqres7 <- summary(modelo7)[[1]][3,2]
+sqres27 <- sqres7 - sqnao7
+fobs7 <- sqnao7/(sqres27/15)
+
+1 - pf(fobs7,1,15)
+
+#install.packages("dae")
+tukey.1df(modelo7, data = dados7)
+```
+```{r teste de Friedman, echo = FALSE}
+friedman.test(prod, groups = trat, blocks = bloc) %>% 
+ tidy() %>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+De acordo com o p-valor obtido pelo teste de Friedman, há evidências para concluir que há diferença entre os tratamentos. Porém, o p-valor obtido pelo teste não-paramétrico não é tão expressivo quanto o obtido pela analise de variancias, já que a estatística do teste não-paramétrico se baseia nas médias dos raqueamentos dos tratamentos.
+
+Fazendo a comparação entre as médias de pares dos tratamentos, pode-se observar quais médias de fato dão significativamente diferentes.
+
+```{r comparação entre pares de médias, echo = FALSE}
+TukeyHSD(modelo7) %>% 
+  tidy()%>%
+  select(-null.value)%>%
+  knitr::kable(
+    format = "latex",
+    align = "c",
+    booktabs = TRUE,
+    longtable = TRUE,
+    linesep = "",
+    ) %>%
+  kableExtra::kable_styling(
+      position = "center",
+      latex_options = c("striped", "repeat_header"),
+      stripe_color = "gray!15")
+```
+
