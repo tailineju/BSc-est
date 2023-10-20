@@ -32,7 +32,6 @@ ssres <- sst - sstrat
 
 qmtrat <- sstrat/(a-1)
 qmres <- ssres/(N-a)
-qmestab <-
 
 #pvalor da estatistica F
 pvalor <- pf(qmtrat/qmres,a-1,N-a,lower.tail = FALSE)
@@ -53,6 +52,7 @@ anova <- aov(df$obs~df$trat)
 summary(anova)
 
 anova$residuals
+anova$
 df$eij
 
 #residuo
@@ -64,13 +64,13 @@ df$eij <- df$obs - yidot20
 sum(df$eij) #==0
 
 #residuos padronizados
-df$eijpad <- df$eij/sqrt(qmres)
+eijpad <- anova$residuals/334 #meansq residuals
 
 
 # 1.3 pressupostos
 
 boxplot(obs~trat)
-qqline(df$eijpad)
+qqline(eijpad)
 
 #independencia
 ggplot(df, aes(y = eij, x = obs)) +
@@ -110,4 +110,4 @@ leveneTest(obs~trat)
 #h0: mi=mj
 #h1: mi != mj
 
-
+TukeyHSD(anova)
