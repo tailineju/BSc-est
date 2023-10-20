@@ -52,6 +52,9 @@ tab
 anova <- aov(df$obs~df$trat)
 summary(anova)
 
+anova$residuals
+df$eij
+
 #residuo
 yidot20 <- rep(yidot,each=5) #valores ajuestados
 #eij = yij - yij estimado
