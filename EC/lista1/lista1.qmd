@@ -1,6 +1,6 @@
 ---
 title: "Lista 1"
-subtitle: "ESTATÍSTICA COMPUTACIONAL"
+subtitle: "ESTATISTICA COMPUTACIONAL"
 author: "Tailine J. S. Nonato"
 date: "12/09/2023"
 format:
