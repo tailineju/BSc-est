@@ -1,6 +1,5 @@
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,ggExtra)
- R
+pacman::p_load(tidyverse,tinytex)
 #####################################
 #ex 4 - livro 1.1
 x1 <- c(3,4,2,6,8,2,5)

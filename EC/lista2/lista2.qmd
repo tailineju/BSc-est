@@ -1,0 +1,126 @@
+---
+subtitle: "ESTATÍSTICA COMPUTACIONAL"
+author: "Tailine J. S. Nonato"
+date: "10/24/2023"
+format: pdf
+---
+
+## 1) Discrete Inverse Transform: Rizzo 3.5
+## 2) Acceptance-Rejection: Rizzo 3.7
+## 3) Multivariate Normal: Rizzo 3.14
+### Essa resolução está comentada, pois fui uma das selecionadas para realizar essa atividade para apresentação em sala.
+Generate 200 random observations from the 3-dimensional multivariate normal distribution having mean vector $\mu = (0, 1, 2)$ and covariance matrix
+$$\sum =
+\begin{bmatrix} 
+1    & -0.5 & 0.5 \\
+-0.5 &  1   & -0.5 \\
+0.5  & -0.5 & 1
+\end{bmatrix}$$
+using the Choleski factorization method. Use the R pairs plot to graph an array of scatter plots for each pair of variables. 
+
+For each pair of variables, 96 Statistical Computing with R (visually) check that the location and correlation approximately agree with the theoretical parameters of the corresponding bivariate normal distribution.
+
+```{r}
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,tinytex)
+```
+
+Seguindo o exemplo 3.18 do livro texto, tem-se que a função para o Método da Fatoração de Choleski para gerar amostras de Distribuição Normal N-Dimensional pode ser escrita por:
+
+```{r}
+rmvn.Choleski <-
+function(n, mu, Sigma) {
+# generate n random vectors from MVN(mu, Sigma)
+# dimension is inferred from mu and Sigma
+d <- length(mu) 
+Q <- chol(Sigma) # Choleski factorization of Sigma
+Z <- matrix(rnorm(n*d), nrow=n, ncol=d)
+X <- Z %*% Q + matrix(mu, n, d, byrow=TRUE)
+X
+}
+
+```
+
+Agora adicionando os dados informados no enunciado e rodando a função são geradas listas:
+
+```{r}
+#| label: pairs
+#| fig-cap: "Sample Scartter Plots"
+
+n <- 200
+mu <- c(0,1,2)
+sigma <- matrix(c(1,-.5,.5,-.5,1,-.5,.5,-.5,1),nrow=3)
+x<-rmvn.Choleski(n,mu,sigma)
+
+head(x)
+```
+E então os gráficos de dispersão dos valores gerados são dados por:
+
+```{r}
+pairs(x)
+```
+## 4) Antithetic Variables: Rizzo 5.6
+## 5) Importance Sampling: Rizzo 5.13, Rizzo 5.14 e Rizzo 5.15
+### 5.13
+```{r}
+g = function (x) {
+  x ^ 2 / sqrt(2*pi) * exp(-x^2/2)
+}
+
+xs = seq(0,10,0.1)
+
+ys.g = g(xs)
+ys.rayleigh = drayleigh(xs, sigma = 1.5)
+ys.norm = dnorm(xs, mean = 1.5)
+lim = max(c(ys.g, ys.rayleigh, ys.norm))
+
+plot(xs, ys.g, type = "l", ylim = c(0, lim))
+lines(xs, ys.rayleigh, col="red", ylim = c(0, lim))
+lines(xs, ys.norm, col="blue", ylim = c(0, lim))
+
+f1(x) = drayleigh(x, sigma = 1.5)
+f2(x) = dnorm(x, mean = 1.5)
+
+# f2 is a little closer to g. should be better.
+```
+### 5.14
+```{r}
+g = function (x) {
+  x ^ 2 / sqrt(2*pi) * exp(-x^2/2) * (x > 1)
+}
+
+sigma.rayleigh = 1.5
+mean = 1.5
+n = 10000
+
+f1 = function (x) {
+  drayleigh(x, sigma = sigma.rayleigh) * (x > 1)
+}
+
+f2 = function (x) {
+  dnorm(x, mean = mean) * (x > 1)
+}
+
+rf1 = function () {
+  rrayleigh(n, sigma = sigma.rayleigh)
+}
+
+rf2 = function () {
+  rnorm(n, mean = mean)
+}
+
+is.rayleigh = function () {
+  xs = rf1()
+  return(mean(g(xs)/f1(xs), na.rm = TRUE))  
+}
+
+is.norm = function () {
+  xs = rf2()
+  return(mean(g(xs)/f2(xs), na.rm = TRUE))  
+}
+
+(theta1 = is.rayleigh())
+(theta2 = is.norm())
+(truth = 0.400626)
+```
+## 6) Monte Carlo Estimation: Rizzo 6.1
