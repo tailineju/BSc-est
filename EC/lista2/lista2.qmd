@@ -1,10 +1,17 @@
 ---
-title: "LISTA 2"
+title: "LISTA 2 (version 2)"
 subtitle: "ESTATÍSTICA COMPUTACIONAL"
 author: "Tailine J. S. Nonato"
 date: "10/24/2023"
 format: html
 ---
+
+```{r}
+#| message: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,bayesmeta)
+```
 
 ## 1) Discrete Inverse Transform: Rizzo 3.5
 A discrete random variable X has probability mass function
@@ -13,30 +20,32 @@ $$\begin{matrix}
  f(x) & 0.1 & 0.2 & 0.2 & 0.2 & 0.3
 \end{matrix}
 $$ 
+
 Use the inverse transform method to generate a random sample of size 1000 from the distribution of X. Construct a relative frequency table and compare the empirical with the theoretical probabilities. Repeat using the R sample function.
+
+**Answers**
 
 ## 2) Acceptance-Rejection: Rizzo 3.7
 Write a function to generate a random sample of size n from the $Beta(a, b)$ distribution by the acceptance-rejection method. Generate a random sample of size 1000 from the $Beta(3,2)$ distribution. Graph the histogram of the sample with the theoretical $Beta(3,2)$ density superimposed.
 
-No solutions
+**Answers**
 
 ## 3) Multivariate Normal: Rizzo 3.14
 
-Obs.: Essa resolução está comentada, pois fui uma das selecionadas para realizar essa atividade para apresentação em sala.
+Generate 200 random observations from the 3-dimensional multivariate normal distribution having mean vector $\mu = (0, 1, 2)$ and covariance matrix 
 
-Generate 200 random observations from the 3-dimensional multivariate normal distribution having mean vector $\mu = (0, 1, 2)$ and covariance matrix $$\sum =
+$$\sum =
 \begin{bmatrix} 
 1    & -0.5 & 0.5 \\
 -0.5 &  1   & -0.5 \\
 0.5  & -0.5 & 1
-\end{bmatrix}$$ using the Choleski factorization method. Use the R pairs plot to graph an array of scatter plots for each pair of variables.
+\end{bmatrix}$$ 
+
+using the Choleski factorization method. Use the R pairs plot to graph an array of scatter plots for each pair of variables.
 
 For each pair of variables, 96 Statistical Computing with R (visually) check that the location and correlation approximately agree with the theoretical parameters of the corresponding bivariate normal distribution.
 
-```{r}
-if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,bayesmeta)
-```
+**Answer**
 
 Seguindo o exemplo 3.18 do livro texto, tem-se que a função para o Método da Fatoração de Choleski para gerar amostras de Distribuição Normal N-Dimensional pode ser escrita por:
 
@@ -81,7 +90,7 @@ Now consider the antithetic variate approach. Compute $Cov(e^U , e^{1−U} )$ an
 $Var(e^U + e^{1−U} )$, where $ U∼ Uniform(0,1)$. What is the percent reduction in
 variance of $\theta$ that can be achieved using antithetic variates (compared with simple MC)?
 
-No solutions
+**Answer**
 
 ## 5) Importance Sampling: Rizzo 5.13, Rizzo 5.14 e Rizzo 5.15
 
