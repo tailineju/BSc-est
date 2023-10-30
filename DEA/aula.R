@@ -1,6 +1,9 @@
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse,car)
 
+#potencias
+#15/09
+
 ## 1.1 hipoteses
 #h0 nao existem diferencas entre os tratamentos (potencias)
 #h1 existem diferencas entre os trats

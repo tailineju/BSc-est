@@ -51,11 +51,11 @@ dados %>%
     longtable = TRUE,
     linesep = "",
     col.names = c("Químico", "Bolt 1", "Bolt 2","Bolt3", "Bolt 4", "Bolt 5")
-    ) %>%
-  kableExtra::kable_styling(
-      position = "center",
-      latex_options = c("striped", "repeat_header"),
-      stripe_color = "gray!15")
+    ) #%>%
+  #kableExtra::kable_styling(
+   #   position = "center",
+    #  latex_options = c("striped", "repeat_header"),
+     # stripe_color = "gray!15")
 ```
 
 ## Modelo e hipóteses

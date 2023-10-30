@@ -2,6 +2,7 @@ if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, car)
 
 #quadrados latinos cana de açucar
+# 27/10
 
 #por linha
 obs <- c(432,518,458,583,331,
