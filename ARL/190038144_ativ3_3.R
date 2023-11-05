@@ -33,3 +33,7 @@ SSR <- SSTO - SSE
 
 
 #f
+
+sigma2 <- SSE/(n-2)
+
+var <- as.numeric(sigma2) * xtxi
