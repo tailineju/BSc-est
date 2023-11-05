@@ -1,0 +1,16 @@
+---
+title: "ATIVIDADE 3"
+subtitle: "ESTATÍSTICA COMPUTACIONAL"
+author: "Tailine J. S. Nonato"
+date: "11/05/2023"
+format: pdf
+---
+
+
+
+```{r}
+#| message: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,bayesmeta)
+```
