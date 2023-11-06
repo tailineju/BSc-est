@@ -1,5 +1,5 @@
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, car)
+pacman::p_load(tidyverse, car, asbio)
 
 # spinneret
 # 30/10
@@ -55,15 +55,19 @@ summary(anova)
 # pressupostos ---
 
 #normalidade
+qqnorm(anova$residuals)
+qqline(anova$residuals)
 shapiro.test(anova$residuals)
 
 #homocedasticidade
+plot(x=anova$residuals,y=anova$fitted.values)
 leveneTest(obs~trat)
 leveneTest(obs~linhas)
 leveneTest(obs~cols)
 
 #independencia de residuos
-plot(x=anova$residuals,y=anova$fitted.values)
+plot(anova$residuals)
+plot(anova$residuals/summary(anova)[[1]][4,3])
 
 # estimação dos parametros ---
 
@@ -89,6 +93,8 @@ mi
 alpha
 taoj
 betak
+
+# teste de aditividade ---
 
 
 # proporção da variância explicada ---
