@@ -10,15 +10,16 @@ obs <- c(130,155,34,40,20,70,
 
 temp <- as.factor(rep(c(15,15,70,70,125,125),times=6))
 
-fator <- as.factor(rep(c(1:3), each=12))
+material <- as.factor(rep(c(1:3), each=12))
 
-df <- data.frame(obs,temp,fator)
+df <- data.frame(obs,temp,material)
 
 #0 exploratoria
+boxplot(obs~material)
 boxplot(obs~temp)
-boxplot(obs~fator)
+boxplot(obs~material*temp)
 
-#0 hipoteses modelo analise fatorial
+#0 hipoteses modelo analise materialial
 #h0: tao1 = ... = taoA = 0
 #h1: taoi != 0
 
@@ -29,7 +30,7 @@ boxplot(obs~fator)
 #h1: tao*betai != 0
 
 #1 anova
-anova <- aov(obs~temp*fator)
+anova <- aov(obs~temp*material)
 summary(anova)
 
 #2 pressupostos
@@ -41,7 +42,7 @@ shapiro.test(anova$residuals)
 #homocedasticidade
 plot(x=anova$residuals,y=anova$fitted.values)
 leveneTest(obs~temp)
-leveneTest(obs~fator)
+leveneTest(obs~material)
 
 #independencia de residuos
 plot(anova$residuals)
@@ -51,5 +52,20 @@ plot(anova$residuals/summary(anova)[[1]][4,3]) #residuos padronizados
 TukeyHSD(anova)
 
 #4 responder perguntas do pesquisador
-#1. Quais efeitos o tipo de material e a temperatura têm na vida útil da bateria?
-#2. Existe uma escolha de material que proporcione uma vida uniformemente longa, independentemente da temperatura?
+
+interaction.plot(material,temp,obs)
+interaction.plot(temp,material,obs)
+
+#1. Quais efeitos o tipo de material e a 
+# temperatura têm na vida útil da bateria?
+
+#Quanto maior a temperatura, menor a vida útil
+#Temp 15 apresenta a melhor vida útil independente do material
+
+#Material 1 diferencia do 2 e do 3 e apresenta menor temperatura
+
+
+#2. Existe uma escolha de material que proporcione 
+# uma vida uniformemente longa, independentemente da temperatura?
+
+# sim, o material 3
