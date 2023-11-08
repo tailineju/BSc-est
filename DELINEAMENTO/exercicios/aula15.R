@@ -57,6 +57,8 @@ leveneTest(obs~cols)
 ggplot(mapping=aes(x=anova$residuals,y=anova$fitted.values)) +
     geom_point(size=5)
 
+#aditividade
+
 #### estimação dos parametros
 
 #mi
@@ -83,8 +85,6 @@ taoj
 betak
 
 #teste de aditividade
-
-
 #yijk = m +taoj + bk + ad + eijk
 #ho: ad=0
 #h1: ad!=0
