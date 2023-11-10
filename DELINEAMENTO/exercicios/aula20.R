@@ -1,5 +1,5 @@
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, car, tcltk)
+pacman::p_load(tidyverse, car)
 
 
 # qual o estudo?
@@ -57,8 +57,11 @@ plot(anova$residuals)
 plot(anova$residuals/summary(anova)[[1]][4,3]) #residuos padronizados
 
 #aditividade ???
+modlct <- lm(obs~a+b+c)
+adlct <- (predict(modlct))^2
+modalct <-lm(obs~a+b+c|adlct)
 
-
+anova(modlct,modalct) #teste de vero #h0 Beta ad = 0 #h1= Beta ad !=0
 
 # estim parametros
 #mi
