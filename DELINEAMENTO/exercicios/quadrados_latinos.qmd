@@ -1,0 +1,151 @@
+---
+title: "DELINEAMENTO"
+subtitle: "QUADRADOS LATINOS"
+author: "Tailine J. S. Nonato"
+date: "10/27/2023"
+format: html
+---
+
+Em quadrados latinos, deseja-se avaliar apenas um tratamento e manter os outros em controle (linha e coluna).
+
+Os pressupostos do modelo são Normalidade, Independência, Homocedasticidade e Aditividade.
+
+```{r}
+#| message: false
+#| echo: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,car)
+```
+
+# Dados
+```{r}
+obs <- c(19.56,23.16,29.72,
+         22.94,27.51,23.71,
+         25.06,17.70,22.32,
+         23.34,23.54,18.75,
+         16.28,22.29,28.09,
+         18.53,19.89,20.42,
+         23.98,20.46,19.28,
+         15.33,23.02,24.97,
+         24.41,22.44,19.23,
+         16.65,22.69,24.94,
+         18.96,24.19,21.95,
+         21.49,15.78,24.65)
+
+trat <- as.factor(
+        c('A','B','C',
+          'B','C','A',
+          'C','A','B',
+          'B','C','A',
+          'A','B','C',
+          'C','A','B',
+          'C','A','B',
+          'A','B','C',
+          'B','C','A',
+          'A','B','C',
+          'B','C','A',
+          'C','A','B'))
+
+linhas <- as.factor(rep(c(1:12),each=3))
+cols <- as.factor(rep(c(1,2,3), times=12))
+
+df<- data.frame(obs,trat,linhas,cols)
+head(df)
+```
+
+# Exploratória
+```{r}
+boxplot(obs~trat)
+boxplot(obs~linhas)
+boxplot(obs~cols)
+```
+
+# Hipóteses do estudo
+$$
+\begin{cases}
+H_{0}: \mbox{\tau _{1}= ... = \tau _{a} = 0} \\
+H_{1}: \mbox{\tau _{i}!= 0}
+\end{cases}
+$$
+
+# Análise de variâncias
+```{r}
+anova <- aov(obs~trat+linhas+cols)
+summary(anova)
+```
+
+# Pressupostos do modelo
+
+## Normalidade
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+shapiro.test(anova$residuals)
+```
+
+## Homocedasticidade
+```{r}
+plot(x=anova$residuals,y=anova$fitted.values)
+leveneTest(obs~trat)
+leveneTest(obs~linhas)
+leveneTest(obs~cols)
+```
+
+## Independência de residuos
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/summary(anova)[[1]][4,3])
+```
+
+## Aditividade
+$$
+\begin{cases}
+H_{0}: \mbox{Os fatores não apresentam efeitos no tecido} \\
+H_{1}: \mbox{Os fatores apresentam efeitos no tecido}
+\end{cases}
+$$
+
+```{r}
+#| warning: false
+mod1 <- lm(obs~trat+linhas+cols)
+ad1 <- predict(mod1)^2
+mod2 <- lm(obs~trat+linhas+cols|ad1)
+anova(mod1,mod2)
+```
+
+# Estimação dos parâmetros
+```{r}
+#mi
+mi <- mean(obs)
+mi
+
+#alpha
+yi_ <- tapply(obs,linhas,mean)
+yi_v <- rep(yi_, each=5)
+alpha <- yi_v - mean(obs)
+alpha
+
+#taoj
+yj_ <- tapply(obs,trat,mean)
+yj_v <- rep(yj_, each=5)
+taoj <- yj_v - mean(obs)
+taoj
+
+#betak
+yk_ <- tapply(obs,cols,mean)
+yk_v <- rep(yk_, each=5)
+betak <- yk_v - mean(obs)
+betak
+```
+
+# Proporção da variância explicada
+```{r}
+r2 <- summary(anova)[[1]][4,3]/sum(summary(anova)[[1]][,3])
+paste0(round(r2*100,2), '%')
+```
+
+# Comparação de médias
+```{r}
+TukeyHSD(anova, which='trat')
+```

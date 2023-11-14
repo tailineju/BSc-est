@@ -47,53 +47,69 @@ boxplot(obs~ciclo*oper*temp)
 
 ## Do estudo
 
-$$\begin{cases}
+$$
+\begin{cases}
 H_{0}: \mbox{Os fatores não apresentam efeitos no tecido} \\
-H_{1}: \mbox{Os fatores apresentam efeitos no tecido}\\
-\end{cases}$$
+H_{1}: \mbox{Os fatores apresentam efeitos no tecido}
+\end{cases}
+$$
 
 ## Do modelo de Análise Fatorial
 
-$$\begin{cases}
-H_{0}: \mbox{$\tau_{1}= ... = \tau_{a} = 0} \\
-H_{1}: \mbox{\tau_{i}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$\tau _{1}= ... = \tau _{a} = 0$} \\
+H_{1}: \mbox{$\tau _{i}!= 0$}
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{\alpha_{1}= ... = \alpha_{a} = 0} \\
-H_{1}: \mbox{\alpha_{i}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$\alpha _{1}= ... = \alpha _{a} = 0$} \\
+H_{1}: \mbox{$\alpha _{i} != 0$}
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{\beta_{1}= ... = \beta_{a} = 0} \\
-H_{1}: \mbox{\beta_{i}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$\beta _{1}= ... = \beta _{a} = 0$} \\
+H_{1}: \mbox{$\beta _{i} != 0$}
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{(\tau\beta)_{ij}= 0} \\
-H_{1}: \mbox{(\tau\beta)_{ij}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta)_{ij} != 0$}
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{(\alpha\beta)_{ij}= 0} \\
-H_{1}: \mbox{(\alpha\beta)_{ij}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$(\alpha \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\alpha \beta)_{ij} != 0$}\\
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{(\tau\alpha)_{ij}= 0} \\
-H_{1}: \mbox{(\tau\alpha)_{ij}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \alpha)_{ij} != 0$}\\
+\end{cases}
+$$
 
 
-$$\begin{cases}
-H_{0}: \mbox{(\tau\beta\alpha)_{ij}= 0} \\
-H_{1}: \mbox{(\tau\beta\alpha)_{ij}!= 0}\\
-\end{cases}$$
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta \alpha)_{ij} != 0$}\\
+\end{cases}
+$$
 
 
 # 1.2 Análise de Variâncias
@@ -106,10 +122,11 @@ summary(anova)
 ## Conclusões
 Com $\alpha=5%$, todas as $H_{0}$ do modelo são rejeitadas, indicando que existem diferenças.
 
-# 1.3) Análise dos pressupostos
+# 1.3 Análise dos pressupostos
 Para o modelo de Análise Fatorial, os pressupostos são Normalidade, Independência dos resíduos e Homocedasticidade.
 
 ## Normalidade
+
 ```{r}
 qqnorm(anova$residuals)
 qqline(anova$residuals)
@@ -117,6 +134,7 @@ shapiro.test(anova$residuals)
 ```
 
 ## Independencia 
+
 ```{r}
 plot(anova$residuals)
 plot(anova$residuals/summary(anova)[[1]][4,3])
@@ -130,10 +148,11 @@ leveneTest(obs~oper)
 leveneTest(obs~temp)
 ```
 
-# 1.4) 
+# 1.4 
 ## $H_{0}$ rejeitada e aí
 - Como a pontuação média varia de acordo com os fatores?
 - Qual combinação maximiza a pontuação?
+
 ```{r}
 TukeyHSD(anova, which="ciclo")
 interaction.ABC.plot(obs,ciclo, oper, temp, data=df)

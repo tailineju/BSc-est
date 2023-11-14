@@ -5,6 +5,9 @@ author: "Tailine J. S. Nonato"
 date: "10/27/2023"
 format: html
 ---
+Em análise fatorial, supõe-se a possibilidade que mais de um fator tenha efeitos sobre as observações. 
+
+Não há pressuposto de adtividade nesse modelo.
 
 ```{r}
 #| message: false
