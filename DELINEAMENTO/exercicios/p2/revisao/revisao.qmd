@@ -1,0 +1,141 @@
+---
+title: "DELINEAMENTO"
+subtitle: "Revisão P2"
+author: "Tailine J. S. Nonato"
+date: "11/16/2023"
+format:
+    html:
+        code-fold: true
+---
+
+# Quadrado Latino
+
+Considere os dados de produção de cana-de-açúcar, em Kg/parcela, de um experimento em quadrado latino onde foram comparados 5 cultivares designados por: A = CO290, B = CO421, C = CO419, D = POJ2878, E = CP36-13. Os dados estão na Tabela 1.
+
+```{r}
+#| message: false
+#| echo: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr,car)
+```
+
+```{r}
+#| tlb-cap: "Tabela 1"
+obs <- c(432,518,458,583,331,
+         724,478,524,550,400,
+         489,384,556,297,420,
+         494,500,313,486,501,
+         515,660,438,394,318)
+
+trat <- as.factor(
+        c('D','A','B','C','E',
+          'C','E','A','B','D',
+          'E','B','C','D','A',
+          'B','D','E','A','C',
+          'A','C','D','E','B'))
+
+cols <- as.factor(rep(c(1:5),times=5))
+rows <- as.factor(rep(c(1:5),each=5))
+
+df <- data.frame(obs,trat,cols,rows)
+
+kable(head(df))
+```
+
+## Hipóteses
+
+- Do estudo
+$$
+\begin{cases}
+H_{0}: \mbox{Os tratamentos não apresentam diferenças} \\
+H_{1}: \mbox{Os tratamentos apresentam efeitos}
+\end{cases}
+$$
+
+- Do modelo (Quadrado Latino)
+$$
+\begin{cases}
+H_{0}: \mbox{$\tau_{1}=...=\tau{a}=0$} \\
+H_{1}: \mbox{$\tau_{i} != 0 $}
+\end{cases}
+$$
+
+## Análise de Variâncias
+```{r}
+anova<-aov(obs~trat+cols+rows)
+summary(anova)
+```
+
+Com $\alpha=5%$, tem-se que $H_{0}$ é rejeitada para o Tratamento e para as Colunas, indicando diferenças. 
+
+## Pressupostos do modelo
+
+Em quadrados latinos, os pressupostos do modelo são:
+- Normalidade dos resíduos
+- Independência dos resíduos
+- Homocedasticidade
+- Aditividade
+
+### Normalidade
+
+$$
+\begin{cases}
+H_{0}: \mbox{Os resíduos seguem distribuição Normal} \\
+H_{1}: \mbox{Os resíduos não seguem distribuição Normal}
+\end{cases}
+$$
+
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+```
+
+A análise gráfica indica uma possível normalidade, mas não há tanta certeza. 
+
+```{r}
+shapiro.test(anova$residuals)
+```
+
+Assim, verificando com teste Shapiro-Wilk para normalidade, verifica-se que não há evidências para rejeitar $H_{0}$, indicando assim Normalidade dos dados.
+
+### Independência
+
+$$
+\begin{cases}
+H_{0}: \mbox{Os resíduos são independentes} \\
+H_{1}: \mbox{Os resíduos não são independentes}
+\end{cases}
+$$
+
+
+```{r}
+plot(anova$residuals)
+```
+
+A análise gráfica indica independência a partir dos dados "espalhados" no gráfico. 
+
+### Homocedasticidade
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\sigma_{1}^{2}=...=\sigma_{n}^{2}$} \\
+H_{1}: \mbox{$\sigma_{i}^{2} !=\sigma_{j}^{2}$, para $i!=j$}
+\end{cases}
+$$
+
+```{r}
+plot(anova$residuals~anova$fitted.values)
+```
+
+```{r}
+leveneTest(obs~trat)
+leveneTest(obs~cols)
+leveneTest(obs~rows)
+```
+
+```{r}
+bartlett.test(obs~trat)
+bartlett.test(obs~cols)
+bartlett.test(obs~rows)
+```
