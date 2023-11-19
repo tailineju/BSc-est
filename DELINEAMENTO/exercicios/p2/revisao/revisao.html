@@ -188,6 +188,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 </div>
 </div>
+<section id="exploratória" class="level2">
+<h2 class="anchored" data-anchor-id="exploratória">Exploratória</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>trat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-3-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
 <section id="hipóteses" class="level2">
 <h2 class="anchored" data-anchor-id="hipóteses">Hipóteses</h2>
 <ul>
@@ -210,8 +236,8 @@ H_{1}: \mbox{$\tau_{i} != 0 $}
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>anova<span class="ot">&lt;-</span><span class="fu">aov</span>(obs<span class="sc">~</span>trat<span class="sc">+</span>cols<span class="sc">+</span>rows)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>anova<span class="ot">&lt;-</span><span class="fu">aov</span>(obs<span class="sc">~</span>trat<span class="sc">+</span>cols<span class="sc">+</span>rows)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>            Df Sum Sq Mean Sq F value   Pr(&gt;F)    
@@ -227,7 +253,13 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </section>
 <section id="pressupostos-do-modelo" class="level2">
 <h2 class="anchored" data-anchor-id="pressupostos-do-modelo">Pressupostos do modelo</h2>
-<p>Em quadrados latinos, os pressupostos do modelo são: - Normalidade dos resíduos - Independência dos resíduos - Homocedasticidade - Aditividade</p>
+<p>Em quadrados latinos, os pressupostos do modelo são:</p>
+<ul>
+<li>Normalidade dos resíduos</li>
+<li>Independência dos resíduos</li>
+<li>Homocedasticidade</li>
+<li>Aditividade</li>
+</ul>
 <section id="normalidade" class="level3">
 <h3 class="anchored" data-anchor-id="normalidade">Normalidade</h3>
 <p><span class="math display">\[
@@ -239,18 +271,18 @@ H_{1}: \mbox{Os resíduos não seguem distribuição Normal}
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(anova<span class="sc">$</span>residuals)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(anova<span class="sc">$</span>residuals)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="revisao_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+<p><img src="revisao_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>A análise gráfica indica uma possível normalidade, mas não há tanta certeza.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -273,10 +305,10 @@ H_{1}: \mbox{Os resíduos não são independentes}
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="revisao_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+<p><img src="revisao_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <p>A análise gráfica indica independência a partir dos dados “espalhados” no gráfico.</p>
@@ -292,16 +324,7 @@ H_{1}: \mbox{$\sigma_{i}^{2} !=\sigma_{j}^{2}$, para $i!=j$}
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals<span class="sc">~</span>anova<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output-display">
-<p><img src="revisao_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
-</div>
-</div>
-<div class="cell">
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>trat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>trat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Levene's Test for Homogeneity of Variance (center = median)
@@ -311,7 +334,7 @@ group  4  0.6294 0.6472
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Levene's Test for Homogeneity of Variance (center = median)
@@ -321,7 +344,7 @@ group  4  0.1668 0.9528
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Levene's Test for Homogeneity of Variance (center = median)
@@ -333,7 +356,7 @@ group  4   0.348 0.8423
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>trat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>trat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -344,7 +367,7 @@ Bartlett's K-squared = 2.1216, df = 4, p-value = 0.7134</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>cols)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -355,7 +378,7 @@ Bartlett's K-squared = 0.87683, df = 4, p-value = 0.9279</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(obs<span class="sc">~</span>rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -366,6 +389,547 @@ Bartlett's K-squared = 1.012, df = 4, p-value = 0.908</code></pre>
 </div>
 </div>
 </section>
+<section id="aditividade" class="level3">
+<h3 class="anchored" data-anchor-id="aditividade">Aditividade</h3>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\theta=0$} \\
+H_{1}: \mbox{$\theta != 0$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(obs<span class="sc">~</span>trat<span class="sc">+</span>cols<span class="sc">+</span>rows)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>adv <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod1)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(obs<span class="sc">~</span>trat<span class="sc">+</span>cols<span class="sc">+</span>rows<span class="sc">|</span>adv)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(mod1,mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Model 1: obs ~ trat + cols + rows
+Model 2: obs ~ trat + cols + rows | adv
+  Res.Df    RSS  Df Sum of Sq      F   Pr(&gt;F)   
+1     12  34115                                 
+2     24 257724 -12   -223610 6.5546 0.001366 **
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>Assim, conclui-se que todos os pressupostos foram atendidos.</p>
+</section>
+</section>
+<section id="estimação-de-parâmetros" class="level2">
+<h2 class="anchored" data-anchor-id="estimação-de-parâmetros">Estimação de parâmetros</h2>
+<section id="média-mu" class="level3">
+<h3 class="anchored" data-anchor-id="média-mu">Média <span class="math inline">\(\mu\)</span></h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>mi <span class="ot">&lt;-</span> <span class="fu">mean</span>(obs)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(mi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">470.52</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="tratamento-tau" class="level3">
+<h3 class="anchored" data-anchor-id="tratamento-tau">Tratamento <span class="math inline">\(\tau\)</span></h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>yi_ <span class="ot">&lt;-</span> <span class="fu">tapply</span>(obs,trat,mean)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>tau <span class="ot">&lt;-</span> yi_ <span class="sc">-</span> <span class="fu">mean</span>(obs)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(tau)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">A</td>
+<td style="text-align: right;">22.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">B</td>
+<td style="text-align: right;">-29.72</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">C</td>
+<td style="text-align: right;">134.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">D</td>
+<td style="text-align: right;">-57.12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">-69.52</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="colunas-beta" class="level3">
+<h3 class="anchored" data-anchor-id="colunas-beta">Colunas <span class="math inline">\(\beta\)</span></h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>yj_ <span class="ot">&lt;-</span> <span class="fu">tapply</span>(obs,cols,mean)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>beta <span class="ot">&lt;-</span> yj_ <span class="sc">-</span> <span class="fu">mean</span>(obs)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(beta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">60.28</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">37.48</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-12.72</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-8.52</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-76.52</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="linhas-alpha" class="level3">
+<h3 class="anchored" data-anchor-id="linhas-alpha">Linhas <span class="math inline">\(\alpha\)</span></h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>yk_ <span class="ot">&lt;-</span> <span class="fu">tapply</span>(obs,rows,mean)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>alpha <span class="ot">&lt;-</span> yk_ <span class="sc">-</span> <span class="fu">mean</span>(obs)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(alpha)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">-6.12</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">64.68</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-41.32</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">-11.72</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">-5.52</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="variância-total-explicada" class="level2">
+<h2 class="anchored" data-anchor-id="variância-total-explicada">Variância total explicada</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>r2 <span class="ot">&lt;-</span> (<span class="fu">summary</span>(anova)[[<span class="dv">1</span>]][<span class="dv">4</span>,<span class="dv">3</span>])<span class="sc">/</span>(<span class="fu">sum</span>(<span class="fu">summary</span>(anova)[[<span class="dv">1</span>]][,<span class="dv">3</span>]))</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">paste0</span>(<span class="fu">round</span>(r2<span class="sc">*</span><span class="dv">100</span>,<span class="dv">2</span>),<span class="st">"%"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">4.84%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="comparações-de-médias" class="level2">
+<h2 class="anchored" data-anchor-id="comparações-de-médias">Comparações de médias</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(anova, <span class="at">which=</span><span class="st">'trat'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = obs ~ trat + cols + rows)
+
+$trat
+      diff         lwr       upr     p adj
+B-A  -51.8 -159.285837  55.68584 0.5605008
+C-A  112.2    4.714163 219.68584 0.0393994
+D-A  -79.2 -186.685837  28.28584 0.1954453
+E-A  -91.6 -199.085837  15.88584 0.1096430
+C-B  164.0   56.514163 271.48584 0.0029114
+D-B  -27.4 -134.885837  80.08584 0.9217659
+E-B  -39.8 -147.285837  67.68584 0.7621180
+D-C -191.4 -298.885837 -83.91416 0.0007967
+E-C -203.8 -311.285837 -96.31416 0.0004550
+E-D  -12.4 -119.885837  95.08584 0.9955527</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="modelo-fatorial" class="level1">
+<h1>Modelo Fatorial</h1>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">27</span>,<span class="dv">30</span>,<span class="dv">31</span>,<span class="dv">26</span>,<span class="dv">30</span>,<span class="dv">34</span>,</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>        <span class="dv">26</span>,<span class="dv">28</span>,<span class="dv">32</span>,<span class="dv">27</span>,<span class="dv">36</span>,<span class="dv">36</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>        <span class="dv">28</span>,<span class="dv">26</span>,<span class="dv">29</span>,<span class="dv">28</span>,<span class="dv">35</span>,<span class="dv">36</span>,</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>        <span class="dv">31</span>,<span class="dv">34</span>,<span class="dv">33</span>,<span class="dv">32</span>,<span class="dv">34</span>,<span class="dv">29</span>,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>        <span class="dv">30</span>,<span class="dv">28</span>,<span class="dv">32</span>,<span class="dv">30</span>,<span class="dv">33</span>,<span class="dv">30</span>,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>        <span class="dv">28</span>,<span class="dv">30</span>,<span class="dv">32</span>,<span class="dv">33</span>,<span class="dv">34</span>,<span class="dv">31</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>        <span class="dv">28</span>,<span class="dv">34</span>,<span class="dv">26</span>,<span class="dv">26</span>,<span class="dv">36</span>,<span class="dv">28</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>        <span class="dv">26</span>,<span class="dv">35</span>,<span class="dv">27</span>,<span class="dv">29</span>,<span class="dv">36</span>,<span class="dv">26</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>        <span class="dv">27</span>,<span class="dv">34</span>,<span class="dv">28</span>,<span class="dv">28</span>,<span class="dv">34</span>,<span class="dv">26</span>)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>ciclo <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">40</span>,<span class="dv">50</span>,<span class="dv">60</span>), <span class="at">each=</span><span class="dv">18</span>))</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>oper <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),<span class="at">times=</span><span class="dv">18</span>))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">300</span>,<span class="dv">350</span>), <span class="at">each=</span><span class="dv">3</span>, <span class="at">times=</span><span class="dv">9</span>))</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(obs,ciclo,oper,temp)</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">obs</th>
+<th style="text-align: left;">ciclo</th>
+<th style="text-align: left;">oper</th>
+<th style="text-align: left;">temp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">27</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">30</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">31</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">300</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">26</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">1</td>
+<td style="text-align: left;">350</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">30</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">350</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">34</td>
+<td style="text-align: left;">40</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">350</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="exploratória-1" class="level2">
+<h2 class="anchored" data-anchor-id="exploratória-1">Exploratória</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>ciclo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>oper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-18-2.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-18-3.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(obs<span class="sc">~</span>ciclo<span class="sc">*</span>oper<span class="sc">*</span>temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-18-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="hipóteses-1" class="level2">
+<h2 class="anchored" data-anchor-id="hipóteses-1">Hipóteses</h2>
+<ul>
+<li>Do estudo</li>
+</ul>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{Os fatores não apresentam efeitos no tecido} \\
+H_{1}: \mbox{Os fatores apresentam efeitos no tecido}
+\end{cases}
+\]</span></p>
+<ul>
+<li>Do modelo Fatorial</li>
+</ul>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\tau _{1}= ... = \tau _{a} = 0$} \\
+H_{1}: \mbox{$\tau _{i}!= 0$}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\alpha _{1}= ... = \alpha _{a} = 0$} \\
+H_{1}: \mbox{$\alpha _{i} != 0$}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\beta _{1}= ... = \beta _{a} = 0$} \\
+H_{1}: \mbox{$\beta _{i} != 0$}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta)_{ij} != 0$}
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$(\alpha \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\alpha \beta)_{ij} != 0$}\\
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$(\tau \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \alpha)_{ij} != 0$}\\
+\end{cases}
+\]</span></p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta \alpha)_{ij} != 0$}\\
+\end{cases}
+\]</span></p>
+</section>
+<section id="análise-de-variâncias-1" class="level2">
+<h2 class="anchored" data-anchor-id="análise-de-variâncias-1">Análise de Variâncias</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(obs<span class="sc">~</span>ciclo<span class="sc">*</span>oper<span class="sc">*</span>temp)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anova)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+ciclo            2  25.59   12.80   5.357  0.00919 ** 
+oper             2 164.93   82.46  34.519 4.26e-09 ***
+temp             1  34.24   34.24  14.333  0.00056 ***
+ciclo:oper       4 193.85   48.46  20.287 8.05e-09 ***
+ciclo:temp       2  23.59   11.80   4.938  0.01273 *  
+oper:temp        2  18.04    9.02   3.775  0.03248 *  
+ciclo:oper:temp  4  34.96    8.74   3.659  0.01336 *  
+Residuals       36  86.00    2.39                     
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<ul>
+<li>Conclusões Com <span class="math inline">\(\alpha=5%\)</span>, todas as <span class="math inline">\(H_{0}\)</span> do modelo são rejeitadas, indicando que existem diferenças.</li>
+</ul>
+</section>
+<section id="pressupostos-do-modelo-1" class="level2">
+<h2 class="anchored" data-anchor-id="pressupostos-do-modelo-1">Pressupostos do modelo</h2>
+<p>Para o modelo de Análise Fatorial, os pressupostos são Normalidade, Independência dos resíduos e Homocedasticidade.</p>
+<section id="normalidade-1" class="level3">
+<h3 class="anchored" data-anchor-id="normalidade-1">Normalidade</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(anova<span class="sc">$</span>residuals)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  anova$residuals
+W = 0.98124, p-value = 0.555</code></pre>
+</div>
+</div>
+</section>
+<section id="independencia" class="level3">
+<h3 class="anchored" data-anchor-id="independencia">Independencia</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals<span class="sc">/</span><span class="fu">summary</span>(anova)[[<span class="dv">1</span>]][<span class="dv">4</span>,<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-21-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="homocedasticidade-1" class="level3">
+<h3 class="anchored" data-anchor-id="homocedasticidade-1">Homocedasticidade</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(anova<span class="sc">$</span>residuals, anova<span class="sc">$</span>fitted.values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>ciclo)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Levene's Test for Homogeneity of Variance (center = median)
+      Df F value Pr(&gt;F)
+group  2  2.3955 0.1013
+      51               </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>oper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Levene's Test for Homogeneity of Variance (center = median)
+      Df F value Pr(&gt;F)
+group  2  1.5477 0.2226
+      51               </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(obs<span class="sc">~</span>temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Levene's Test for Homogeneity of Variance (center = median)
+      Df F value  Pr(&gt;F)  
+group  1  3.3024 0.07494 .
+      52                  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusões-do-estudo" class="level2">
+<h2 class="anchored" data-anchor-id="conclusões-do-estudo">Conclusões do estudo</h2>
+<ul>
+<li>Como a pontuação média varia de acordo com os fatores?</li>
+<li>Qual combinação maximiza a pontuação?</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(anova, <span class="at">which=</span><span class="st">"ciclo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = obs ~ ciclo * oper * temp)
+
+$ciclo
+            diff        lwr        upr     p adj
+50-40  1.0555556 -0.2037488  2.3148599 0.1152084
+60-40 -0.6111111 -1.8704155  0.6481933 0.4689489
+60-50 -1.6666667 -2.9259710 -0.4073623 0.0071848</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction.ABC.plot</span>(obs,ciclo, oper, temp, <span class="at">data=</span>df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="revisao_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 </section>
 

@@ -17,7 +17,7 @@ Considere os dados de produção de cana-de-açúcar, em Kg/parcela, de um exper
 #| echo: false
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,knitr,car)
+pacman::p_load(tidyverse,knitr,car,dae)
 ```
 
 ```{r}
@@ -41,6 +41,13 @@ rows <- as.factor(rep(c(1:5),each=5))
 df <- data.frame(obs,trat,cols,rows)
 
 kable(head(df))
+```
+
+## Exploratória
+```{r}
+boxplot(obs~trat)
+boxplot(obs~cols)
+boxplot(obs~rows)
 ```
 
 ## Hipóteses
@@ -72,6 +79,7 @@ Com $\alpha=5%$, tem-se que $H_{0}$ é rejeitada para o Tratamento e para as Col
 ## Pressupostos do modelo
 
 Em quadrados latinos, os pressupostos do modelo são:
+
 - Normalidade dos resíduos
 - Independência dos resíduos
 - Homocedasticidade
@@ -125,10 +133,6 @@ H_{1}: \mbox{$\sigma_{i}^{2} !=\sigma_{j}^{2}$, para $i!=j$}
 $$
 
 ```{r}
-plot(anova$residuals~anova$fitted.values)
-```
-
-```{r}
 leveneTest(obs~trat)
 leveneTest(obs~cols)
 leveneTest(obs~rows)
@@ -138,4 +142,211 @@ leveneTest(obs~rows)
 bartlett.test(obs~trat)
 bartlett.test(obs~cols)
 bartlett.test(obs~rows)
+```
+
+### Aditividade
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\theta=0$} \\
+H_{1}: \mbox{$\theta != 0$}
+\end{cases}
+$$
+
+```{r}
+#| warning: false
+mod1 <- lm(obs~trat+cols+rows)
+adv <- predict(mod1)^2
+mod2 <- lm(obs~trat+cols+rows|adv)
+anova(mod1,mod2)
+```
+
+Assim, conclui-se que todos os pressupostos foram atendidos.
+
+## Estimação de parâmetros
+
+### Média $\mu$
+```{r}
+mi <- mean(obs)
+kable(mi)
+```
+
+### Tratamento $\tau$
+```{r}
+yi_ <- tapply(obs,trat,mean)
+tau <- yi_ - mean(obs)
+kable(tau)
+```
+
+### Colunas $\beta$
+```{r}
+yj_ <- tapply(obs,cols,mean)
+beta <- yj_ - mean(obs)
+kable(beta)
+```
+
+### Linhas $\alpha$
+```{r}
+yk_ <- tapply(obs,rows,mean)
+alpha <- yk_ - mean(obs)
+kable(alpha)
+```
+
+## Variância total explicada
+
+```{r}
+r2 <- (summary(anova)[[1]][4,3])/(sum(summary(anova)[[1]][,3]))
+kable(paste0(round(r2*100,2),"%"))
+```
+
+## Comparações de médias
+
+```{r}
+TukeyHSD(anova, which='trat')
+```
+
+# Modelo Fatorial
+
+```{r}
+obs <- c(27,30,31,26,30,34,
+        26,28,32,27,36,36,
+        28,26,29,28,35,36,
+        31,34,33,32,34,29,
+        30,28,32,30,33,30,
+        28,30,32,33,34,31,
+        28,34,26,26,36,28,
+        26,35,27,29,36,26,
+        27,34,28,28,34,26)
+
+ciclo <- as.factor(rep(c(40,50,60), each=18))
+
+oper <- as.factor(rep(c(1:3),times=18))
+
+temp <- as.factor(rep(c(300,350), each=3, times=9))
+
+df <- data.frame(obs,ciclo,oper,temp)
+kable(head(df))
+```
+
+## Exploratória
+
+```{r}
+boxplot(obs~ciclo)
+boxplot(obs~oper)
+boxplot(obs~temp)
+boxplot(obs~ciclo*oper*temp)
+```
+
+## Hipóteses
+
+- Do estudo
+
+$$
+\begin{cases}
+H_{0}: \mbox{Os fatores não apresentam efeitos no tecido} \\
+H_{1}: \mbox{Os fatores apresentam efeitos no tecido}
+\end{cases}
+$$
+
+- Do modelo Fatorial
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\tau _{1}= ... = \tau _{a} = 0$} \\
+H_{1}: \mbox{$\tau _{i}!= 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\alpha _{1}= ... = \alpha _{a} = 0$} \\
+H_{1}: \mbox{$\alpha _{i} != 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\beta _{1}= ... = \beta _{a} = 0$} \\
+H_{1}: \mbox{$\beta _{i} != 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta)_{ij} != 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\alpha \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\alpha \beta)_{ij} != 0$}\\
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \alpha)_{ij} != 0$}\\
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta \alpha)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta \alpha)_{ij} != 0$}\\
+\end{cases}
+$$
+
+
+## Análise de Variâncias
+
+```{r}
+anova <- aov(obs~ciclo*oper*temp)
+summary(anova)
+```
+
+Com $\alpha=5%$, todas as $H_{0}$ do modelo são rejeitadas, indicando que existem diferenças.
+
+## Pressupostos do modelo
+Para o modelo de Análise Fatorial, os pressupostos são Normalidade, Independência dos resíduos e Homocedasticidade.
+
+### Normalidade
+
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+shapiro.test(anova$residuals)
+```
+
+### Independencia 
+
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/summary(anova)[[1]][4,3])
+```
+
+### Homocedasticidade
+```{r}
+plot(anova$residuals, anova$fitted.values)
+leveneTest(obs~ciclo)
+leveneTest(obs~oper)
+leveneTest(obs~temp)
+```
+
+## Conclusões do estudo
+
+- Como a pontuação média varia de acordo com os fatores?
+- Qual combinação maximiza a pontuação?
+
+```{r}
+TukeyHSD(anova, which="ciclo")
+interaction.ABC.plot(obs,ciclo, oper, temp, data=df)
 ```
