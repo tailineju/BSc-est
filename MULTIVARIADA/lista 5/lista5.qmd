@@ -10,7 +10,7 @@ format: html
 ```{r}
 #| message: false
 #| echo: false
-pacman::p_load(tidyverse)
+pacman::p_load(tidyverse,knitr,FactoMineR)
 ```
 
 ### Exercício 9.1
@@ -37,7 +37,7 @@ $$Cov(\epsilon) = \begin{bmatrix}
 \end{bmatrix}
 $$
 
-That is, write $ \rho $ in the form $ \rho = LL' + Cov(\epsilon) $
+That is, write $\rho$ in the form $\rho = LL' + Cov(\epsilon)$
 
 - Respostas
 
@@ -84,7 +84,76 @@ $Corr(Z_{3},F_{1})$ = $l_{31}$ = `r l[3,1]`
 $Z_{1}$ tem a maior correlação com o fator, dessa forma será a variável que mais carregará o "nome" do fator.
 
 ### Exercício 9.3
+The eigenvalues and eigenvectors of the correlation matrix $\rho$ in Exercise 9.1 are
+
+$\lambda_{1}=1.96, \hspace{1cm} e_{1}^{'}=[.625,.593,.507]$
+
+$\lambda_{2}=0.68, \hspace{1cm} e_{2}^{'}=[-.219,-.491,.843]$
+
+$\lambda_{3}=0.36, \hspace{1cm} e_{3}^{'}=[.749,-.638,-.177]$
+
+a. Assuming an $m=1$ factor model, calculate the loading matrix L and the matrix of specific variances using the principal component solution method. Compare the results with those in Exercise 9.1.
+
+- Respostas
 
 ```{r}
+avs<- eigen(rho)
+lambda1<- avs$values[1]
+e1<-avs$vectors[,1]
+l3 <- matrix(sqrt(lambda1)*e1)
+l3
+l
+```
 
+Os resultados são um pouco diferentes. Usando componentes principais, os valores resultam um pouco maiores.
+
+b. What proportion of the total population variance is explained by the first common factor?
+
+```{r}
+p<- nrow(l3)
+prop <- lambda1/p
+paste0(round(prop*100,2),"%")
+```
+
+### Exercício 9.4
+Given $\rho$ and $Cov$ in Exercise 9.1 and $m=1$ factor model, calculate the reduced correlation matrix $\bar{p}=p-cov$ and the principal factor solution for the loading matrix $L$. Is the result consistent with the information in Exercise 9.1? Should it be?  
+
+- Respostas
+
+```{r}
+rhob <- rho - cove
+rhob
+llt
+
+avsb<-eigen(rhob)
+avsb
+
+lambda1b<- avsb$values[1]
+e1b<-avsb$vectors[,1]
+l4 <- matrix(sqrt(lambda1b)*e1b)
+l4
+l
+```
+
+Os resultados são consistentes com o Exercício 9.1. Deveria ser já que o fator comum define completamente a matriz $\bar{p}=p-cov$.
+
+### Exercício 9.6
+Demonstração
+
+
+### Exemplo 9.14
+???
+
+### Exercício 9.10
+
+
+### Exercício 9.15
+```{r}
+d9<-read.delim("MULTIVARIADA/lista 5/materiais/table9_12-SalespeopleData.DAT.txt",sep=",",header=FALSE)
+kable(head(d9))
+```
+
+```{r}
+pca<-PCA(d9, graph=TRUE)
+pca
 ```
