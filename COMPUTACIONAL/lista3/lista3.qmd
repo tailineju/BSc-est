@@ -1,0 +1,89 @@
+---
+title: "LISTA 3"
+subtitle: "ESTATÍSTICA COMPUTACIONAL"
+author: "Tailine J. S. Nonato"
+date: "11/18/2023"
+format: 
+    html:
+        code-fold: true
+---
+
+```{r}
+#| message: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr,broom,lubridate,corrplot)
+```
+
+# Dados
+```{r}
+#| warning: false
+climbing <- read_csv("climbing_statistics.csv")
+weather <- read_csv("Rainier_Weather.csv")
+convert <- function(x) (x-32) * 5/9
+shift <- function(x) x - mean(x)
+dados <- inner_join(climbing, weather) %>%
+    select(-matches("Percent|Battery")) %>%
+    filter(Attempted >= Succeeded,
+           Route != "glacier only - no summit attempt",
+           Route != "Unknown") %>%
+    mutate(`Temperature AVG`= convert(`Temperature AVG`),
+    Cleaver = Route=="Disappointment Cleaver",
+    Date = mdy(Date)) %>%
+select(Date, Succeeded, everything()) %>%
+rename(Data = Date,
+       Rota = Route,
+       Sucessos = Succeeded,
+       Tentativas = Attempted,
+       Temperatura = `Temperature AVG`,
+       Umidade_relativa = `Relative Humidity AVG`,
+       Velocidade_vento = `Wind Speed Daily AVG`,
+       Direc_vento = `Wind Direction AVG`,
+       Radiacao_solar = `Solare Radiation AVG`) %>%
+group_by(Data, Rota) %>%
+    mutate(Sucessos = sum(Sucessos),
+           Tentativas = sum(Tentativas)) %>%
+    distinct() %>%
+    ungroup()
+kable(head(dados))
+```
+
+# Item A
+Conduza um teste de hipóteses por simulação para avaliar a hipótese nula de que a média do número de sucessos obtidos pela rota "Disappointment Cleaver" é igual a média das demais rotas (conjuntamente).
+
+- Respostas
+
+Tem-se como hipóteses:
+$$
+\begin{cases}
+H_{0}: \mbox{$\mu_{1}=...=\mu_{n}$} \\
+H_{1}: \mbox{$\mu_{i} != \mu_{j}$}
+\end{cases}
+$$
+
+Para realizar a comparação de médias realiza-se o Teste de Tukey:
+
+```{r}
+
+```
+
+# Item B
+Obtenha o estimador de máxima verossimilhança de $\alpha$ e $\beta$ considerando o modelo proposto. Dica: Use a função optim do R para achar o ponto que maximiza a log-verossimilhança.
+
+- Respostas
+
+# Item C
+Estime a distribuição de probabilidade do número de sucessos previstos para um dia em que a temperatura seja de 15 graus.
+
+- Respostas
+
+# Item D
+Construa um intervalo de confiança de 95% para $\exp(\beta)$ a partir do método de bootstrap paramétrico. Interprete o resultado considerando o contexto dos dados. Dica: calcule o aumento percentual da média esperada quando a temperatura aumenta em 1 grau Celsio.
+
+- Respostas
+
+# Item E
+Faça um diagnóstico do modelo via simulação. Para tanto, gere dados sintéticos usando o modelo obtido no item b), ajuste um novo modelo sobre os dados sintéticos e calcule o Erro quadrático médio (MSE). Repita esse procedimento 10000 vezes e compare os MSEs gerados com aquele do modelo obtido
+em b). Comente os resultados.
+
+- Respostas
