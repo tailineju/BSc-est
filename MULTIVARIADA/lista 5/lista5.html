@@ -263,13 +263,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>eigen() decomposition
 $values
-[1] 1.550000e+00 6.661338e-16 0.000000e+00
+[1] 1.550000e+00 6.661338e-16 5.015897e-18
 
 $vectors
-           [,1]       [,2]       [,3]
-[1,] -0.7228974  0.6909554  0.0000000
-[2,] -0.5622535 -0.5882458 -0.5812382
-[3,] -0.4016097 -0.4201756  0.8137335</code></pre>
+          [,1]       [,2]       [,3]
+[1,] 0.7228974  0.6909554  0.0000000
+[2,] 0.5622535 -0.5882458 -0.5812382
+[3,] 0.4016097 -0.4201756  0.8137335</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lambda1b<span class="ot">&lt;-</span> avsb<span class="sc">$</span>values[<span class="dv">1</span>]</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>e1b<span class="ot">&lt;-</span>avsb<span class="sc">$</span>vectors[,<span class="dv">1</span>]</span>
@@ -277,9 +277,9 @@ $vectors
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>l4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     [,1]
-[1,] -0.9
-[2,] -0.7
-[3,] -0.5</code></pre>
+[1,]  0.9
+[2,]  0.7
+[3,]  0.5</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>l</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -305,7 +305,105 @@ $vectors
 <section id="exercício-9.15" class="level3">
 <h3 class="anchored" data-anchor-id="exercício-9.15">Exercício 9.15</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d9<span class="ot">&lt;-</span><span class="fu">read.delim</span>(<span class="st">"materiais/table9_12-SalespeopleData.DAT.txt"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d9<span class="ot">&lt;-</span><span class="fu">read.delim</span>(<span class="st">"materiais/table9_12-SalespeopleData.DAT.txt"</span>,<span class="at">sep=</span><span class="st">","</span>,<span class="at">header=</span><span class="cn">FALSE</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(d9))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">V1</th>
+<th style="text-align: right;">V2</th>
+<th style="text-align: right;">V3</th>
+<th style="text-align: right;">V4</th>
+<th style="text-align: right;">V5</th>
+<th style="text-align: right;">V6</th>
+<th style="text-align: right;">V7</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">93.0</td>
+<td style="text-align: right;">96.0</td>
+<td style="text-align: right;">97.8</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">88.8</td>
+<td style="text-align: right;">91.8</td>
+<td style="text-align: right;">96.8</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">95.0</td>
+<td style="text-align: right;">100.3</td>
+<td style="text-align: right;">99.0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">26</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">101.3</td>
+<td style="text-align: right;">103.8</td>
+<td style="text-align: right;">106.8</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">102.0</td>
+<td style="text-align: right;">107.8</td>
+<td style="text-align: right;">103.0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">32</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">95.8</td>
+<td style="text-align: right;">97.5</td>
+<td style="text-align: right;">99.3</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">21</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pca<span class="ot">&lt;-</span><span class="fu">PCA</span>(d9, <span class="at">graph=</span><span class="cn">TRUE</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>pca</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>**Results for the Principal Component Analysis (PCA)**
+The analysis was performed on 50 individuals, described by 7 variables
+*The results are available in the following objects:
+
+   name               description                          
+1  "$eig"             "eigenvalues"                        
+2  "$var"             "results for the variables"          
+3  "$var$coord"       "coord. for the variables"           
+4  "$var$cor"         "correlations variables - dimensions"
+5  "$var$cos2"        "cos2 for the variables"             
+6  "$var$contrib"     "contributions of the variables"     
+7  "$ind"             "results for the individuals"        
+8  "$ind$coord"       "coord. for the individuals"         
+9  "$ind$cos2"        "cos2 for the individuals"           
+10 "$ind$contrib"     "contributions of the individuals"   
+11 "$call"            "summary statistics"                 
+12 "$call$centre"     "mean of the variables"              
+13 "$call$ecart.type" "standard error of the variables"    
+14 "$call$row.w"      "weights for the individuals"        
+15 "$call$col.w"      "weights for the variables"          </code></pre>
+</div>
 </div>
 </section>
 

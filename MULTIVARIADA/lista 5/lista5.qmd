@@ -149,7 +149,8 @@ Demonstração
 
 ### Exercício 9.15
 ```{r}
-d9<-read.delim("MULTIVARIADA/lista 5/materiais/table9_12-SalespeopleData.DAT.txt",sep=",",header=FALSE)
+d9<-read.delim(#"MULTIVARIADA/lista 5/
+"materiais/table9_12-SalespeopleData.DAT.txt",sep=",",header=FALSE)
 kable(head(d9))
 ```
 
