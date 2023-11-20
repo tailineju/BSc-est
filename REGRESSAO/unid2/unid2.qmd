@@ -1,0 +1,14 @@
+---
+title: "UNIDADE 2"
+subtitle: "REGRESSÃO LINEAR"
+author: "Tailine J. S. Nonato"
+date: "11/20/2023"
+format: html
+---
+
+```{r}
+#| message: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse)
+```
