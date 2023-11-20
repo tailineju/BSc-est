@@ -1,5 +1,5 @@
 ---
-title: "LISTA 5"
+title: "LISTA 6"
 subtitle: "ANÁLISE MULTIVARIADA 1"
 author: "Tailine J. S. Nonato"
 date: "11/15/2023"
@@ -10,5 +10,77 @@ format: html
 ```{r}
 #| message: false
 #| echo: false
-pacman::p_load(tidyverse,knitr,FactoMineR)
+pacman::p_load(tidyverse,car)
 ```
+
+## Exercicio 1
+
+- Amostra
+
+Método: Decomposicao de Cholesky
+
+```{r}
+mu<-matrix(c(3,2),2,1)
+sigma<-matrix(c(1,-1.5,-1.5,4),2,2)
+
+rmvn.cholesky <-
+  function(n, mu, Sigma) {
+    p <- length(mu)
+    Q <- chol(Sigma)
+    Z <- matrix(rnorm(n*p), nrow=n, ncol=p)
+    X <- Z %*% Q + matrix(mu, n, p, byrow=TRUE)
+    X
+  }
+
+a3 <- rmvn.cholesky(1000, mu, sigma)
+plot(a3, xlab = "x", ylab = "y", pch = 20)
+```
+
+- Elipses de contorno
+```{r}
+dataEllipse(a3,pch=20, 
+            main= "Decomposicao de Cholesky")
+```
+
+- QQ Plot
+
+```{r}
+ndc <- function(dados){
+  S <- var(dados)  
+  dadosc <- dados
+  dadosc[,1] <- dados[,1] - mean(dados[,1])
+  dadosc[,2] <- dados[,2] - mean(dados[,2])  
+  
+  n <- nrow(dadosc); p <- ncol(dadosc)
+  D2 <- rep(0,n)
+  
+  for(i in 1:n){ 
+    D2[i] <- t(as.vector(dadosc[i,])) %*% solve(S) %*% as.vector(dadosc[i,])}
+  
+    ui  <- sort(n * D2/(n - 1)^2)
+    alpha <- 0.5 * (p - 2) / p
+    beta  <- 0.5 * (n - p - 3) / (n-p-1) 
+    i <- c(1:n)
+    q.vi <- (i-alpha)/(n-alpha-beta+1) 
+    a <- 0.5
+    b <- 0.5 * (n-p-1)
+    vi <- qbeta(q.vi,a,b)
+    plot(ui,vi)
+    model <- lm(vi ~ui)
+    abline(model, col=4, lwd=2)  
+}
+ndc(a3)
+```
+
+- Vetor de Médias
+```{r}
+colMeans(a3)
+```
+
+- Matriz de var-cov
+```{r}
+cov(a3)
+```
+
+- Conclusoes
+
