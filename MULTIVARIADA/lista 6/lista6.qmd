@@ -1,0 +1,14 @@
+---
+title: "LISTA 5"
+subtitle: "ANÁLISE MULTIVARIADA 1"
+author: "Tailine J. S. Nonato"
+date: "11/15/2023"
+format: html
+---
+
+
+```{r}
+#| message: false
+#| echo: false
+pacman::p_load(tidyverse,knitr,FactoMineR)
+```

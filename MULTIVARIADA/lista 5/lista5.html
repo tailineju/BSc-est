@@ -302,11 +302,12 @@ $vectors
 <section id="exercício-9.10" class="level3">
 <h3 class="anchored" data-anchor-id="exercício-9.10">Exercício 9.10</h3>
 </section>
-<section id="exercício-9.15" class="level3">
-<h3 class="anchored" data-anchor-id="exercício-9.15">Exercício 9.15</h3>
+<section id="exercício-9.19" class="level3">
+<h3 class="anchored" data-anchor-id="exercício-9.19">Exercício 9.19</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d9<span class="ot">&lt;-</span><span class="fu">read.delim</span>(<span class="st">"materiais/table9_12-SalespeopleData.DAT.txt"</span>,<span class="at">sep=</span><span class="st">","</span>,<span class="at">header=</span><span class="cn">FALSE</span>)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(d9))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>d9<span class="ot">&lt;-</span><span class="fu">read.delim</span>(<span class="co">#"MULTIVARIADA/lista 5/</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="st">"materiais/table9_12-SalespeopleData.DAT.txt"</span>,<span class="at">sep=</span><span class="st">","</span>,<span class="at">header=</span><span class="cn">FALSE</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(d9))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -380,29 +381,28 @@ $vectors
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>pca<span class="ot">&lt;-</span><span class="fu">PCA</span>(d9, <span class="at">graph=</span><span class="cn">TRUE</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>pca</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>**Results for the Principal Component Analysis (PCA)**
-The analysis was performed on 50 individuals, described by 7 variables
-*The results are available in the following objects:
-
-   name               description                          
-1  "$eig"             "eigenvalues"                        
-2  "$var"             "results for the variables"          
-3  "$var$coord"       "coord. for the variables"           
-4  "$var$cor"         "correlations variables - dimensions"
-5  "$var$cos2"        "cos2 for the variables"             
-6  "$var$contrib"     "contributions of the variables"     
-7  "$ind"             "results for the individuals"        
-8  "$ind$coord"       "coord. for the individuals"         
-9  "$ind$cos2"        "cos2 for the individuals"           
-10 "$ind$contrib"     "contributions of the individuals"   
-11 "$call"            "summary statistics"                 
-12 "$call$centre"     "mean of the variables"              
-13 "$call$ecart.type" "standard error of the variables"    
-14 "$call$row.w"      "weights for the individuals"        
-15 "$call$col.w"      "weights for the variables"          </code></pre>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="do">#### ..... PC, m=2 ####</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>pc2 <span class="ot">&lt;-</span> <span class="fu">principal</span>(d9, <span class="at">nfactors =</span> <span class="dv">2</span>, <span class="at">rotate =</span> <span class="st">'none'</span>, <span class="at">covar =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>r2<span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(d9) <span class="sc">-</span> pc2<span class="sc">$</span>loadings <span class="sc">%*%</span> </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>            <span class="fu">t</span>(pc2<span class="sc">$</span>loadings) <span class="sc">-</span> <span class="fu">diag</span>(pc2<span class="sc">$</span>uniquenesses),<span class="dv">3</span>)</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>load1 <span class="ot">&lt;-</span> pc2<span class="sc">$</span>loadings[,<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(load1,<span class="at">type=</span><span class="st">"n"</span>)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="do">#### ..... PC, m=3 ####</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>pc3 <span class="ot">&lt;-</span> <span class="fu">principal</span>(d9, <span class="at">nfactors =</span> <span class="dv">3</span>, <span class="at">rotate =</span> <span class="st">'none'</span>, <span class="at">covar =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>r3 <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">cor</span>(d9) <span class="sc">-</span> pc3<span class="sc">$</span>loadings <span class="sc">%*%</span> </span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>            <span class="fu">t</span>(pc3<span class="sc">$</span>loadings) <span class="sc">-</span> <span class="fu">diag</span>(pc3<span class="sc">$</span>uniquenesses),<span class="dv">3</span>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>load2 <span class="ot">&lt;-</span> pc3<span class="sc">$</span>loadings[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(load2,<span class="at">type=</span><span class="st">"n"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="lista5_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>

@@ -10,7 +10,7 @@ format: html
 ```{r}
 #| message: false
 #| echo: false
-pacman::p_load(tidyverse,knitr,FactoMineR)
+pacman::p_load(tidyverse,knitr,psych)
 ```
 
 ### Exercício 9.1
@@ -147,7 +147,7 @@ Demonstração
 ### Exercício 9.10
 
 
-### Exercício 9.15
+### Exercício 9.19
 ```{r}
 d9<-read.delim(#"MULTIVARIADA/lista 5/
 "materiais/table9_12-SalespeopleData.DAT.txt",sep=",",header=FALSE)
@@ -155,6 +155,25 @@ kable(head(d9))
 ```
 
 ```{r}
-pca<-PCA(d9, graph=TRUE)
-pca
+
+#### ..... PC, m=2 ####
+
+pc2 <- principal(d9, nfactors = 2, rotate = 'none', covar = FALSE)
+
+r2<- round(cor(d9) - pc2$loadings %*% 
+            t(pc2$loadings) - diag(pc2$uniquenesses),3)
+
+load1 <- pc2$loadings[,1:2]
+plot(load1,type="n")
+
+
+#### ..... PC, m=3 ####
+
+pc3 <- principal(d9, nfactors = 3, rotate = 'none', covar = FALSE)
+
+r3 <- round(cor(d9) - pc3$loadings %*% 
+            t(pc3$loadings) - diag(pc3$uniquenesses),3)
+
+load2 <- pc3$loadings[,1:3]
+plot(load2,type="n")
 ```
