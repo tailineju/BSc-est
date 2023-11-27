@@ -23,7 +23,7 @@ obs <- c(90,86,96,84,100,92,92,81,
          114,93,112,91,108,95,98,83)
 operador <- as.factor(rep(c(1:4),each=2,times=3))
 filtro <- as.factor(rep(rep(c(1:2),times=4),3))
-cluster <- as.factor(rep(c('L','M','H'),each=8))
+cluster <- as.factor(rep(c('aL','bM','cH'),each=8))
 
 df<-data.frame(obs,operador,filtro,cluster)
 kable(head(df))
