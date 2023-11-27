@@ -1,0 +1,84 @@
+---
+title: "DELINEAMENTO"
+subtitle: "Exercício em sala"
+author: "Tailine J. S. Nonato"
+date: "11/27/2023"
+format:
+    html:
+        code-fold: true
+---
+
+```{r}
+#| message: false
+#| echo: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr,car)
+```
+
+# Dados
+```{r}
+obs <- c(90,86,96,84,100,92,92,81,
+         102,87,106,90,105,97,96,80,
+         114,93,112,91,108,95,98,83)
+operador <- as.factor(rep(c(1:4),each=2,times=3))
+filtro <- as.factor(rep(rep(c(1:2),times=4),3))
+cluster <- as.factor(rep(c('L','M','H'),each=8))
+
+df<-data.frame(obs,operador,filtro,cluster)
+kable(head(df))
+```
+
+# Exploratória
+```{r}
+boxplot(obs~operador)
+boxplot(obs~filtro)
+boxplot(obs~cluster)
+boxplot(obs~filtro*cluster)
+```
+
+
+# Análise de Variância
+```{r}
+anova <- aov(obs ~ operador + filtro * cluster)
+summary(anova)
+```
+
+# Pressupostos
+
+## Normalidade
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+
+shapiro.test(anova$residuals)
+```
+
+## Independência
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/sqrt(summary(anova)[[1]][5,3]))
+```
+
+## Homocedasticidade
+```{r}
+plot(anova$residuals,anova$fitted.values)
+leveneTest(obs~operador)
+leveneTest(obs~filtro)
+leveneTest(obs~cluster)
+
+bartlett.test(obs~operador)
+bartlett.test(obs~filtro)
+bartlett.test(obs~cluster)
+```
+
+# Comparação de Médias
+```{r}
+TukeyHSD(anova)
+```
+
+# Interações
+```{r}
+interaction.plot(cluster,filtro,obs)
+interaction.plot(filtro,cluster,obs)
+```
