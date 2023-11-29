@@ -1,0 +1,168 @@
+---
+title: "DELINEAMENTO"
+subtitle: "Exercício em sala"
+author: "Tailine J. S. Nonato"
+date: "11/29/2023"
+format:
+    html:
+        code-fold: true
+---
+
+# Quadrado Latino com 2 fatores
+
+## Modelo
+
+$$ Y_{ijk} = \mu + \tau _{i} + \beta _{j} + (\tau\beta)_{ij} + \delta _{k} + \epsilon _{ijk} $$
+
+- $\tau$: Fator F
+- $\beta$: Fator G
+- $\delta$: Bloco (linha e coluna)
+
+## Hipóteses do Modelo
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\tau _{1}= ... = \tau _{a} = 0$} \\
+H_{1}: \mbox{$\tau _{i}\neq 0$}
+\end{cases}
+$$
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\beta _{1}= ... = \beta _{a} = 0$} \\
+H_{1}: \mbox{$\beta _{i} \neq 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta)_{ij} \neq 0$}
+\end{cases}
+$$
+
+
+```{r}
+#| message: false
+#| echo: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr,car)
+```
+
+## Dados
+```{r}
+obs <- c(90,106,108,81,90,88,
+         114,96,105,83,86,84,
+         102,90,95,92,85,104,
+         87,84,100,96,110,91,
+         93,112,92,80,90,98,
+         86,91,97,98,100,92)
+row <- as.factor(rep(c(1:6),each=6))
+col <- as.factor(rep(c(1:6),times=6))
+fatf <- as.factor(
+        c(1,1,1,2,2,2,
+          1,1,1,2,2,2,
+          1,2,2,1,2,1,
+          2,2,1,1,1,2,
+          2,1,2,2,1,1,
+          2,2,2,1,1,1))
+fatg <- as.factor(
+        c(1,2,3,1,3,2,
+         3,1,2,3,2,1,
+         2,2,3,1,1,3,
+         2,1,1,2,3,3,
+         3,3,1,2,1,2,
+         1,3,2,3,2,1))
+
+df <- data.frame(obs,row,col,fatf,fatg)
+kable(head(df),align='c')
+```
+
+## Exploratória
+```{r}
+boxplot(obs~fatg)
+boxplot(obs~fatf)
+boxplot(obs~fatf*fatg)
+```
+
+## Análise de Variâncias
+```{r}
+anova<- aov(obs~row+col+fatf*fatg)
+summary(anova)
+```
+
+## Pressupostos do modelo
+
+### Normalidade
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+```
+
+```{r}
+shapiro.test(anova$residuals)
+```
+
+### Independência
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/summary(anova)[[1]][6,3])
+```
+
+### Homocedasticidade
+
+```{r}
+plot(anova$residuals,anova$fitted.values)
+```
+
+- Linhas
+```{r}
+leveneTest(obs~row)
+bartlett.test(obs~row)
+```
+
+- Colunas
+```{r}
+leveneTest(obs~col)
+bartlett.test(obs~col)
+```
+
+- Fator F
+```{r}
+leveneTest(obs~fatf)
+bartlett.test(obs~fatf)
+```
+
+- Fator G
+```{r}
+leveneTest(obs~fatg)
+bartlett.test(obs~fatg)
+```
+
+### Aditividade
+```{r}
+#| warning: false
+mod1<- lm(obs~row+col+fatf*fatg)
+admod1<- predict(mod1)^2
+mod2<- lm(obs~row+col+fatf*fatg|admod1)
+anova(mod1,mod2)
+```
+
+Assim, todos os pressupostos foram cumpridos a um nivel de significancia de $5%$.
+
+## Comparação de médias
+```{r}
+TukeyHSD(anova,which = c('fatf','fatg','fatf:fatg'))
+```
+
+```{r}
+interaction.plot(fatf,fatg,obs)
+interaction.plot(fatg,fatf,obs)
+```
+
+## Conclusões
+A maximização ocorre na combinação $f_{1} * g_{3}$. 
+
+Observa-se que quanto maior o fator G e menor o fator G maior média nos valores observados. 
