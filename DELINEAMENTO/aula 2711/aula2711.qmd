@@ -8,6 +8,8 @@ format:
         code-fold: true
 ---
 
+# Blocos casualisados com 1 fator
+
 ```{r}
 #| message: false
 #| echo: false
@@ -16,7 +18,7 @@ if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse,knitr,car)
 ```
 
-# Dados
+## Dados
 ```{r}
 obs <- c(90,86,96,84,100,92,92,81,
          102,87,106,90,105,97,96,80,
@@ -29,7 +31,7 @@ df<-data.frame(obs,operador,filtro,cluster)
 kable(head(df))
 ```
 
-# Exploratória
+## Exploratória
 ```{r}
 boxplot(obs~operador)
 boxplot(obs~filtro)
@@ -38,15 +40,15 @@ boxplot(obs~filtro*cluster)
 ```
 
 
-# Análise de Variância
+## Análise de Variância
 ```{r}
 anova <- aov(obs ~ operador + filtro * cluster)
 summary(anova)
 ```
 
-# Pressupostos
+## Pressupostos
 
-## Normalidade
+### Normalidade
 ```{r}
 qqnorm(anova$residuals)
 qqline(anova$residuals)
@@ -54,13 +56,13 @@ qqline(anova$residuals)
 shapiro.test(anova$residuals)
 ```
 
-## Independência
+### Independência
 ```{r}
 plot(anova$residuals)
 plot(anova$residuals/sqrt(summary(anova)[[1]][5,3]))
 ```
 
-## Homocedasticidade
+### Homocedasticidade
 ```{r}
 plot(anova$residuals,anova$fitted.values)
 leveneTest(obs~operador)
@@ -72,12 +74,12 @@ bartlett.test(obs~filtro)
 bartlett.test(obs~cluster)
 ```
 
-# Comparação de Médias
+## Comparação de Médias
 ```{r}
 TukeyHSD(anova)
 ```
 
-# Interações
+## Interações
 ```{r}
 interaction.plot(cluster,filtro,obs)
 interaction.plot(filtro,cluster,obs)
