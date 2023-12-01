@@ -1,59 +1,50 @@
 ---
-title: "LISTA 3"
-subtitle: "ESTATÍSTICA COMPUTACIONAL"
-author: "Tailine J. S. Nonato"
-date: "11/18/2023"
-format: 
-    html:
-        code-fold: true
+title: 'LISTA 3'
+subtitle: 'ESTATÍSTICA COMPUTACIONAL'
+author: 'Tailine J. S. Nonato'
+date: '11/30/2023'
+format: pdf
 ---
 
 ```{r}
 #| message: false
 #| echo: false
-if (!require(pacman)) install.packages("pacman")
+if (!require(pacman)) install.packages('pacman')
 pacman::p_load(tidyverse,knitr,broom)
 ```
 
 # Dados
 ```{r}
 #| warning: false
-climbing <- read_csv(#"COMPUTACIONAL/lista3/
-"climbing_statistics.csv")
-weather <- read_csv(#"COMPUTACIONAL/lista3
-"Rainier_Weather.csv")
+climbing <- read_csv("climbing_statistics.csv")
+weather <- read_csv("Rainier_Weather.csv")
 convert <- function(x) (x-32) * 5/9
 shift <- function(x) x - mean(x)
+
 dados <- inner_join(climbing, weather) %>%
     select(-matches("Percent|Battery")) %>%
-    filter(Attempted >= Succeeded,
-           Route != "glacier only - no summit attempt",
-           Route != "Unknown") %>%
-    mutate(`Temperature AVG`= convert(`Temperature AVG`),
-    Cleaver = Route=="Disappointment Cleaver",
-    Date = mdy(Date)) %>%
-select(Date, Succeeded, everything()) %>%
-rename(Data = Date,
-       Rota = Route,
-       Sucessos = Succeeded,
-       Tentativas = Attempted,
-       Temperatura = `Temperature AVG`,
-       Umidade_relativa = `Relative Humidity AVG`,
-       Velocidade_vento = `Wind Speed Daily AVG`,
-       Direc_vento = `Wind Direction AVG`,
-       Radiacao_solar = `Solare Radiation AVG`) %>%
-group_by(Data, Rota) %>%
-    mutate(Sucessos = sum(Sucessos),
-           Tentativas = sum(Tentativas)) %>%
-    distinct() %>%
-    ungroup()
-kable(head(dados),align="l")
+    filter(Attempted >= Succeeded, Route != "glacier only - no summit attempt",Route != "Unknown") %>%
+    mutate(`Temperature AVG`= convert(`Temperature AVG`),Cleaver = Route=="Disappointment Cleaver", Date = mdy(Date)) %>%
+    select(Date, Succeeded, everything()) %>%
+    rename(Data = Date,
+           Rota = Route,
+           Sucessos = Succeeded,
+           Tentativas = Attempted,
+           Temperatura = `Temperature AVG`,
+           Umidade_relativa = `Relative Humidity AVG`,
+           Velocidade_vento = `Wind Speed Daily AVG`,
+           Direc_vento = `Wind Direction AVG`,
+           Radiacao_solar = `Solare Radiation AVG`) %>%
+    group_by(Data, Rota) %>%
+    mutate(Sucessos = sum(Sucessos), Tentativas = sum(Tentativas)) %>%
+    distinct() 
+kable(head(dados),align='l')
 ```
 
 # Item A
-Conduza um teste de hipóteses por simulação para avaliar a hipótese nula de que a média do número de sucessos obtidos pela rota "Disappointment Cleaver" é igual a média das demais rotas (conjuntamente).
+Conduza um teste de hipóteses por simulação para avaliar a hipótese nula de que a média do número de sucessos obtidos pela rota 'Disappointment Cleaver' é igual a média das demais rotas (conjuntamente).
 
-- Respostas
+- **Respostas**
 
 Tem-se como hipóteses:
 $$
@@ -64,29 +55,25 @@ H_{1}: \mbox{$\mu_{1} \neq \mu_{2,...,n}$}
 $$
 
 
-Observando primeiramente de forma "exploratória", calculamos as médias e a diferenças entre elas.
+Observando primeiramente de forma 'exploratória', calculamos as médias e a diferenças entre elas.
 ```{r}
 #| warning: false
-#| tbl-cap: "Sumário de Sucessos"
-#| label: tab1
+#| tbl-cap: 'Sumário de Sucessos'
 tab1<- tidy(summary(dados$Sucessos))
 kable(tab1,align='l')
 ```
 
 ```{r}
-#| tbl-cap: "Análitica das Médias"
-mu1 <- dados %>%
-    filter(Rota == "Disappointment Cleaver") %>%
-    summarise(lambda = mean(Sucessos)) %>%
-    pull()
-mu2 <- dados %>%
-    filter(Rota != "Disappointment Cleaver") %>%
-    summarise(lambda = mean(Sucessos)) %>%
-    pull()
+#| tbl-cap: 'Análitica das Médias'
+tab2 <- dados %>% filter(Rota == 'Disappointment Cleaver')
+mu1 <- mean(tab2$Sucessos)
+
+tab3 <- dados %>% filter(Rota != 'Disappointment Cleaver')
+mu2 <- mean(tab3$Sucessos)
 diff <- mu1-mu2
 
-tab2 <- data.frame(mu1,mu2,diff)
-kable(tab2,align='l')
+tab4 <- data.frame(mu1,mu2,diff)
+kable(tab4,align='l')
 ```
 
 Considerando o Súmario de Sucesso, observa-se uma média de em torno de `r round(tab1$mean,2)` sucessos em todas as rotas avaliadas, assim o valor da diferença `r round(diff,2)` pode ser considerado alto, indicando a possível diferença de médias.
@@ -95,13 +82,13 @@ Realizando uma simulação com $n=10.000$, tem-se que:
 
 ```{r}
 #| warning: false
-#| tbl-cap: "Sumário de Diferenças na Simulação"
+#| tbl-cap: 'Sumário de Diferenças na Simulação'
 otherR <- dados %>%
-filter(Rota != "Disappointment Cleaver") %>%
-select(Sucessos)
+    filter(Rota != 'Disappointment Cleaver') %>%
+    select(Sucessos)
 DCR <- dados %>%
-filter(Rota == "Disappointment Cleaver") %>%
-select(Sucessos)
+filter(Rota == 'Disappointment Cleaver') %>%
+    select(Sucessos)
 
 n <- 10000
 diff2 <- numeric(n)
@@ -117,29 +104,118 @@ kable(tidy(summary(diff2)),align='l')
 ```
 
 ```{r}
-#| tbl-cap: Probabilidade de $H_{0}$ ser aceita dada que é verdadeira
-prob <- paste0(round(mean(diff2)/n*100,2),'%')
-kable(prob,align='l')
+#| tbl-cap: P($H_{0}$ é aceita | $H_{0}$ é verdadeira)
+prob <- data.frame(paste0(round(mean(diff2)/n*100,2),'%'))
+colnames(prob)<-c("Probabilidade")
+kable(prob,align='c')
 ```
 
+Com uma probabilidade ~0.01 de que as médias seriam iguais, há evidências para rejeitar $H_{0}$.
 
 # Item B
-Obtenha o estimador de máxima verossimilhança de $\alpha$ e $\beta$ considerando o modelo proposto. Dica: Use a função optim do R para achar o ponto que maximiza a log-verossimilhança.
+Obtenha o estimador de máxima verossimilhança de $\alpha$ e $\beta$ considerando o modelo proposto. 
 
-- Respostas
+Dica: Use a função optim do R para achar o ponto que maximiza a log-verossimilhança.
+
+- **Respostas**
+```{r}
+#| tbl-cap: 'Estimadores de Máxima Verossimilhança'
+lv <- function(p,temp,sucesso){
+    l <- exp(p[1]+p[2]*temp)
+    sum(dpois(sucesso,l,log=T))}
+estim <- optim(c(0,0), function(.) -lv(.,temp=dados$Temperatura, sucesso=dados$Sucessos))$`par`
+
+estim<- data.frame(t(estim))
+colnames(estim) <- c('Alpha','Beta')
+kable(estim,align='c')
+```
 
 # Item C
 Estime a distribuição de probabilidade do número de sucessos previstos para um dia em que a temperatura seja de 15 graus.
 
-- Respostas
+- **Respostas**
+
+Para verificar, basta utilizar a mesma estrutura anterior, mas considerando o valor fixo $T_{i} = 15$.
+
+```{r}
+#| tbl-cap: 'Estimadores de Máxima Verossimilhança '
+estim2 <- optim(c(0,0), function(.) -lv(.,temp=15, sucesso=dados$Sucessos))$`par`
+estim2 <- data.frame(t(estim2))
+
+colnames(estim2) <- c('Alpha','Beta')
+kable(estim2,align='c')
+```
+
+Verificando um intervalo [0,95] (min-max sucessos), tem-se que:
+
+```{r}
+#| fig-cap: 'Distribuição de Probabilidade de Sucessos quando Temperatura é 15º C'
+x <- 0:95
+pr <- (estim2[1]+estim2[2])*15
+lambda<- as.numeric(exp(pr))
+fprob <- dpois(x, lambda)
+
+plot(fprob)
+```
 
 # Item D
-Construa um intervalo de confiança de 95% para $\exp(\beta)$ a partir do método de bootstrap paramétrico. Interprete o resultado considerando o contexto dos dados. Dica: calcule o aumento percentual da média esperada quando a temperatura aumenta em 1 grau Celsio.
+Construa um intervalo de confiança de 95% para $\exp(\beta)$ a partir do método de bootstrap paramétrico. Interprete o resultado considerando o contexto dos dados. 
 
-- Respostas
+Dica: calcule o aumento percentual da média esperada quando a temperatura aumenta em 1 grau Celsio.
+
+- **Respostas**
+
+```{r}
+#| warning: false
+#| label: simul
+#| tbl-cap: 'Sumário de $Y \sim \exp(\beta)$'
+sucessos <- numeric()
+beta.estim <- numeric()
+SE <- numeric()
+
+for(j in 1:1000){
+    for(i in 1:nrow(dados)){
+        pr <- exp(as.numeric(estim[1]+estim[2]*dados$Temperatura[i]))
+        sucessos[i] <- rpois(1,pr)}
+    estim3 <- optim(c(0,0), function(.) -lv(., temp=dados$Temperatura, sucesso=sucessos))$`par`
+
+    beta.estim[j] <- estim3[2]
+    
+    SE[j] <- mean((sucessos-exp(as.numeric(estim[1])+as.numeric(estim[2])*dados$Temperatura)))^2
+    sucessos <- numeric()
+    }
+y <- exp(beta.estim)
+kable(tidy(summary(y)))
+```
+
+```{r}
+#| warning: false
+#| fig-cap: 'Distribuição de Probabilidade de $Y \sim \exp(\beta)$'
+plot(y)
+```
+
+```{r}
+alpha <- 1-0.95
+inf<-as.numeric(quantile(y, probs= (alpha/2)))
+sup<-as.numeric(quantile(y, probs= (1-alpha/2)))
+ic<- data.frame(inf,sup)
+colnames(ic) <-c('Limite Inferior','Limite Superior')
+kable(ic,align='c')
+```
+
+$$ IC(\exp(\beta), 95\%) = [1.078, 1.091] $$
 
 # Item E
-Faça um diagnóstico do modelo via simulação. Para tanto, gere dados sintéticos usando o modelo obtido no item b), ajuste um novo modelo sobre os dados sintéticos e calcule o Erro quadrático médio (MSE). Repita esse procedimento 10000 vezes e compare os MSEs gerados com aquele do modelo obtido
-em b). Comente os resultados.
+Faça um diagnóstico do modelo via simulação. Para tanto, gere dados sintéticos usando o modelo obtido no item b, ajuste um novo modelo sobre os dados sintéticos e calcule o Erro quadrático médio (MSE). Repita esse procedimento 10000 vezes e compare os MSEs gerados com aquele do modelo obtido
+em b. Comente os resultados.
 
-- Respostas
+- **Respostas**
+
+Com fins de otimização, a simulação foi realizada no Item D, mas apenas com 1000 repetições por limitações de hardware e tempo de execução.
+
+```{r}
+#| tbl-cap: 'Erro Quadrático Médio'
+
+MSE <- mean(SE)
+kable(MSE,align='c')
+```
