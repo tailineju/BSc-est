@@ -9,3 +9,35 @@ format:
 ---
 
 # Splitplot
+
+```{r}
+pacman::p_load(tidyverse,knitr)
+```
+
+```{r}
+obs <- c(42.9,41.6,28.9,30.8,
+         53.8,58.5,43.9,46.3,
+         49.5,53.8,40.7,39.4,
+         44.4,41.8,28.3,34.7,
+         53.3,69.6,45.4,35.1,
+         57.6,69.6,42.4,51.9,
+         59.8,65.8,41.4,45.4,
+         64.1,57.4,44.1)
+variedade <- as.factor(rep(c(1:4),each=16,times=4))
+sementes <- as.factor(rep(c(1:4),each=4,times=4))
+bloco <- as.factor(rep(c('i','ii','iii','iv'),times=16))
+
+df<-data.frame(variedade,sementes,bloco)
+kable(head(df),align='l')
+```
+```{r}
+#easyanova
+```
+
+```{r}
+#anova1<-aov(obs~A*B+error(bloco/A))
+#summary(anova1)
+#residuo 
+#anova2<-aov(obs~A*B+bloco:A)
+#summary(anova2)
+```
