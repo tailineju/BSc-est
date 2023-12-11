@@ -1,0 +1,11 @@
+---
+title: "DELINEAMENTO"
+subtitle: "Exercício em sala"
+author: "Tailine J. S. Nonato"
+date: "12/11/2023"
+format:
+    html:
+        code-fold: true
+---
+
+# Experimento Fatorial $2^{k}$
