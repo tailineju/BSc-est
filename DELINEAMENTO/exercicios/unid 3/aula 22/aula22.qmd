@@ -28,7 +28,7 @@ filtro <- as.factor(rep(rep(c(1:2),times=4),3))
 cluster <- as.factor(rep(c('aL','bM','cH'),each=8))
 
 df<-data.frame(obs,operador,filtro,cluster)
-kable(head(df))
+kable(head(df),align='l')
 ```
 
 ## Exploratória
