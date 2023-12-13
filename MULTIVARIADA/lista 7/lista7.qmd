@@ -2,10 +2,9 @@
 title: "LISTA 7"
 subtitle: "ANÁLISE MULTIVARIADA 1"
 author: "Tailine J. S. Nonato"
-date: "12/10/2023"
+date: "12/12/2023"
 format: html
 ---
-
 
 ```{r}
 #| message: false
@@ -13,3 +12,112 @@ format: html
 pacman::p_load(tidyverse,knitr)
 ```
 
+::: {.panel-tabset}
+## 12.5
+
+```{r}
+#| warning: false
+#| message: false
+d<-matrix(c(0,1,11,5,1,0,2,3,11,2,0,4,5,3,4,0),4,4)
+d
+simples <- hclust(as.dist(d), method = "single")
+plot(as.dendrogram(simples), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Simples", main="Dendograma")
+completa <- hclust(as.dist(d), method = "complete")
+plot(as.dendrogram(completa), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Completa", main="Dendograma")
+media <- hclust(as.dist(d), method = "average")
+plot(as.dendrogram(media), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Média", main="Dendograma")
+```
+
+
+## 12.6
+```{r}
+#| warning: false
+#| message: false
+d6<-matrix(c(0,4,6,1,6,4,0,9,7,3,6,9,0,10,5,1,7,10,0,8,6,3,5,8,0),5,5)
+d6
+simples6 <- hclust(as.dist(d6), method = "single")
+plot(as.dendrogram(simples6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Simples", main="Dendograma")
+completa6 <- hclust(as.dist(d6), method = "complete")
+plot(as.dendrogram(completa6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Completa", main="Dendograma")
+media6 <- hclust(as.dist(d6), method = "average")
+plot(as.dendrogram(media6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Média", main="Dendograma")
+```
+
+## 12.7
+```{r}
+#| warning: false
+#| message: false
+corr<-matrix(c(1,.63,.51,.12,.16,
+            .63,1,.57,.32,.21,
+            .51,.57,1,.18,.15,
+            .12,.32,.18,1,.68,
+            .16,.21,.15,.68,1),5,5)
+corr
+simples7 <- hclust(as.dist(corr), method = "single")
+plot(as.dendrogram(simples7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Simples", main="Dendograma")
+completa7 <- hclust(as.dist(corr), method = "complete")
+plot(as.dendrogram(completa7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Completa", main="Dendograma")
+media7 <- hclust(as.dist(corr), method = "average")
+plot(as.dendrogram(media7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Média", main="Dendograma")
+```
+
+
+## 12.10
+**obs: deve-se usar método de Ward e o R, no entanto, não encontrei informações
+
+### Item A
+$ESS_{1}= (2-2)^2 = 0$
+
+$ESS_{2}= (1-1)^2 = 0$
+
+$ESS_{3}= (5-5)^2 = 0$
+
+$ESS_{4}= (8-8)^2 = 0$
+
+$ESS= ESS_{1} + ESS_{2} + ESS_{3} + ESS_{4}  = 0$
+
+### Item B
+
+$$
+\begin{array}{lll|r}
+\text{Clusters} & & & \text{Aumento ESS} \\ \hline
+\{12\}  & \{3\}  & \{4\} & 0,5         \\
+\{13\}    & \{2\}  & \{4\} & 4,5            \\
+\{14\}    & \{2\}  & \{3\} &  18           \\
+\{1\}    & \{23\}  & \{4\} &   8   \\
+\{1\}    & \{24\}  & \{3\} &    24,5   \\
+\{1\}    & \{2\}  & \{34\} &    4,5 
+\end{array}
+$$
+
+### Item C 
+
+$$
+\begin{array}{ll|r}
+\text{Clusters} & & \text{Aumento ESS} \\ \hline
+\{12\}  & \{34\}  & 5        \\
+\{123\}    & \{4\}  & 8,7            
+\end{array}
+$$
+
+
+Assim,
+
+```{r}
+ess<-(2-4)^2 + (1-4)^2 + (5-4)^2 + (8-4)^2
+```
+
+$ESS = (2-4)^2 + (1-4)^2 + (5-4)^2 + (8-4)^2 =$ `r ess`
+
+
+
+:::
