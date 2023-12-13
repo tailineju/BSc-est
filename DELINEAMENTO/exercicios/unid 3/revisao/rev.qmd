@@ -1,0 +1,333 @@
+---
+title: "DELINEAMENTO"
+subtitle: "Revisão P3"
+author: "Tailine J. S. Nonato"
+date: "12/13/2023"
+format:
+    html:
+        code-fold: true
+---
+
+```{r}
+#| echo: false
+pacman::p_load(tidyverse,knitr,easyanova,car)
+```
+
+::: {.panel-tabset}
+
+# Blocos Casualisados com 1 fator
+
+## Dados
+```{r}
+obs <- c(90,86,96,84,100,92,92,81,
+         102,87,106,90,105,97,96,80,
+         114,93,112,91,108,95,98,83)
+operador <- as.factor(rep(c(1:4),each=2,times=3))
+filtro <- as.factor(rep(rep(c(1:2),times=4),3))
+cluster <- as.factor(rep(c('aL','bM','cH'),each=8))
+
+df<-data.frame(obs,operador,filtro,cluster)
+kable(head(df),align='l')
+```
+
+## Exploratória
+```{r}
+boxplot(obs~operador)
+boxplot(obs~filtro)
+boxplot(obs~cluster)
+boxplot(obs~filtro*cluster)
+```
+
+
+## Análise de Variância
+```{r}
+anova <- aov(obs ~ operador + filtro * cluster)
+summary(anova)
+```
+
+## Pressupostos
+
+### Normalidade
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+
+shapiro.test(anova$residuals)
+```
+
+### Independência
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/sqrt(summary(anova)[[1]][5,3]))
+```
+
+### Homocedasticidade
+```{r}
+plot(anova$residuals,anova$fitted.values)
+leveneTest(obs~operador)
+leveneTest(obs~filtro)
+leveneTest(obs~cluster)
+
+bartlett.test(obs~operador)
+bartlett.test(obs~filtro)
+bartlett.test(obs~cluster)
+```
+
+## Comparação de Médias
+```{r}
+TukeyHSD(anova)
+```
+
+## Interações
+```{r}
+interaction.plot(cluster,filtro,obs)
+interaction.plot(filtro,cluster,obs)
+```
+
+# Quadrado Latino com 2 fatores
+
+
+## Modelo
+
+$$ Y_{ijk} = \mu + \tau _{i} + \beta _{j} + (\tau\beta)_{ij} + \delta _{k} + \epsilon _{ijk} $$
+
+- $\tau$: Fator F
+- $\beta$: Fator G
+- $\delta$: Bloco (linha e coluna)
+
+## Hipóteses do Modelo
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\tau _{1}= ... = \tau _{a} = 0$} \\
+H_{1}: \mbox{$\tau _{i}\neq 0$}
+\end{cases}
+$$
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\beta _{1}= ... = \beta _{a} = 0$} \\
+H_{1}: \mbox{$\beta _{i} \neq 0$}
+\end{cases}
+$$
+
+
+$$
+\begin{cases}
+H_{0}: \mbox{$(\tau \beta)_{ij}= 0$} \\
+H_{1}: \mbox{$(\tau \beta)_{ij} \neq 0$}
+\end{cases}
+$$
+
+## Dados
+```{r}
+obs <- c(90,106,108,81,90,88,
+         114,96,105,83,86,84,
+         102,90,95,92,85,104,
+         87,84,100,96,110,91,
+         93,112,92,80,90,98,
+         86,91,97,98,100,92)
+row <- as.factor(rep(c(1:6),each=6))
+col <- as.factor(rep(c(1:6),times=6))
+fatf <- as.factor(
+        c(1,1,1,2,2,2,
+          1,1,1,2,2,2,
+          1,2,2,1,2,1,
+          2,2,1,1,1,2,
+          2,1,2,2,1,1,
+          2,2,2,1,1,1))
+fatg <- as.factor(
+        c(1,2,3,1,3,2,
+         3,1,2,3,2,1,
+         2,2,3,1,1,3,
+         2,1,1,2,3,3,
+         3,3,1,2,1,2,
+         1,3,2,3,2,1))
+
+df <- data.frame(obs,row,col,fatf,fatg)
+kable(head(df),align='c')
+```
+
+## Exploratória
+```{r}
+boxplot(obs~fatg)
+boxplot(obs~fatf)
+boxplot(obs~fatf*fatg)
+```
+
+## Análise de Variâncias
+```{r}
+anova<- aov(obs~row+col+fatf*fatg)
+summary(anova)
+```
+
+## Pressupostos do modelo
+
+### Normalidade
+```{r}
+qqnorm(anova$residuals)
+qqline(anova$residuals)
+```
+
+```{r}
+shapiro.test(anova$residuals)
+```
+
+### Independência
+```{r}
+plot(anova$residuals)
+plot(anova$residuals/summary(anova)[[1]][6,3])
+```
+
+### Homocedasticidade
+
+```{r}
+plot(anova$residuals,anova$fitted.values)
+```
+
+- Linhas
+```{r}
+leveneTest(obs~row)
+bartlett.test(obs~row)
+```
+
+- Colunas
+```{r}
+leveneTest(obs~col)
+bartlett.test(obs~col)
+```
+
+- Fator F
+```{r}
+leveneTest(obs~fatf)
+bartlett.test(obs~fatf)
+```
+
+- Fator G
+```{r}
+leveneTest(obs~fatg)
+bartlett.test(obs~fatg)
+```
+
+### Aditividade
+```{r}
+#| warning: false
+mod1<- lm(obs~row+col+fatf*fatg)
+admod1<- predict(mod1)^2
+mod2<- lm(obs~row+col+fatf*fatg|admod1)
+anova(mod1,mod2)
+```
+
+Assim, todos os pressupostos foram cumpridos a um nivel de significancia de $5%$.
+
+## Comparação de médias
+```{r}
+TukeyHSD(anova,which = c('fatf','fatg','fatf:fatg'))
+```
+
+```{r}
+interaction.plot(fatf,fatg,obs)
+interaction.plot(fatg,fatf,obs)
+```
+
+## Conclusões
+A maximização ocorre na combinação $f_{1} * g_{3}$. 
+
+Observa-se que quanto maior o fator G e menor o fator G maior média nos valores observados. 
+
+
+# Experimento Fatorial com 2 níveis
+
+1. Estimação dos efeitos principais de cada fator;
+2. Ajuste do modelo completo;
+3. Realização dos testes estatísticos;
+4. Refinamento do modelo;
+5. Análise dos resíduos;
+6. Interpretação dos resultados.
+
+# Splitplot
+
+```{r}
+obs <- c(42.9,41.6,28.9,30.8,
+         53.8,58.5,43.9,46.3,
+         49.5,53.8,40.7,39.4,
+         44.4,41.8,28.3,34.7,
+         53.3,69.6,45.4,35.1,
+         57.6,69.6,42.4,51.9,
+         59.8,65.8,41.4,45.4,
+         64.1,57.4,44.1,51.6,
+         62.3,58.5,44.6,50.3,
+         63.4,50.4,45,46.7,
+         64.5,46.1,62.6,50.3,
+         63.6,56.1,52.7,51.8,
+         75.4,65.6,54,52.7,
+         70.3,67.3,57.6,58.5,
+         68.8,65.3,45.6,51,
+         71.6,69.4,56.6,47.4)
+variedade <- as.factor(rep(c(1:4),each=16))
+sementes <- as.factor(rep(c(1:4),each=4,times=4))
+bloco <- as.factor(rep(c('i','ii','iii','iv'),times=16))
+
+df<-data.frame(obs,variedade,sementes,bloco)
+kable(head(df),align='l')
+```
+
+## Análise de Variâncias
+```{r}
+anova <- aov(obs~variedade*sementes+ Error(bloco/variedade))
+summary(anova)
+res<-aov(obs~variedade*sementes+bloco:variedade)
+
+parcela<- summary(anova)[[1]][1]
+```
+
+
+
+## Pressupostos do Modelo
+
+- Normalidade
+```{r}
+qqnorm(res$residuals)
+qqline(res$residuals)
+shapiro.test(res$residuals)
+```
+
+- Independência
+```{r}
+plot(res$residuals)
+plot(res$residuals/summary(res)[[1]][5,3])
+```
+
+- Homocedasticidade
+```{r}
+leveneTest(obs~bloco)
+leveneTest(obs~variedade)
+leveneTest(obs~sementes)
+
+bartlett.test(obs~bloco)
+bartlett.test(obs~variedade)
+bartlett.test(obs~sementes)
+```
+
+
+
+## Comparação de médias
+```{r}
+interaction.plot(variedade,sementes,obs)
+comp <- ea2(data.frame(variedade,bloco,sementes,obs),design = 5)
+comp
+```
+
+
+
+# Erro Tipo II 
+- Delta
+- Dedução pelo eqm
+
+# Demonstrações
+- Derivada
+- Delta
+- Contraste
+
+
+:::
