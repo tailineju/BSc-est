@@ -3,7 +3,7 @@ title: "LISTA 7"
 subtitle: "ANÁLISE MULTIVARIADA 1"
 author: "Tailine J. S. Nonato"
 date: "12/13/2023"
-format: html
+format: pdf
 ---
 
 ```{r}
@@ -12,14 +12,22 @@ format: html
 pacman::p_load(tidyverse,knitr)
 ```
 
-::: {.panel-tabset}
-## 12.5
+## Exercício 12.5
+A matriz de distâncias é dada por:
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: false
 d<-matrix(c(0,1,11,5,1,0,2,3,11,2,0,4,5,3,4,0),4,4)
 d
+```
+
+Assim, os dendogramas de cada processo são dados por:
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
 simples <- hclust(as.dist(d), method = "single")
 plot(as.dendrogram(simples), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
      xlab="Ligação Simples", main="Dendograma")
@@ -32,10 +40,11 @@ plot(as.dendrogram(media), hang = -1, cex.axis=1.2, cex.lab = 1.5,
 ```
 
 
-## 12.6
+## Exercício 12.6
 ```{r}
 #| warning: false
 #| message: false
+#| echo: false
 d6<-matrix(c(0,4,6,1,6,4,0,9,7,3,6,9,0,10,5,1,7,10,0,8,6,3,5,8,0),5,5)
 d6
 simples6 <- hclust(as.dist(d6), method = "single")
@@ -49,10 +58,11 @@ plot(as.dendrogram(media6), hang = -1, cex.axis=1.2, cex.lab = 1.5,
      xlab="Ligação Média", main="Dendograma")
 ```
 
-## 12.7
+## Exercício 12.7
 ```{r}
 #| warning: false
 #| message: false
+#| echo: false
 corr<-matrix(c(1,.63,.51,.12,.16,
             .63,1,.57,.32,.21,
             .51,.57,1,.18,.15,
@@ -71,8 +81,8 @@ plot(as.dendrogram(media7), hang = -1, cex.axis=1.2, cex.lab = 1.5,
 ```
 
 
-## 12.10
-**obs: deve-se usar método de Ward e o R, no entanto, não encontrei informações
+## Exercício 12.10
+Obs: Foi orientado usar método de Ward e o R, no entanto, não encontrei informações suficientes. 
 
 ### Item A
 $ESS_{1}= (2-2)^2 = 0$
@@ -113,11 +123,95 @@ $$
 Assim,
 
 ```{r}
+#| echo: false
 ess<-(2-4)^2 + (1-4)^2 + (5-4)^2 + (8-4)^2
 ```
 
 $ESS = (2-4)^2 + (1-4)^2 + (5-4)^2 + (8-4)^2 =$ `r ess`
 
+## Exercício 12.11
 
+```{r}
+#| echo: false
+df<- matrix(c(5,1,-1,3,4,-2,1,1),4,2)
+df
+```
 
-:::
+Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
+
+```{r}
+#| echo: false
+ab<- (df[1,]+df[2,])/2
+cd<- (df[3,]+df[4,])/2
+df.c <- matrix(c(ab,cd),2)
+df.c
+```
+
+Utilizando a função `kmeans` tem-se que o cluster final é:
+
+```{r}
+#| echo: false
+km <- kmeans(df,centers=df.c)
+km$cluster
+```
+
+Ou seja, 1:(AD) e 2:(BC). E os novos centroides são dados por:
+```{r}
+#| echo: false
+km$centers
+```
+
+## Exercício 12.12
+
+Dada a matriz, os centroides dos clusters (AC) e (BD)  são dados por:
+
+```{r}
+#| echo: false
+ac<- (df[1,]+df[3,])/2
+bd<- (df[2,]+df[4,])/2
+df.c2 <- matrix(c(ac,bd),2)
+df.c2
+```
+
+O cluster final é:
+
+```{r}
+#| echo: false
+km2 <- kmeans(df,centers=df.c2)
+km2$cluster
+```
+
+Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
+```{r}
+#| echo: false
+km2$centers
+```
+
+Resultado similar ao do item anterior.
+
+## Exercíco 12.13
+
+Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
+
+```{r}
+rev(df)
+#| echo: false
+ac<- (df[1,]+df[3,])/2
+bd<- (df[2,]+df[4,])/2
+df.c2 <- matrix(c(ac,bd),2)
+df.c2
+```
+
+O cluster final é:
+
+```{r}
+#| echo: false
+km2 <- kmeans(df,centers=df.c2)
+km2$cluster
+```
+
+Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
+```{r}
+#| echo: false
+km2$centers
+```

@@ -319,7 +319,7 @@ plot(agn2)
 # Prof. George von Borries.
 
 
-load("MULTIVARIADA/geyser.rda")
+load("MULTIVARIADA/exemplos R/geyser.rda")
 geyser
 
 (meang <- apply(geyser,2,mean))
