@@ -10,6 +10,7 @@ format: pdf
 #| message: false
 #| echo: false
 pacman::p_load(tidyverse,knitr)
+#Brands-of-Cereal-T11-9.DAT
 ```
 
 ## Exercício 12.5
@@ -194,24 +195,76 @@ Resultado similar ao do item anterior.
 Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
 
 ```{r}
-rev(df)
 #| echo: false
-ac<- (df[1,]+df[3,])/2
-bd<- (df[2,]+df[4,])/2
-df.c2 <- matrix(c(ac,bd),2)
-df.c2
+df2<-matrix(rev(df),4,2)
+ab2<- (df2[1,]+df2[2,])/2
+cd2<- (df2[3,]+df2[4,])/2
+df.c3 <- matrix(c(ab2,cd2),2)
+df.c3
 ```
 
 O cluster final é:
 
 ```{r}
 #| echo: false
-km2 <- kmeans(df,centers=df.c2)
-km2$cluster
+km3 <- kmeans(df2,centers=df.c3)
+km3$cluster
 ```
 
 Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
 ```{r}
 #| echo: false
-km2$centers
+km3$centers
+```
+
+## Exercício 12.14
+
+### Item A
+```{r}
+#| echo: false
+df14<- read.delim('catorze.txt',sep=';',header = FALSE)
+d14 <- dist(df14[,3:10],method="euclidean",diag=F)
+d14
+```
+
+### Item B
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+simples14 <- hclust(as.dist(d14), method = "single")
+plot(as.dendrogram(simples14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Simples", main="Dendograma")
+completa14 <- hclust(as.dist(d14), method = "complete")
+plot(as.dendrogram(completa14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Completa", main="Dendograma")
+```
+
+## Exercício 12.15
+
+```{r}
+#| echo: false
+#| warning: false
+
+meang <- apply(df14,2,mean)
+varg <- apply(df14,2,var)
+stdg <- sqrt(varg)
+
+#df14.sc <- scale(df14,center=meang,scale=stdg)
+
+#apply(df14.sc,2,mean)
+#apply(df14.sc,2,var)
+
+#df14.sc.d <- dist(df14.sc)
+
+#par(mfrow=c(2, 2))
+
+#df14.km2 <- kmeans(df14.sc,2, iter.max = 1000)
+#df14.km3 <- kmeans(df14.sc,3, iter.max = 1000)
+#df14.k <- cbind(df14,df14.km2$cluster,df14.km3$cluster)
+#df14.k[1:5,]
+#plot(df14.k$X1,df14.k$X2,col=df14.km2$cluster,pch=16,
+#     main="K-means, G=2",xlab="X1",ylab="X2")
+#plot(df14.k$X1,df14.k$X2,col=df14.km3$cluster,pch=16,
+#     main="K-means, G=3",xlab="X1",ylab="X2")
 ```
