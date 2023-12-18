@@ -9,7 +9,7 @@ format: pdf
 ```{r}
 #| message: false
 #| echo: false
-pacman::p_load(tidyverse,knitr)
+pacman::p_load(tidyverse,knitr,factoextra)
 #Brands-of-Cereal-T11-9.DAT
 ```
 
@@ -29,15 +29,17 @@ Assim, os dendogramas de cada processo são dados por:
 #| warning: false
 #| message: false
 #| echo: false
+
+par(mfrow = c(1, 3))
 simples <- hclust(as.dist(d), method = "single")
 plot(as.dendrogram(simples), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Simples", main="Dendograma")
+     xlab="Ligação Simples")
 completa <- hclust(as.dist(d), method = "complete")
 plot(as.dendrogram(completa), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Completa", main="Dendograma")
+     xlab="Ligação Completa")
 media <- hclust(as.dist(d), method = "average")
 plot(as.dendrogram(media), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Média", main="Dendograma")
+     xlab="Ligação Média")
 ```
 
 
@@ -48,15 +50,16 @@ plot(as.dendrogram(media), hang = -1, cex.axis=1.2, cex.lab = 1.5,
 #| echo: false
 d6<-matrix(c(0,4,6,1,6,4,0,9,7,3,6,9,0,10,5,1,7,10,0,8,6,3,5,8,0),5,5)
 d6
+par(mfrow = c(1, 3))
 simples6 <- hclust(as.dist(d6), method = "single")
 plot(as.dendrogram(simples6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Simples", main="Dendograma")
+     xlab="Ligação Simples")
 completa6 <- hclust(as.dist(d6), method = "complete")
 plot(as.dendrogram(completa6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Completa", main="Dendograma")
+     xlab="Ligação Completa")
 media6 <- hclust(as.dist(d6), method = "average")
 plot(as.dendrogram(media6), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Média", main="Dendograma")
+     xlab="Ligação Média")
 ```
 
 ## Exercício 12.7
@@ -70,15 +73,23 @@ corr<-matrix(c(1,.63,.51,.12,.16,
             .12,.32,.18,1,.68,
             .16,.21,.15,.68,1),5,5)
 corr
-simples7 <- hclust(as.dist(corr), method = "single")
+```
+
+Convertendo a matriz de correlação em uma matriz de dissimilaridades D:
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+dcorr <- 1 - corr
+dcorr
+
+par(mfrow = c(1, 2))
+simples7 <- hclust(as.dist(dcorr), method = "single")
 plot(as.dendrogram(simples7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Simples", main="Dendograma")
-completa7 <- hclust(as.dist(corr), method = "complete")
+     xlab="Ligação Simples")
+completa7 <- hclust(as.dist(dcorr), method = "complete")
 plot(as.dendrogram(completa7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Completa", main="Dendograma")
-media7 <- hclust(as.dist(corr), method = "average")
-plot(as.dendrogram(media7), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Média", main="Dendograma")
+     xlab="Ligação Completa")
 ```
 
 
@@ -134,32 +145,49 @@ $ESS = (2-4)^2 + (1-4)^2 + (5-4)^2 + (8-4)^2 =$ `r ess`
 
 ```{r}
 #| echo: false
-df<- matrix(c(5,1,-1,3,4,-2,1,1),4,2)
-df
+x1 <- c(5,1,-1,3)
+x2 <- c(4,-2,1,1)
+item <- c("A","B","C","D")
+df <- data.frame(item,x1,x2)
 ```
 
 Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
 
 ```{r}
 #| echo: false
-ab<- (df[1,]+df[2,])/2
-cd<- (df[3,]+df[4,])/2
-df.c <- matrix(c(ab,cd),2)
-df.c
+c.ab <- df %>%
+  filter(item == c("A","B")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.cd <- df %>%
+  filter(item == c("C","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c<- as.matrix(rbind(c.ab,c.cd))
 ```
 
 Utilizando a função `kmeans` tem-se que o cluster final é:
 
 ```{r}
 #| echo: false
-km <- kmeans(df,centers=df.c)
+km <- kmeans(df[,2:3],centers=df.c)
 km$cluster
 ```
 
 Ou seja, 1:(AD) e 2:(BC). E os novos centroides são dados por:
 ```{r}
+#| warning: false
 #| echo: false
 km$centers
+
+fviz_cluster(km, data=df[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
+
 ```
 
 ## Exercício 12.12
@@ -168,24 +196,37 @@ Dada a matriz, os centroides dos clusters (AC) e (BD)  são dados por:
 
 ```{r}
 #| echo: false
-ac<- (df[1,]+df[3,])/2
-bd<- (df[2,]+df[4,])/2
-df.c2 <- matrix(c(ac,bd),2)
-df.c2
+c.ac <- df %>%
+  filter(item == c("A","C")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.bd <- df %>%
+  filter(item == c("B","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c2<- as.matrix(rbind(c.ac,c.bd))
 ```
 
 O cluster final é:
 
 ```{r}
 #| echo: false
-km2 <- kmeans(df,centers=df.c2)
+km2 <- kmeans(df[,2:3],centers=df.c2)
 km2$cluster
 ```
 
 Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
 ```{r}
 #| echo: false
+#| warning: false
 km2$centers
+fviz_cluster(km2, data=df[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
 ```
 
 Resultado similar ao do item anterior.
@@ -196,10 +237,22 @@ Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
 
 ```{r}
 #| echo: false
-df2<-matrix(rev(df),4,2)
-ab2<- (df2[1,]+df2[2,])/2
-cd2<- (df2[3,]+df2[4,])/2
-df.c3 <- matrix(c(ab2,cd2),2)
+#| warning: false
+x11 <- rev(c(5,-1,1,-3))
+x21 <- rev(c(3,1,-2,-2))
+df2 <- data.frame(item,x11,x21)
+
+c.ab2 <- df2 %>%
+  filter(item == c("A","B")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.cd2 <- df2 %>%
+  filter(item == c("C","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c3<- as.matrix(rbind(c.ab2,c.cd2))
 df.c3
 ```
 
@@ -207,14 +260,20 @@ O cluster final é:
 
 ```{r}
 #| echo: false
-km3 <- kmeans(df2,centers=df.c3)
+km3 <- kmeans(df2[,2:3],centers=df.c3)
 km3$cluster
 ```
 
-Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
+Ou seja, 1:(ABC) e 2:(D). E os centroides são dados por:
 ```{r}
 #| echo: false
+#| warning: false
 km3$centers
+fviz_cluster(km2, data=df2[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
 ```
 
 ## Exercício 12.14
@@ -224,20 +283,24 @@ km3$centers
 #| echo: false
 df14<- read.delim('catorze.txt',sep=';',header = FALSE)
 d14 <- dist(df14[,3:10],method="euclidean",diag=F)
-d14
+print(d14[1:50,])
 ```
+
+Por questões de tamanho, o output completo pode ser verificado no arquivo em R.
 
 ### Item B
 ```{r}
 #| warning: false
 #| message: false
 #| echo: false
+
+par(mfrow = c(1, 2))
 simples14 <- hclust(as.dist(d14), method = "single")
 plot(as.dendrogram(simples14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Simples", main="Dendograma")
+     xlab="Ligação Simples")
 completa14 <- hclust(as.dist(d14), method = "complete")
 plot(as.dendrogram(completa14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
-     xlab="Ligação Completa", main="Dendograma")
+     xlab="Ligação Completa")
 ```
 
 ## Exercício 12.15

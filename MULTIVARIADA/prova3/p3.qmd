@@ -1,0 +1,278 @@
+---
+title: "PROVA 3"
+subtitle: "ANÁLISE MULTIVARIADA 1"
+author: "Tailine J. S. Nonato (190038144)"
+date: "12/14/2023"
+format: pdf
+---
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+pacman::p_load(tidyverse,knitr,factoextra,mvnTest)
+```
+
+
+# Lista 7
+
+## Exercício 12.11
+
+```{r}
+#| echo: false
+x1 <- c(5,1,-1,3)
+x2 <- c(4,-2,1,1)
+item <- c("A","B","C","D")
+df <- data.frame(item,x1,x2)
+```
+
+Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
+
+```{r}
+#| echo: false
+c.ab <- df %>%
+  filter(item == c("A","B")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.cd <- df %>%
+  filter(item == c("C","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c<- as.matrix(rbind(c.ab,c.cd))
+df.c
+```
+
+Utilizando a função `kmeans` tem-se que o cluster final é:
+
+```{r}
+#| echo: false
+km <- kmeans(df[,2:3],centers=df.c)
+km$cluster
+```
+
+Ou seja, 1:(AD) e 2:(BC). E os novos centroides são dados por:
+```{r}
+#| warning: false
+#| echo: false
+km$centers
+
+fviz_cluster(km, data=df[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
+
+```
+
+## Exercício 12.12
+
+Dada a matriz, os centroides dos clusters (AC) e (BD)  são dados por:
+
+```{r}
+#| echo: false
+c.ac <- df %>%
+  filter(item == c("A","C")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.bd <- df %>%
+  filter(item == c("B","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c2<- as.matrix(rbind(c.ac,c.bd))
+df.c2
+```
+
+O cluster final é:
+
+```{r}
+#| echo: false
+km2 <- kmeans(df[,2:3],centers=df.c2)
+km2$cluster
+```
+
+Ou seja, 1:(AD) e 2:(BC). E os centroides são dados por:
+```{r}
+#| echo: false
+#| warning: false
+km2$centers
+fviz_cluster(km2, data=df[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
+```
+
+Resultado similar ao do item anterior.
+
+## Exercíco 12.13
+
+Dada a matriz, os centroides dos clusters (AB) e (CD)  são dados por:
+
+```{r}
+#| echo: false
+#| warning: false
+x11 <- rev(c(5,-1,1,-3))
+x21 <- rev(c(3,1,-2,-2))
+df2 <- data.frame(item,x11,x21)
+
+c.ab2 <- df2 %>%
+  filter(item == c("A","B")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+c.cd2 <- df2 %>%
+  filter(item == c("C","D")) %>%
+  select(!item) %>%
+  summarise_all(list(mean))
+
+df.c3<- as.matrix(rbind(c.ab2,c.cd2))
+df.c3
+```
+
+O cluster final é:
+
+```{r}
+#| echo: false
+km3 <- kmeans(df2[,2:3],centers=df.c3)
+km3$cluster
+```
+
+Ou seja, 1:(ABC) e 2:(D). E os centroides são dados por:
+```{r}
+#| echo: false
+#| warning: false
+km3$centers
+fviz_cluster(km2, data=df2[,2:3],
+             ellipse.type="euclid",
+             star.plot=TRUE,
+             repel=TRUE,
+             ggtheme=theme_minimal())
+```
+
+
+## Exercício 12.14
+
+### Item A
+
+Verificando as 5 primeiras linhas e 5 primeiras colunas da matriz de distâncias é dada por:
+```{r}
+#| echo: false
+df14<- as.data.frame(read.delim('file12_14.txt',sep=';',header = FALSE))
+d14 <- dist(df14[,3:10],method="euclidean",diag=F)
+print(as.matrix(d14)[1:5,1:5])
+```
+
+Por questões de tamanho, o output completo pode ser verificado no arquivo em R.
+
+### Item B
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+simples14 <- hclust(as.dist(d14), method = "single")
+plot(as.dendrogram(simples14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Simples")
+completa14 <- hclust(as.dist(d14), method = "complete")
+plot(as.dendrogram(completa14), hang = -1, cex.axis=1.2, cex.lab = 1.5, 
+     xlab="Ligação Completa")
+```
+
+Comparando os dendogramas, pode-se dizer que os resultados são similares.
+
+## Exercício 12.15
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+df32<- read.delim('file11_32.txt',sep=';',header = FALSE)
+df32$V1 <- factor(df32$V1)
+```
+
+```{r}
+#| echo: false
+#| warning: false
+
+c32.1 <- df32 %>%
+  filter(V1 == c("1")) %>%
+  select(!V1) %>%
+  summarise_all(list(mean))
+
+c32.2 <- df32 %>%
+  filter(V1 == c("2")) %>%
+  select(!V1) %>%
+  summarise_all(list(mean))
+
+df.c32<- as.matrix(rbind(c32.1,c32.2))
+df.c32
+
+km15_2 <- kmeans(df32[,2:3],2, iter.max = 1000)
+km15_3 <- kmeans(df32[,2:3],3, iter.max = 1000)
+km15_4 <- kmeans(df32[,2:3],4, iter.max = 1000)
+
+
+df32.k <- cbind(df32,km15_2$cluster,km15_3$cluster,km15_4$cluster)
+df32.k[1:6,]
+plot(df32.k$V1,df32.k$V2,col=km15_2$cluster,pch=16,
+     main="K-means, G=2",xlab="X1",ylab="X2")
+plot(df32.k$V1,df32.k$V2,col=km15_3$cluster,pch=16,
+     main="K-means, G=3",xlab="X1",ylab="X2")
+plot(df32.k$V1,df32.k$V2,col=km15_4$cluster,pch=16,
+     main="K-means, G=4",xlab="X1",ylab="X2")
+```
+
+
+# Lista 8
+
+## Exercício 11.32
+
+### Item A
+
+Para investigar a suposição de Normal Bivariada, tem-se como hipóteses: 
+
+$$
+\begin{cases}
+H_{0}: \mbox{Os dados seguem distribuição Normal} \\
+H_{1}: \mbox{Os dados não seguem distribuição Normal}
+\end{cases}
+$$
+
+Realiza-se análise gráfica:
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+df32 %>% 
+  ggplot(aes(x=V2, y=V3, color=V1)) +
+    geom_point()
+```
+
+Pela análise gráfica, observa-se que os grupos têm formatos que lembram formatos eliptícos, tornando a suposição de Normal Bivariada algo razoável a se dizer. Além disso, não há evidências para rejeitar $H_{0}$. 
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+shapiro.test(df32$V2)
+shapiro.test(df32$V3)
+```
+
+Realizando o teste de Shapiro-Wilk para normalidade nas marginais,também não há evidências para rejietar $H_{0}$. 
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+AD.test(df32[,2:3], qqplot = TRUE)
+```
+
+O teste de Anderson-Darling para normalidade multivariada também não rejeitou $H_{0}$. Observa-se também pelo QQPlot mais uma indicação de normalidade. Assim, pode-se dizer que os dados sguem distribuição Normal Multivariada, especificamente para o caso, Bivariada. 
+
+# Item B ao D
+
+Uma tentativa de solucionar a questão está no arquivo R. Tive problemas ao gerar a função `cov_pooled` e não fui capaz de gerar os outputs que gostaria, mas deixzei a estrutura. 

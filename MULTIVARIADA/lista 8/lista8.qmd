@@ -2,19 +2,22 @@
 title: "LISTA 8"
 subtitle: "ANÁLISE MULTIVARIADA 1"
 author: "Tailine J. S. Nonato"
-date: "12/13/2023"
-format: html
+date: "12/14/2023"
+format: pdf
 ---
 
 ```{r}
 #| message: false
+#| warning: false
 #| echo: false
 pacman::p_load(tidyverse,knitr)
 ```
 
-::: {.panel-tabset}
 # 11.1
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
 x1<- matrix(c(3,2,4,7,4,7),3,2)
 x2<-matrix(c(6,5,4,9,7,8),3,2)
 meanx1<- matrix(c(3,6),2,1)
@@ -24,9 +27,12 @@ s<-matrix(c(1,1,1,2),2,2)
 
 ## Item A
 
-$$ \tilde{y} = (\bar{x}_{1} - \bar{x}_{2})' \hspace{5px} S_{pooled}^{-1} \hspace{5px} x = \tilde{\alpha}' \hspace{5px} x $$
+$$ \tilde{y} = (\bar{x}_{1} - \bar{x}_{2})' \hspace{1pt} S_{\text{pooled}}^{-1} \hspace{1pt} x = \tilde{\alpha}' \hspace{1pt} x $$
 
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
 sinv<- solve(s)
 sinv
 ```
@@ -41,16 +47,16 @@ $$\tilde{y} = \left(\begin{bmatrix}
 \end{bmatrix}\right)' \begin{bmatrix}
 2 & -1\\
 -1 & 1
-\end{bmatrix} \hspace{5px} x 
+\end{bmatrix} \hspace{1pt} x 
 $$
 
 
-$$\tilde{y} = \tilde{\alpha}' \hspace{5px} x 
+$$\tilde{y} = \tilde{\alpha}' \hspace{1pt} x 
 $$
 
 $$\tilde{y} = \begin{bmatrix}
 -2 & 0
-\end{bmatrix} \hspace{5px} x 
+\end{bmatrix} \hspace{1pt} x 
 $$
 
 $$\tilde{y} = -2x_{1} 
@@ -58,6 +64,11 @@ $$
 
 
 ## Item B 
+
+$$\hat{m}=\frac{1}{2}(\hat{y}_1+\hat{y}_2)=\frac{1}{2}(\mathbf{\hat{a}'\bar{x}_1+\hat{a}'\bar{x}_2})= 8$$
+
+Portanto, devemos colocar $x'_0$ na população $\pi _1$ se $\hat{y}_0=[2 \ \ 7]x_0 \geq \hat{m}=$ 8. Caso contrário, devemos atribuir $x_0$ para a população $\pi_2$.
+Neste caso, $x_0$ calculado = -4; portanto, atribuímos este à população $\pi_1$
 
 
 # 11.2
@@ -83,5 +94,3 @@ $$
 # 11.32
 
 # Q13
-
-:::
