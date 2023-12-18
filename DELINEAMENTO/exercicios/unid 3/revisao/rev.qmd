@@ -10,7 +10,7 @@ format:
 
 ```{r}
 #| echo: false
-pacman::p_load(tidyverse,knitr,easyanova,car)
+pacman::p_load(tidyverse,knitr,easyanova,car,asbio)
 ```
 
 ::: {.panel-tabset}
@@ -309,6 +309,10 @@ bartlett.test(obs~variedade)
 bartlett.test(obs~sementes)
 ```
 
+- Aditividade
+```{r}
+tukey.add.test()
+```
 
 
 ## Comparação de médias

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Tailine J. S. Nonato">
+<meta name="dcterms.date" content="2023-12-17">
+
+<title>UNIDADE 2</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="unid2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="unid2_files/libs/quarto-html/quarto.js"></script>
+<script src="unid2_files/libs/quarto-html/popper.min.js"></script>
+<script src="unid2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="unid2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="unid2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="unid2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="unid2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="unid2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="unid2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">UNIDADE 2</h1>
+<p class="subtitle lead">REGRESSÃO LINEAR</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Tailine J. S. Nonato </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 17, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="modelo-regressão-linear-múltipla" class="level2">
+<h2 class="anchored" data-anchor-id="modelo-regressão-linear-múltipla">Modelo Regressão Linear Múltipla</h2>
+<p><span class="math display">\[\hat{Y} = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + ... + \beta_nx_{in} +
+\]</span></p>
+<p>Em termos matriciais;</p>
+<p><span class="math display">\[\hat{Y}=\mathbf{(X'X) (X'Y) (Y'Y)}
+\]</span></p>
+<p>Onde</p>
+<p><span class="math display">\[(Y'Y)=\sum Y_i^2
+\]</span></p>
+<p>Em que Y é vetor <span class="math inline">\((1_xn)\)</span>, e X é matriz quadrada <span class="math inline">\((n_xn)\)</span></p>
+</section>
+<section id="teste-de-ausência-de-regressão" class="level2">
+<h2 class="anchored" data-anchor-id="teste-de-ausência-de-regressão">Teste de ausência de regressão</h2>
+<p><span class="math display">\[
+\begin{equation}
+\begin{cases}
+H_0: \beta_0 = \beta_1 = ... = \beta_n = 0 \\
+H_1: \exists \beta_i \neq 0
+\end{cases}
+\end{equation}
+\]</span></p>
+<p>Caso exista, testar individualmente</p>
+<p><span class="math display">\[
+\begin{equation}
+\begin{cases}
+H_0: \beta_i = 0 \\
+H_1: \beta_i \neq 0
+\end{cases}
+\end{equation}
+\]</span></p>
+</section>
+<section id="teste-t" class="level2">
+<h2 class="anchored" data-anchor-id="teste-t">Teste T</h2>
+<p><span class="math display">\[
+\begin{equation}
+    T = \frac{\hat{{\beta}_j}}{S\{\hat{\beta}_j\}}
+\end{equation}
+\]</span></p>
+<p>Calculando <span class="math inline">\(Y_n\)</span></p>
+<p><span class="math display">\[
+\begin{equation}
+    E(Y_n) = (\hat{Y}_n \mp t_{1-\frac{\alpha}{2}}S\{\hat{Y}_n\})
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[\mathbf{X}_0=[1 \ 5 \ 4]'
+\]</span> <span class="math display">\[\mathbf{\hat{Y}_0=X'\beta}
+\]</span></p>
+<p><span class="math display">\[V\mathbf{(\hat{Y}_n)=X'_0 V(\hat{\beta})X_0}=MSE\mathbf{X'_0(X'X)^{-1}X_0}
+\]</span></p>
+<p>Onde: <span class="math display">\[V(\hat{\beta})=\mathbf{X'_0MSE(X'X)^{-1}X_0}
+\]</span></p>
+<p>Já o <span class="math inline">\(Y_n\)</span>;</p>
+<p><span class="math display">\[Y_n = (\hat{Y}_n \mp t_{1-\frac{\alpha}{2}}S\{pred\})
+\]</span></p>
+<p>Onde</p>
+<p><span class="math display">\[S^2\{pred\}=MSE + MSE \mathbf{X'_0(X'X)^{-1}X_0}
+\]</span> <span class="math display">\[=MSE(\frac{1}{n}+\mathbf{X'_0(X'X)^{-1}X_0})
+\]</span></p>
+</section>
+<section id="teste-linear-geral" class="level2">
+<h2 class="anchored" data-anchor-id="teste-linear-geral">Teste linear geral</h2>
+<p>Verificar o ganho de adicionar um parâmetro <span class="math inline">\(\beta_i\)</span> no modelo</p>
+<p>Hipóteses: <span class="math display">\[H_0: \beta_2 = 0
+\]</span> <span class="math display">\[H_1: \beta_2 \neq 0
+\]</span></p>
+<ul>
+<li><p>Rodar modelo completo <span class="math display">\[Y_i=\beta_0+\beta_1x_{i1}+\beta_2x{i2}+\epsilon_i
+\]</span></p></li>
+<li><p>Rodar modelo reduzido (ou restrito) <span class="math display">\[Y_i=\beta_0+\beta_1x_{i1}+\epsilon_i
+\]</span></p></li>
+</ul>
+<p><span class="math display">\[F^{*}=\frac{SSE(R)-SSE(F)}{g.l.R-g.l.F}\div \frac{SSE(F)}{g.l.F}
+\]</span></p>
+<p>onde</p>
+<p><span class="math display">\[SSE(R)-SSE(F) = SSR(X_2|X_1)
+\]</span></p>
+</section>
+<section id="lista-2a" class="level1">
+<h1>Lista 2a</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readxl, ggcorrplot,GGally)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#1)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#X2 = 3</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Definir a função do polinômio</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>polinomio <span class="ot">&lt;-</span> <span class="cf">function</span>(x1,x2) {</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">25</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>x1 <span class="sc">+</span> <span class="dv">4</span><span class="sc">*</span>x2 <span class="sc">+</span> <span class="fl">1.5</span><span class="sc">*</span>x1<span class="sc">*</span>x2)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotar o gráfico do polinômio</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">polinomio</span>(<span class="at">x1 =</span>x ,<span class="at">x2 =</span> <span class="dv">3</span>), <span class="at">from =</span> <span class="sc">-</span><span class="dv">10</span>, <span class="at">to =</span> <span class="dv">10</span>, <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"y"</span>, <span class="at">main =</span> <span class="st">"Gráfico do Polinômio"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unid2_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fazendo pelo ggplot</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar um data frame com os valores de x</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular os valores de y usando a função do polinômio</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">polinomio</span>(<span class="at">x1 =</span> df<span class="sc">$</span>x, <span class="at">x2 =</span> <span class="dv">3</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotar o gráfico usando ggplot2</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x"</span>, <span class="at">y =</span> <span class="st">"y"</span>, <span class="at">title =</span> <span class="st">"Gráfico do Polinômio X=3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unid2_files/figure-html/unnamed-chunk-2-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#X2 = 6</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Definir a função do polinômio</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>polinomio <span class="ot">&lt;-</span> <span class="cf">function</span>(x1,x2) {</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="dv">25</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>x1 <span class="sc">+</span> <span class="dv">4</span><span class="sc">*</span>x2 <span class="sc">+</span> <span class="fl">1.5</span><span class="sc">*</span>x1<span class="sc">*</span>x2)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotar o gráfico do polinômio</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">polinomio</span>(<span class="at">x1 =</span>x ,<span class="at">x2 =</span> <span class="dv">6</span>), <span class="at">from =</span> <span class="sc">-</span><span class="dv">10</span>, <span class="at">to =</span> <span class="dv">10</span>, <span class="at">xlab =</span> <span class="st">"x"</span>, <span class="at">ylab =</span> <span class="st">"y"</span>, <span class="at">main =</span> <span class="st">"Gráfico do Polinômio"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unid2_files/figure-html/unnamed-chunk-2-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Criar um data frame com os valores de x</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> x)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calcular os valores de y usando a função do polinômio</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>y <span class="ot">&lt;-</span> <span class="fu">polinomio</span>(<span class="at">x1 =</span> df<span class="sc">$</span>x, <span class="at">x2 =</span> <span class="dv">6</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotar o gráfico usando ggplot2</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"x"</span>, <span class="at">y =</span> <span class="st">"y"</span>, <span class="at">title =</span> <span class="st">"Gráfico do Polinômio X=6"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="unid2_files/figure-html/unnamed-chunk-2-4.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#O modelo é aditivo podemos perceber que a escala ela dobra quando dobramos o X indicando que o valores sao maiores</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#2)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#3)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>#4) dados &lt;- read_excel(“dados/Dados_ex_6_5.xlsx”, col_types = c(“numeric”, “numeric”, “numeric”))</p>
+<p>#a)</p>
+</section>
+<section id="calcular-a-matriz-de-correlação" class="level1">
+<h1>Calcular a matriz de correlação</h1>
+<p>matriz_cor &lt;- cor(dados)</p>
+</section>
+<section id="converter-a-matriz-de-correlação-em-um-data-frame" class="level1">
+<h1>Converter a matriz de correlação em um data frame</h1>
+<p>df_cor &lt;- as.data.frame(matriz_cor)</p>
+</section>
+<section id="criar-o-gráfico-de-correlação-corr-plot" class="level1">
+<h1>Criar o gráfico de correlação (corr plot)</h1>
+<p>ggcorrplot(df_cor,lab = TRUE)</p>
+<p>#matriz grafico de dispersao</p>
+<p>ggpairs(dados) #podemos perceber que a variavel X2 é categorica (2,4)</p>
+<p>#b)</p>
+<p>modelo = lm(Y ~ X1 + X2, data = dados) summary(modelo)</p>
+<p>#c)</p>
+<p>residuo = modelo$residuals</p>
+<p>boxplot(residuo)</p>
+<p>#fazendo pelo ggplot</p>
+</section>
+<section id="calcular-medidas-resumo" class="level1">
+<h1>Calcular medidas resumo</h1>
+<p>medidas_resumo &lt;- as.data.frame(residuos) %&gt;% summarize( Min = min(residuos), Q1 = quantile(residuos, 0.25), Mediana = median(residuos), Q3 = quantile(residuos, 0.75), Max = max(residuos), Media = mean(residuos) )</p>
+</section>
+<section id="criar-o-boxplot-com-medidas-resumo" class="level1">
+<h1>Criar o boxplot com medidas resumo</h1>
+<p>ggplot(dados, aes(y = residuos)) + geom_boxplot() + geom_point(data = medidas_resumo, aes(x=0,y = Media), color = “red”, size = 3) + labs(x = “Residuos”, y = “Valor”, title = “Boxplot com Medidas Resumo”)</p>
+<p>#graficos de residuos</p>
+<p>qqnorm(residuos) qqline(residuos) shapiro.test(residuos)</p>
+<p>#d)</p>
+<p>results = data.frame(modelo<span class="math inline">\(model,modelo\)</span>fitted.values,modelo$residuals)</p>
+<p>plot(results<span class="math inline">\(modelo.fitted.values,results\)</span>Y)</p>
+<p>plot(results$X1,residuos)</p>
+<p>plot(results$X2,residuos)</p>
+<p>#e)</p>
+<p>SSR = anova(modelo)[[1,2]] #soma de quadrados da regressao SSE = anova(modelo)[[2,2]] #soma de quadrados do residuo</p>
+<p>n = length(dados$Y)</p>
+<p>alfa = 0.05 est_obs = (SSR/2)/(SSE/n)^2</p>
+<p>pchisq(est_obs,alfa,1)</p>
+<p>#f)</p>
+<p>glres = n-2</p>
+<p>c = glres</p>
+<p>results = results %&gt;% mutate(y_barra = ave(Y, X1, FUN = mean))</p>
+<p>SSPE = sum((results<span class="math inline">\(Y - results\)</span>y_barra)^2)</p>
+<p>SSLF = sum((results<span class="math inline">\(y_barra - results\)</span>modelo.fitted.values)^2)</p>
+<p>MSPE = SSPE/(n-c)</p>
+<p>MSLF = SSLF/(c-2)</p>
+<p>f_obs = MSLF/MSPE</p>
+<p>pf(f_obs,n-2,n-c)</p>
+<p>#3)</p>
+<p>#a) testar se existe regressao - ## h0: B1 = B2 (ausencia de regressao) ## h1? Existe um Bj != 0 (existe reg) ## est F ## o que implica sobre b1 e b2, se nao rejeitar, variaveis na ajudam a explicar o comp de y ## se rejeitar, alguma ajuda a explicar. ai testa individualmente ## h0) Bj = 0 ## h1) Bj != 0 ## est T</p>
+</section>
+<section id="c-ic-de-b1-e-b2" class="level1">
+<h1>c) Ic de B1 e B2</h1>
+<p>#4) ##a) ##b)</p>
+<p>#5) ##a) ##b)</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
