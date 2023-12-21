@@ -1,0 +1,113 @@
+---
+title: 'Previsão da Temperatura Máxima Diária'
+subtitle: 'Uma simulação com Monte Carlo'
+author: 'Tailine J. S. Nonato'
+date: '12/21/2023'
+number-sections: true
+lang: pt-BR
+format: pdf
+---
+
+# Introdução
+A precisão na previsão climática é crucial para uma variedade de aplicações práticas, desde planejamento agrícola até gestão de recursos. Compreender e prever a variação na temperatura máxima diária é um aspecto fundamental no estudo dos padrões climáticos, apresentando desafios significativos devido à sua complexidade e variabilidade.
+
+Este estudo investiga a aplicação do método de Monte Carlo na análise da sensibilidade e desempenho de estimadores na previsão da temperatura máxima diária. Utilizando múltiplas amostras simuladas, exploramos a variabilidade resultante de diferentes cenários de variação sazonal, oferecendo insights sobre a capacidade dos estimadores em lidar com a diversidade de padrões climáticos.
+
+A abordagem do Monte Carlo permite a geração de múltiplas amostras de dados climáticos simulados, variando parâmetros como a amplitude da variação sazonal, enquanto aplicamos diferentes métodos de previsão, como a média móvel e a suavização exponencial. Essa abordagem proporciona uma visão mais abrangente da robustez e sensibilidade desses estimadores diante de cenários climáticos variados.
+
+Ao avaliarmos as múltiplas amostras simuladas, buscamos identificar padrões, cenários críticos e as capacidades relativas de cada estimador em diferentes contextos climáticos simulados. Os resultados obtidos oferecem insights valiosos para aprimorar a compreensão e o uso de métodos de previsão na modelagem da temperatura máxima diária, levando em consideração a variabilidade natural dos padrões climáticos.
+
+Este artigo apresenta não apenas os resultados da análise, mas também o método metodológico utilizado, fornecendo uma base sólida para avanços futuros na previsão climática e aplicações práticas que dependem da precisão das previsões de temperatura.
+
+
+
+
+\newpage
+# Metodologia
+- Geração de Dados Simulados: Utilizou-se o método de Monte Carlo para gerar múltiplas amostras de dados climáticos simulados. Variou-se a amplitude da variação sazonal enquanto se manteve constante o desvio padrão do ruído nos dados.
+
+- Modelagem da Variação Sazonal: Para simular padrões sazonais, aplicou-se uma função senoidal aos dados simulados, representando variações anuais de temperatura. A amplitude da função senoidal foi ajustada para criar diferentes níveis de variação ao longo do ano.
+
+- Implementação de Estimadores: Foram aplicados estimadores de previsão, como a média móvel e a suavização exponencial, aos dados climáticos simulados. Cada estimador foi avaliado em cada amostra gerada pelo Monte Carlo.
+
+- Análise dos Resultados: Analisaram-se as previsões dos estimadores em diferentes cenários de variação sazonal. Avaliou-se a sensibilidade e robustez de cada estimador diante de variações climáticas simuladas, considerando a variabilidade nos resultados das previsões.
+
+- Identificação de Padrões e Conclusões: A partir das múltiplas amostras simuladas, identificaram-se padrões, cenários críticos e a capacidade relativa de cada estimador em lidar com os diferentes contextos climáticos simulados. As conclusões foram embasadas na análise da variabilidade dos resultados.
+
+\newpage
+# Resultados
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+if (!require(pacman)) install.packages('pacman')
+pacman::p_load(tidyverse,knitr)
+```
+
+## Geração dos dados da simulação
+
+Ao iniciar os processos, define-se arbitrariamente o período ao qual deseja-se prever, para este estudo definiu-se um período de 730 dias (2 anos), a partir de 1 de janeiro de 2024. Para gerar a função de simulação com Monte Carlo, parte-se de algumas informações preexistentes:
+
+- A variação de temperatura anual pode ser representada por função senoidal, onde cria-se uma sequência de números de 1 até a quantidade de dias a ser prevista no estudo e divide-se essa sequência por 365 para normalizá-la em um período de 1 ano, conforme descrito a seguir:
+
+- Uma função senoidal gera valores que variam entre -1 e 1 ao longo do ano, representando variações sazonais que se assemelham aos padrões climáticos reais.
+
+A função criada para gerar os dados climáticos com o método de Monte Carlo simula séries temporais de temperatura máxima diária ao longo de um período dada uma média de temperatura, a amplitude da variação de temperatura e o desvio padrão dos erros/ruídos, ou seja,  a parte componente aleatória presente nos dados.
+
+
+```{r}
+#| warning: false
+#| message: false
+
+dias <- 730
+datas <- seq(as.Date("2024-01-01"), by = "day", length.out = dias)
+
+gerar_dados_climaticos <- function(mu, amplitude, sigma){
+  variacao_anual <- sin(2 * pi * (1:dias) / 365) * amplitude
+  ruido <- rnorm(dias, mean = 0, sd = sigma)
+  temperatura_maxima <- mu + variacao_anual + ruido
+  return(temperatura_maxima)}
+```
+
+## Parâmetros da simulação
+
+Com a função pronta, define-se então que serão geradas na simulação 1000 amostras. Utilizando os dados do Boletim Climatológico do INMET do versão 2022/2023 de Brasília, os parâmetros da simulação serão: a temperatura média de 22° C, a amplitude de variação de acordo com a média da temperatura mínima (18,2°C) e a média da máxima (27,4°C), 9,2 e o desvio padrão dos ruídos arbitrário, fixado em 5.
+
+```{r}
+amostras <- 1000
+mu <- 22
+amplitude <- 9.2
+sigma <- 5
+
+simulacao_monte_carlo <- gerar_dados_climaticos(mu, amplitude, sigma)
+
+plot(datas, 
+    simulacao_monte_carlo, 
+    type = "l", xlab = "Data", 
+    ylab = "Temperatura Máxima Estimada")
+```
+
+## Análise das amostras simuladas
+```{r}
+medias_temperatura_maxima <- sapply(simulacao_monte_carlo, mean)
+```
+
+\newpage
+# Conclusões
+Impacto da variação sazonal na previsão:
+
+Observamos que, ao variar a amplitude da variação sazonal nos dados simulados, há uma influência direta na amplitude das temperaturas máximas estimadas ao longo do ano. Amplitudes maiores resultam em variações mais extremas nas temperaturas simuladas.
+Robustez dos estimadores em diferentes cenários:
+
+Os estimadores, como a média móvel ou a suavização exponencial, podem reagir de maneira diferente às variações na amplitude sazonal. Em amostras com variações sazonais mais intensas, alguns estimadores podem apresentar melhor desempenho na captura desses padrões do que em amostras com variação sazonal mais suave.
+Variações na precisão das previsões:
+
+Com a variação dos parâmetros, como a amplitude da variação sazonal, é possível observar mudanças na precisão das previsões dos estimadores. Em amostras com variações mais acentuadas, certos estimadores podem mostrar uma capacidade superior de se adaptar e prever as temperaturas máximas.
+Identificação de cenários críticos ou extremos:
+
+As múltiplas amostras geradas pelo método de Monte Carlo permitem identificar cenários extremos ou críticos, nos quais os estimadores podem ter desempenhos excepcionais ou inadequados. Isso proporciona insights valiosos sobre a sensibilidade dos métodos às variações climáticas simuladas.
+Necessidade de ajustes nos modelos ou métodos:
+
+A variabilidade observada nas previsões em diferentes amostras pode indicar a importância de ajustar os modelos ou métodos de previsão para lidar com diferentes níveis de variação sazonal e ruído nos dados reais.
