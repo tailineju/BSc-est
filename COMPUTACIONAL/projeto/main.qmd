@@ -213,6 +213,15 @@ Oportunidades:
 - Também é válido vincular essa simulação com dados espaciais reais de Latitude e Longetude para observar o mapa de calor.  
 
 \newpage
+# Referências
+
+INMET, Instituto Nacional de Meteorologia. Boletim Climatológico: Balanço do verã0 2022/2023 em Brasília. Ministério da Agricultura, Pecuária e Abastecimento. 2023. Disponível em: <https://portal.inmet.gov.br/uploads/notastecnicas/Balan%C3%A7o-ver%C3%A3o-Bras%C3%ADlia_acs1.pdf>
+
+RIZZO, Maria L. Statistical computing with R. Chapman & Hall/CRC, 2020.
+
+SHUMWAY, Robert H.; STOFFER, David S. Time Series Analysis and Its Applications: With R Examples. Springer, 2017.
+
+\newpage
 # Apêndices
 
 Código em R:
