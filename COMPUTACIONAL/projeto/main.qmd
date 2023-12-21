@@ -9,30 +9,17 @@ format: pdf
 ---
 
 # Introdução
-A precisão na previsão climática é crucial para uma variedade de aplicações práticas, desde planejamento agrícola até gestão de recursos. Compreender e prever a variação na temperatura máxima diária é um aspecto fundamental no estudo dos padrões climáticos, apresentando desafios significativos devido à sua complexidade e variabilidade.
+A introdução deste estudo sobre simulação de Monte Carlo para estimativa de temperatura máxima se concentra na importância da compreensão e previsão dos padrões climáticos. Explorando a técnica estatística de Monte Carlo para simular 100 amostras de 365 dias de temperatura máxima, esse estudo busca examinar a variação sazonal, distribuição e comportamento temporal das médias estimadas. A introdução destaca a relevância de prever as variações climáticas e como a simulação de Monte Carlo oferece uma abordagem poderosa para modelar e compreender esses fenômenos.
 
-Este estudo investiga a aplicação do método de Monte Carlo na análise da sensibilidade e desempenho de estimadores na previsão da temperatura máxima diária. Utilizando múltiplas amostras simuladas, exploramos a variabilidade resultante de diferentes cenários de variação sazonal, oferecendo insights sobre a capacidade dos estimadores em lidar com a diversidade de padrões climáticos.
-
-A abordagem do Monte Carlo permite a geração de múltiplas amostras de dados climáticos simulados, variando parâmetros como a amplitude da variação sazonal, enquanto aplicamos diferentes métodos de previsão, como a média móvel e a suavização exponencial. Essa abordagem proporciona uma visão mais abrangente da robustez e sensibilidade desses estimadores diante de cenários climáticos variados.
-
-Ao avaliarmos as múltiplas amostras simuladas, buscamos identificar padrões, cenários críticos e as capacidades relativas de cada estimador em diferentes contextos climáticos simulados. Os resultados obtidos oferecem insights valiosos para aprimorar a compreensão e o uso de métodos de previsão na modelagem da temperatura máxima diária, levando em consideração a variabilidade natural dos padrões climáticos.
-
-Este artigo apresenta não apenas os resultados da análise, mas também o método metodológico utilizado, fornecendo uma base sólida para avanços futuros na previsão climática e aplicações práticas que dependem da precisão das previsões de temperatura.
-
-
-
-
-\newpage
 # Metodologia
-- Geração de Dados Simulados: Utilizou-se o método de Monte Carlo para gerar múltiplas amostras de dados climáticos simulados. Variou-se a amplitude da variação sazonal enquanto se manteve constante o desvio padrão do ruído nos dados.
+O estudo parte da definição de parâmetros, seguida pela geração de `n` amostras de `m` dias de temperatura máxima utilizando a técnica de Monte Carlo. Nesse momento, parte-se de algumas informações preexistentes:
 
-- Modelagem da Variação Sazonal: Para simular padrões sazonais, aplicou-se uma função senoidal aos dados simulados, representando variações anuais de temperatura. A amplitude da função senoidal foi ajustada para criar diferentes níveis de variação ao longo do ano.
+- A variação de temperatura anual pode ser representada por função senoidal, onde cria-se uma sequência de números de 1 até a quantidade de dias a ser prevista no estudo e divide-se essa sequência por 365 para normalizá-la em um período de 1 ano, conforme descrito a seguir:
 
-- Implementação de Estimadores: Foram aplicados estimadores de previsão, como a média móvel e a suavização exponencial, aos dados climáticos simulados. Cada estimador foi avaliado em cada amostra gerada pelo Monte Carlo.
+- Uma função senoidal gera valores que variam entre -1 e 1 ao longo do ano, representando variações sazonais que se assemelham aos padrões climáticos reais.
 
-- Análise dos Resultados: Analisaram-se as previsões dos estimadores em diferentes cenários de variação sazonal. Avaliou-se a sensibilidade e robustez de cada estimador diante de variações climáticas simuladas, considerando a variabilidade nos resultados das previsões.
+A função criada para gerar os dados climáticos simula séries temporais de temperatura máxima diária ao longo de um período dada uma média de temperatura, a amplitude da variação de temperatura e o desvio padrão dos erros/ruídos, ou seja,  a parte componente aleatória presente nos dados. 
 
-- Identificação de Padrões e Conclusões: A partir das múltiplas amostras simuladas, identificaram-se padrões, cenários críticos e a capacidade relativa de cada estimador em lidar com os diferentes contextos climáticos simulados. As conclusões foram embasadas na análise da variabilidade dos resultados.
 
 \newpage
 # Resultados
@@ -43,71 +30,268 @@ Este artigo apresenta não apenas os resultados da análise, mas também o méto
 #| echo: false
 
 if (!require(pacman)) install.packages('pacman')
-pacman::p_load(tidyverse,knitr)
+pacman::p_load(tidyverse,knitr,broom,car)
 ```
 
 ## Geração dos dados da simulação
 
-Ao iniciar os processos, define-se arbitrariamente o período ao qual deseja-se prever, para este estudo definiu-se um período de 730 dias (2 anos), a partir de 1 de janeiro de 2024. Para gerar a função de simulação com Monte Carlo, parte-se de algumas informações preexistentes:
+Para iniciar os processos, define-se arbitrariamente o período ao qual deseja-se prever, para este estudo definiu-se um período de 365 dias (1 ano), a partir de 1 de janeiro de 2024. Logo depois, define-se a função que tem como parâmetros:
 
-- A variação de temperatura anual pode ser representada por função senoidal, onde cria-se uma sequência de números de 1 até a quantidade de dias a ser prevista no estudo e divide-se essa sequência por 365 para normalizá-la em um período de 1 ano, conforme descrito a seguir:
-
-- Uma função senoidal gera valores que variam entre -1 e 1 ao longo do ano, representando variações sazonais que se assemelham aos padrões climáticos reais.
-
-A função criada para gerar os dados climáticos com o método de Monte Carlo simula séries temporais de temperatura máxima diária ao longo de um período dada uma média de temperatura, a amplitude da variação de temperatura e o desvio padrão dos erros/ruídos, ou seja,  a parte componente aleatória presente nos dados.
+- `n`: número de amostras a serem geradas
+- `dias`: número de dias para cada amostra
+- $\mu$: média da temperatura máxima
+- `amplitude`: amplitude da variação sazonal (representada por uma função senoidal)
+- $\sigma$: desvio padrão do ruído
 
 
 ```{r}
 #| warning: false
 #| message: false
+#| echo: false
 
-dias <- 730
-datas <- seq(as.Date("2024-01-01"), by = "day", length.out = dias)
-
-gerar_dados_climaticos <- function(mu, amplitude, sigma){
-  variacao_anual <- sin(2 * pi * (1:dias) / 365) * amplitude
-  ruido <- rnorm(dias, mean = 0, sd = sigma)
-  temperatura_maxima <- mu + variacao_anual + ruido
-  return(temperatura_maxima)}
+gerar_dados_climaticos <- function(n, dias, mu, amplitude, sigma){
+  temperaturas <- matrix(NA, nrow = dias, ncol = n)
+  for (i in 1:n) {
+    variacao_anual <- sin(2 * pi * (1:dias) / 365) * amplitude
+    ruido <- rnorm(dias, mean = 0, sd = sigma)
+    temperatura_maxima <- mu + variacao_anual + ruido
+    temperaturas[, i] <- temperatura_maxima}
+  return(temperaturas)}
 ```
 
 ## Parâmetros da simulação
 
-Com a função pronta, define-se então que serão geradas na simulação 1000 amostras. Utilizando os dados do Boletim Climatológico do INMET do versão 2022/2023 de Brasília, os parâmetros da simulação serão: a temperatura média de 22° C, a amplitude de variação de acordo com a média da temperatura mínima (18,2°C) e a média da máxima (27,4°C), 9,2 e o desvio padrão dos ruídos arbitrário, fixado em 5.
+Com a função pronta, define-se então os parâmetros da simulação. Serão geradas na simulação 100 amostras utilizando os dados do Boletim Climatológico do INMET do versão 2022/2023 de Brasília, onde a temperatura média é de 21,9° C, a amplitude de variação de acordo com a média da temperatura mínima (18,2°C) e a média da máxima (27,4°C), é de 9,2 e o desvio padrão dos ruídos arbitrário, será fixado em 5. Ou seja:
+
+$$
+\mu = 22,9
+$$
+$$
+\sigma = 5 
+$$
+$$
+\text{Amplitude} = 9,2
+$$
 
 ```{r}
-amostras <- 1000
-mu <- 22
+#| warning: false
+#| message: false
+#| echo: false
+
+n <- 100
+dias <- 365
+mu <- 22.9
 amplitude <- 9.2
 sigma <- 5
 
-simulacao_monte_carlo <- gerar_dados_climaticos(mu, amplitude, sigma)
-
-plot(datas, 
-    simulacao_monte_carlo, 
-    type = "l", xlab = "Data", 
-    ylab = "Temperatura Máxima Estimada")
+simulacao_monte_carlo <- gerar_dados_climaticos(n, dias, mu, amplitude, sigma)
 ```
 
-## Análise das amostras simuladas
+## Exploração dos dados gerados
+Criando um banco de dados com 365 datas a partir de 01 de janeiro, a médias por data das temperaturas geradas em cada uma das 100 amostras
+
+| Variáveis             |
+|:---------------------:|
+|indice                 |
+|datas                  |
+|temp_max_1             |
+| ...                   |
+|temp_max_100           |
+|media                  |
+
+## Medidas resumo
+
+Observando as medidas resumo da média de temperaturas máximas, tem-se que:
+
 ```{r}
-medias_temperatura_maxima <- sapply(simulacao_monte_carlo, mean)
+#| warning: false
+#| message: false
+#| echo: false
+
+indices <- c(1:365)
+datas <- seq(as.Date("2024-01-01"), by = "day", length.out = dias)
+medias_temperatura_maxima <- rowMeans(simulacao_monte_carlo)
+dados_simulados <- data.frame(indice = indices, datas = datas, temperatura_maxima = simulacao_monte_carlo, media = medias_temperatura_maxima)
+
+kable(tidy(round(summary(dados_simulados$media),2)),align='c')
+kable(data.frame(sd = sd(dados_simulados$media)),align='c')
 ```
+
+Dado o contexto brasiliense, apesar de ter a média conforme o parâmetro inicial, uma temperatura máxima de 12,8°C pode ser baixa demais, assim como uma máxima 33°C pode ser pouco, já que, dadas as últimas ondas de calor, foram registradas no DF temperaturas mais altas que isso. Mas é importante ressaltar que tudo isso está sendo influenciado pelos parâmetros pré-definidos.
+
+Realiza-se a seguir representações gráficas para complementar as medidas resumo e visualizar propriamente os dados gerados pela simulação.
+
+### Série temporal
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+ggplot(dados_simulados, aes(x = datas, y = media)) +
+  geom_line(color = "skyblue") +
+  labs(title = "Temperatura Máxima ao Longo do Tempo",
+       x = "Data", y = "Temperatura Máxima Simulada")+
+     theme_classic()
+```
+
+### Histograma das médias
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+ggplot(dados_simulados, aes(x = media)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribuição das Médias Estimadas",
+       x = "Média da Temperatura Máxima Estimada", y = "Contagem")+
+     theme_classic()
+```
+
+### Densidade das médias
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+ggplot(dados_simulados, aes(x = media)) +
+  geom_density(fill = "skyblue", color = "black") +
+  labs(title = "Distribuição das Médias Estimadas",
+       x = "Média da Temperatura Máxima Estimada", y = "Densidade")+
+     theme_classic()
+
+```
+
+Observa-se nas 3 representações gráficas a variação sazonal por meio da função senoidal de forma que de janeiro a abril as temperaturas sobem e atingem o pico do ano e a partir de maio, aproximadamente, começam a cair até atingir as menores temperaturas em outubro, onde logo após começam a subir mais uma vez.
+
+### Teste de Normalidade
+
+Observando os dados, tem-se como hipóteses:
+
+$$
+\begin{cases}
+H_{0}: \mbox{Os dados seguem distribuição Normal} \\
+H_{1}: \mbox{Os dados não seguem distribuição Normal}
+\end{cases}
+$$
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+qqnorm(dados_simulados$media)
+qqline(dados_simulados$media)
+shapiro.test(dados_simulados$media)
+```
+
+A análise gráfica e os resultados do teste Shapiro-Wilk apontam para rejieção de $H_{0}$, constatando a não normalidade univariada dos dados.
+
+### Mapa de calor
+
+Para finalizar, realiza-se então, um mapa de calor simulando um distribuição espacial:
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+ggplot(dados_simulados, aes(x = datas, y = 1, fill = media)) +
+  geom_tile() +
+  scale_fill_gradient(low = "skyblue", high = "red") +
+  labs(title = "Mapa de Calor da Temperatura Máxima",
+       x = "Data", y = "")+
+     theme_classic()
+```
+
+Embora não apresente coordenadas geográficas reais, proporciona uma visualização da distribuição espacial fictícia das temperaturas máximas médias estimadas.
 
 \newpage
 # Conclusões
-Impacto da variação sazonal na previsão:
+Ao realizar 100 simulações de 365 dias cada é possível observar uma clara variação sazonal nas médias estimadas da temperatura máxima ao longo do tempo. Com temperaturas mais elevadas no mês de abril e mais baixas no mês de outubro, o que pode não ser tão compatível com a realidade local.
 
-Observamos que, ao variar a amplitude da variação sazonal nos dados simulados, há uma influência direta na amplitude das temperaturas máximas estimadas ao longo do ano. Amplitudes maiores resultam em variações mais extremas nas temperaturas simuladas.
-Robustez dos estimadores em diferentes cenários:
+Oportunidades:
 
-Os estimadores, como a média móvel ou a suavização exponencial, podem reagir de maneira diferente às variações na amplitude sazonal. Em amostras com variações sazonais mais intensas, alguns estimadores podem apresentar melhor desempenho na captura desses padrões do que em amostras com variação sazonal mais suave.
-Variações na precisão das previsões:
+- É válido realizar um estudo mais aprofundado para constatar o comportamento das médias quanto a distribuição Normal utilizando técnicas Multivariadas.
 
-Com a variação dos parâmetros, como a amplitude da variação sazonal, é possível observar mudanças na precisão das previsões dos estimadores. Em amostras com variações mais acentuadas, certos estimadores podem mostrar uma capacidade superior de se adaptar e prever as temperaturas máximas.
-Identificação de cenários críticos ou extremos:
+- Também é válido vincular essa simulação com dados espaciais reais de Latitude e Longetude para observar o mapa de calor.  
 
-As múltiplas amostras geradas pelo método de Monte Carlo permitem identificar cenários extremos ou críticos, nos quais os estimadores podem ter desempenhos excepcionais ou inadequados. Isso proporciona insights valiosos sobre a sensibilidade dos métodos às variações climáticas simuladas.
-Necessidade de ajustes nos modelos ou métodos:
+\newpage
+# Apêndices
 
-A variabilidade observada nas previsões em diferentes amostras pode indicar a importância de ajustar os modelos ou métodos de previsão para lidar com diferentes níveis de variação sazonal e ruído nos dados reais.
+Código em R:
+```{r}
+#| warning: false
+#| message: false
+#| eval: false
+#| echo: true
+
+# Carregamento de pacotes
+if (!require(pacman)) install.packages('pacman')
+pacman::p_load(tidyverse,knitr,broom)
+
+# Função Método Monte Carlo
+gerar_dados_climaticos <- function(n, dias, mu, amplitude, sigma){
+  temperaturas <- matrix(NA, nrow = dias, ncol = n)
+  for (i in 1:n) {
+    variacao_anual <- sin(2 * pi * (1:dias) / 365) * amplitude
+    ruido <- rnorm(dias, mean = 0, sd = sigma)
+    temperatura_maxima <- mu + variacao_anual + ruido
+    temperaturas[, i] <- temperatura_maxima}
+  return(temperaturas)}
+
+# Parâmetros da simulação
+n <- 100
+dias <- 365
+mu <- 22.9
+amplitude <- 9.2
+sigma <- 5
+
+# Simulação
+simulacao_monte_carlo <- gerar_dados_climaticos(n, dias, mu, amplitude, sigma)
+
+# Criando um banco de dados com a simulação e adicionando informações
+indices <- c(1:365)
+datas <- seq(as.Date("2024-01-01"), by = "day", length.out = dias)
+medias_temperatura_maxima <- rowMeans(simulacao_monte_carlo)
+dados_simulados <- data.frame(indice = indices, 
+                  datas = datas, 
+                  temperatura_maxima = simulacao_monte_carlo, 
+                  media = medias_temperatura_maxima)
+kable(names(dados_simulados),align='c')
+
+# Medidas resumo
+kable(tidy(round(summary(dados_simulados$media),2)),align='c')
+
+kable(data.frame(sd = sd(dados_simulados$media)),align='c')
+
+# Série temporal
+ggplot(dados_simulados, aes(x = datas, y = media)) +
+  geom_line(color = "skyblue") +
+  labs(title = "Temperatura Máxima ao Longo do Tempo",
+       x = "Data", y = "Temperatura Máxima Simulada")+
+     theme_classic()
+
+# Histograma das médias
+ggplot(dados_simulados, aes(x = media)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Distribuição das Médias Estimadas",
+       x = "Média da Temperatura Máxima Estimada", y = "Contagem")+
+     theme_classic()
+
+# Densidade
+ggplot(dados_simulados, aes(x = media)) +
+  geom_density(fill = "skyblue", color = "black") +
+  labs(title = "Distribuição das Médias Estimadas",
+       x = "Média da Temperatura Máxima Estimada", y = "Densidade")+
+     theme_classic()
+
+# Normalidade
+qqnorm(dados_simulados$media)
+qqline(dados_simulados$media)
+shapiro.test(dados_simulados$media)
+  
+# Mapa de calor
+ggplot(dados_simulados, aes(x = indice, y = 1, fill = media)) +
+  geom_tile() +
+  scale_fill_gradient(low = "skyblue", high = "red") +
+  labs(title = "Mapa de Calor da Temperatura Máxima",
+       x = "Índice", y = "")+
+     theme_classic()
+```
