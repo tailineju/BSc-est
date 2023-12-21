@@ -99,7 +99,7 @@ Criando um banco de dados com 365 datas a partir de 01 de janeiro, a médias por
 |temp_max_100           |
 |media                  |
 
-## Medidas resumo
+### Medidas resumo
 
 Observando as medidas resumo da média de temperaturas máximas, tem-se que:
 
