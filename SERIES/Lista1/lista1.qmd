@@ -1,0 +1,48 @@
+---
+title: "LISTA 1"
+subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
+author: "Tailine J. S. Nonato"
+date: "03/20/2023"
+format: pdf
+---
+
+```{r}
+#| message: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse)
+```
+
+**Descrição da atividade:** 
+
+- Exercícios 1.1 a 1.6 do Cap.1 (pag.10) de Cryer & Chan (2008)
+
+## Exercício 1.1
+Use software to produce the time series plot shown in Exhibit 1.2, on page 2. The data are in the file named larain.
+
+- Resposta:
+
+## Exercício 1.2
+Produce the time series plot displayed in Exhibit 1.3, on page 3. The data file is named color.
+
+- Resposta:
+
+## Exercício 1.3
+Simulate a completely random process of length 48 with independent, normal values. Plot the time series plot. Does it look “random”? Repeat this exercise several times with a new simulation each time.
+
+- Resposta:
+
+## Exercício 1.4
+Simulate a completely random process of length 48 with independent, chi-square distributed values, each with 2 degrees of freedom. Display the time series plot. Does it look “random” and nonnormal? Repeat this exercise several times with a new simulation each time.
+
+- Resposta:
+
+## Exercício 1.5
+Simulate a completely random process of length 48 with independent, t-distributed values each with 5 degrees of freedom. Construct the time series plot. Does it look “random” and nonnormal? Repeat this exercise several times with a new simulation each time.
+
+- Resposta:
+
+## Exercício 1.6
+Construct a time series plot with monthly plotting symbols for the Dubuque temperature series as in Exhibit 1.9, on page 7. The data are in the file named tempdub.
+
+- Resposta:
