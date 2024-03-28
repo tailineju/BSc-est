@@ -1,0 +1,48 @@
+---
+title: "Exercícios em Sala"
+subtitle: "ANÁLISE DE DADOS CATEGORIZADOS"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# 28 de março
+## Descrição da atividade 
+Estimar a proporção de casas com renda menor que 5 u.m. 
+
+Aula de inferências/estimativa de proporção.
+
+
+```{r}
+#| echo: false
+#| message: false
+
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr)
+```
+
+```{r}
+set.seed(4)
+n<-10
+amostra <- sample(1:90,size=n, replace = FALSE)
+salario<- c(9,2,2,8,3,5,8,3,6,8)
+carac <- salario<5
+
+df<-data.frame(amostra,salario,carac)
+kable(df,align='c')
+```
+
+**Estimativa pontual**
+```{r}
+pia <-sum(df$carac)/10
+kable(pia,align='c')
+```
+
+**Estimativa do intervalo de confiância**
+```{r}
+alpha<- 0.1
+sup<- pia - qnorm(1-(alpha/2))*sqrt((pia*(1-pia))/n)
+inf<- pia + qnorm(1-(alpha/2))*sqrt((pia*(1-pia))/n)
+
+ic <- data.frame(sup,inf)
+kable(round(ic,2),align='c')
+```

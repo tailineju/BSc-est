@@ -9,10 +9,9 @@ format: pdf
 # Descrição da atividade 
 
 - Exercícios 2.1, 2.2, 2.4, 2.5 e 2.6 do Cap.2 (pag.20) de Cryer & Chan (2008)
-
-Antes de iniciar os exercícios propostos, carrega-se os pacotes necessários:
 ```{r}
 #| message: false
+#| echo: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse)
 ```
@@ -26,14 +25,101 @@ b. $Cov(X, X + Y)$
 
 c. $Corr(X + Y, X − Y)$
 
+- Respostas: 
+
+**Item A.** 
+
+(I) $Var(X+Y) = Var(X) + Var (Y) + Cov (X+Y)$
+
+Para encontrar $Cov (X+Y)$, tem-se:
+
+> $Cov (X+Y) = Corr(X, Y) \sqrt{Var(X) Var(Y)}$
+
+> $Cov (X+Y) = 0.25 \cdot \sqrt{9 \cdot 4}$
+
+> $Cov (X+Y) = 1.5$
+
+Substituindo em (I), tem-se:
+
+> $Var(X+Y) = 9 + 4 + 1.5$
+
+> $Var(X+Y) = 14.5$
+
+**Item B.** 
+
+> $Cov(X,X+Y) = Cov(X,X) + Cov (X,Y)$
+
+> $Cov(X,X+Y) = Var(X) + Cov(X,Y)$
+
+> $Cov(X,X+Y) = 9 + 1.5$
+
+> $Cov(X,X+Y) = 10.5$
+
+**Item C.**
+
+Tem-se que:
+
+(I) $Corr(X+Y,X-Y)=\frac{Cov(X+Y,X-Y)}{\sqrt{Var(X+Y) \cdot Var(X - Y)}}$
+
+Assim:
+
+i. Pelo *Item A*,
+
+> $Var(X+Y) = 14.5$
+
+ii. Calcula-se a variância de $X-Y$
+
+> $Var(X-Y) = Var(x) + Var(Y) - Cov(X,Y)$
+
+> $Var(X-Y) = 9 + 4 - 1.5$ 
+
+> $Var(X-Y) = 11.5$
+
+iii. Calcula-se a covariância de $X+Y$ e $X-Y$:
+
+> $Cov(X+Y,X-Y) = Cov(X,X) - Cov(X,Y) + Cov(X,Y) - Cov(Y,Y)$
+
+> $Cov(X+Y,X-Y) = Cov(X,X) - Cov(Y,Y)$
+
+> $Cov(X+Y,X-Y) = Var(X) - Var(Y)$
+
+> $Cov(X+Y,X-Y) = 9 - 4$
+
+> $Cov(X+Y,X-Y) = 5$
+
+
+Por fim, é possível substituir em (I) de tal forma que: 
+
+> $Corr(X+Y,X-Y)=\frac{Cov(X+Y,X-Y)}{\sqrt{Var(X+Y) \cdot Var(X - Y)}}$
+
+> $Corr(X+Y,X-Y)=\frac{5}{14.5 \cdot 11.5}$
+
+> $Corr(X+Y,X-Y) \approx 0.3872$
+
+
 ## Exercício 2.2
 If $X$ and $Y$ are dependent but $Var(X) = Var(Y)$, find $Cov(X + Y, X − Y)$.
 
+- Respostas:
+
+Em passos similares na resolução do *Item C, (iii)*, tem-se que:
+
+> $Cov(X+Y,X-Y) = Cov(X,X) - Cov(X,Y) + Cov(X,Y) - Cov(Y,Y)$
+
+> $Cov(X+Y,X-Y) = Cov(X,X) - Cov(Y,Y)$
+
+> $Cov(X+Y,X-Y) = Var(X) - Var(Y)$
+
+Como agora $Var(X) = Var(Y)$, então:
+
+> $Cov(X+Y,X-Y) = 0$
 
 ## Exercício 2.4
 Let ${e_t}$ be a zero mean white noise process. Suppose that the observed process is $Y_t = e_t + \theta e_{t − 1}$, where $\theta$ is either 3 or 1/3.
 
 a. Find the autocorrelation function for ${Y_t}$ both when $\theta = 3$ and when $\theta = 1/3$.
+
+
 
 b. You should have discovered that the time series is stationary regardless of the value of $\theta$ and that the autocorrelation functions are the same for $\theta = 3$ and $\theta = 1/3$. For simplicity, suppose that the process mean is known to be zero and the variance of $Y_t$ is known to be 1. You observe the series ${Y_t}$ for $t = 1, 2,..., n$ and suppose that you can produce good estimates of the autocorrelations $\rho _k$. Do you think that you could determine which value of $\theta$ is correct (3 or 1/3) based on the estimate of $\rho _k$? Why or why not?
 
