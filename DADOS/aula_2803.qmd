@@ -46,3 +46,46 @@ inf<- pia + qnorm(1-(alpha/2))*sqrt((pia*(1-pia))/n)
 ic <- data.frame(sup,inf)
 kable(round(ic,2),align='c')
 ```
+
+## Descrição da atividade
+
+Jornal; preferem certa marca
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\pi= 0.6$} \\
+H_{1}: \mbox{$\pi > 0.6$}
+\end{cases}
+$$
+
+
+**Dados**
+```{r}
+n=200
+carac=156
+
+prop<- carac/n
+
+kable(prop,align='c')
+```
+
+**Teste de hipóteses**
+```{r}
+pib<-0.6
+alpha<-0.025
+
+z<- (prop-pib)/sqrt((pib*(1-pib))/n)
+
+
+kable(z, align = 'c')
+kable(z>qnorm(1-(alpha)),align='c')
+```
+
+```{r}
+
+sup<- pib - qnorm(1-(alpha))*sqrt((pib*(1-pib))/n)
+inf<- pib + qnorm(1-(alpha))*sqrt((pib*(1-pib))/n)
+
+ic <- data.frame(sup,inf)
+kable(round(ic,2),align='c')
+```
