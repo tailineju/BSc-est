@@ -8,7 +8,7 @@ format: pdf
 
 # Descrição da atividade 
 
-- Exercícios 2.1, 2.2, 2.4, 2.5 e 2.6 do Cap.2 (pag.20) de Cryer & Chan (2008)
+Exercícios 2.1, 2.2, 2.4, 2.5 e 2.6 do Cap.2 (pag.20) de Cryer & Chan (2008)
 ```{r}
 #| message: false
 #| echo: false
@@ -25,9 +25,9 @@ b. $Cov(X, X + Y)$
 
 c. $Corr(X + Y, X − Y)$
 
-- Respostas: 
+### Respostas 
 
-**Item A.** 
+#### Item A 
 
 (I) $Var(X+Y) = Var(X) + Var (Y) + Cov (X+Y)$
 
@@ -45,7 +45,7 @@ Substituindo em (I), tem-se:
 
 > $Var(X+Y) = 14.5$
 
-**Item B.** 
+#### Item B 
 
 > $Cov(X,X+Y) = Cov(X,X) + Cov (X,Y)$
 
@@ -55,7 +55,7 @@ Substituindo em (I), tem-se:
 
 > $Cov(X,X+Y) = 10.5$
 
-**Item C.**
+#### Item C
 
 Tem-se que:
 
@@ -92,7 +92,7 @@ Por fim, é possível substituir em (I) de tal forma que:
 
 > $Corr(X+Y,X-Y)=\frac{Cov(X+Y,X-Y)}{\sqrt{Var(X+Y) \cdot Var(X - Y)}}$
 
-> $Corr(X+Y,X-Y)=\frac{5}{14.5 \cdot 11.5}$
+> $Corr(X+Y,X-Y)=\frac{5}{\sqrt{14.5 \cdot 11.5}}$
 
 > $Corr(X+Y,X-Y) \approx 0.3872$
 
@@ -100,9 +100,9 @@ Por fim, é possível substituir em (I) de tal forma que:
 ## Exercício 2.2
 If $X$ and $Y$ are dependent but $Var(X) = Var(Y)$, find $Cov(X + Y, X − Y)$.
 
-- Respostas:
+### Respostas
 
-Em passos similares na resolução do *Item C, (iii)*, tem-se que:
+Em passos similares na resolução do *Item C, (iii) no Exercício 2.1*, tem-se que:
 
 > $Cov(X+Y,X-Y) = Cov(X,X) - Cov(X,Y) + Cov(X,Y) - Cov(Y,Y)$
 
@@ -110,7 +110,7 @@ Em passos similares na resolução do *Item C, (iii)*, tem-se que:
 
 > $Cov(X+Y,X-Y) = Var(X) - Var(Y)$
 
-Como agora $Var(X) = Var(Y)$, então:
+Agora, como $Var(X) = Var(Y)$, então:
 
 > $Cov(X+Y,X-Y) = 0$
 
@@ -119,13 +119,86 @@ Let ${e_t}$ be a zero mean white noise process. Suppose that the observed proces
 
 a. Find the autocorrelation function for ${Y_t}$ both when $\theta = 3$ and when $\theta = 1/3$.
 
-
-
 b. You should have discovered that the time series is stationary regardless of the value of $\theta$ and that the autocorrelation functions are the same for $\theta = 3$ and $\theta = 1/3$. For simplicity, suppose that the process mean is known to be zero and the variance of $Y_t$ is known to be 1. You observe the series ${Y_t}$ for $t = 1, 2,..., n$ and suppose that you can produce good estimates of the autocorrelations $\rho _k$. Do you think that you could determine which value of $\theta$ is correct (3 or 1/3) based on the estimate of $\rho _k$? Why or why not?
+
+### Respostas
+
+#### Item A
+
+Sendo $t,s={0,\pm 1, \pm 2, ...}$ e $k={\pm 1, \pm 2, ...}$, a autocovariância será dada pelo sistema:
+
+(I)
+$$
+\gamma_{\text{t,s}} = \begin{cases}
+\mbox{$Var(Y_t)$} \hspace{1.9cm} \text{for} \hspace{0.5cm} {|t-s|=0}\\
+\mbox{$Cov(Y_t,Y_{t-1})$} \hspace{1cm} \text{for} \hspace{0.5cm} {|t-s|=1}\\
+\mbox{$Cov(Y_t,Y_{t-k})$} \hspace{1cm} \text{for} \hspace{0.5cm} {|t-s|>1}
+\end{cases}
+$$
+
+i. Calculando $Var(Y_t)$, tem-se que:
+
+> $Var(Y_t) = Var(e_t + \theta e_{t-1})$
+
+> $Var(Y_t) = Var(e_t) + \theta^2 Var(e_{t-1})$
+
+> $Var(Y_t) = (1 + \theta^2)\sigma^{2}_{e}$
+
+ii. Calculando $Cov(Y_t,Y_{t-1})$, tem-se que:
+
+> $Cov(Y_t,Y_{t-1}) = Cov(e_t + \theta e_{t-1},e_{t-1}+ \theta e_{t-2})$
+
+> $Cov(Y_t,Y_{t-1}) = \theta Var(e_{t-1})$
+
+> $Cov(Y_t,Y_{t-1}) = \theta \sigma^{2}_{e}$
+
+iii. Por fim, calculando $Cov(Y_t,Y_{t-k})$, tem-se que para $k>1$:
+
+> $Cov(Y_t,Y_{t-k}) = Cov(e_t + \theta e_{t-1},e_{t-k}+ \theta e_{t-k-1})$
+
+> $Cov(Y_t,Y_{t-k}) = 0$
+
+Logo, substituindo no sistema (I), tem-se que:
+
+$$
+\gamma_{\text{t,s}} = \begin{cases}
+\mbox{$(1 + \theta^2)\sigma^{2}_{e}$} \hspace{1cm} \text{for} \hspace{0.5cm} {|t-s|=0}\\
+\mbox{$\theta \sigma^{2}_{e}$} \hspace{2.2cm} \text{for} \hspace{0.5cm} {|t-s|=1}\\
+\mbox{$0$} \hspace{2.6cm} \text{for} \hspace{0.5cm} {|t-s|>1}
+\end{cases}
+$$
+
+Assim, como a função de autocorrelação é dada por:
+
+(II)
+
+> $Corr(Y_t,Y_s)=\frac{Cov(Y_t,Y_s)}{\sqrt{Var(Y_t +Y_s) \cdot Var(Y_t - Y_s)}}$
+
+Tem-se que:
+$$
+\rho_{\text{t,s}} = \begin{cases}
+\mbox{$1$} \hspace{2.5cm} \text{for} \hspace{0.5cm} {|t-s|=0}\\
+\mbox{$\theta/(1+\theta^2)$} \hspace{1cm} \text{for} \hspace{0.5cm} {|t-s|=1}\\
+\mbox{$0$} \hspace{2.5cm} \text{for} \hspace{0.5cm} {|t-s|>1}
+\end{cases}
+$$
+
+Substituindo as informações em (II), para ambos $\theta=3$ e $\theta=1/3$, a equação $\theta/(1+\theta^2) = 0.3$, assim, sem diferenciação de casos:
+$$
+\rho_{\text{t,s}} = \begin{cases}
+\mbox{$1$} \hspace{2cm} \text{for} \hspace{0.5cm} {|t-s|=0}\\
+\mbox{$0.3$} \hspace{1.7cm} \text{for} \hspace{0.5cm} {|t-s|=1}\\
+\mbox{$0$} \hspace{2cm} \text{for} \hspace{0.5cm} {|t-s|>1}
+\end{cases}
+$$
+
+
+#### Item B
+Como a autocorrelação é a mesma para $\theta=3$ e $\theta=1/3$, usar a estimação de $\rho_k$ não traz informação suficiente para determinar qual dos valores de $\theta$ seria o correto.
 
 
 ## Exercício 2.5
-Suppose $Y_t = 5 + 2t + X_t$, where ${X_t}$ is a zero-mean stationary series with autoco- variance function $\gamma _k$.
+Suppose $Y_t = 5 + 2t + X_t$, where ${X_t}$ is a zero-mean stationary series with autocovariance function $\gamma _k$.
 
 a. Find the mean function for ${Y_t}$.
 
@@ -133,16 +206,86 @@ b. Find the autocovariance function for ${Y_t}$.
 
 c. Is ${Y_t}$ stationary? Why or why not?
 
+### Respostas
+
+#### Item A
+
+> $\mu_t = E(Y_t)$
+
+> $\mu_t = E(5+2t+X_t)$
+
+> $\mu_t = 5 + 2t + E(X_t)$
+
+> Como dito no enunciado, ${X_t}$ tem média zero, então:
+
+> $\mu_t = 5 + 2t$
+
+#### Item B
+Sendo $t={0,\pm 1, \pm 2, ...}$ e $k={\pm 1, \pm 2, ...}$
+
+> $Cov(Y_t,Y_{t-k}) = Cov(5+2t+X_T, 5+ 2(t-k) + X_{t-k})$
+
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t, X_{t-k})$
+
+> $Cov(Y_t,Y_{t-k}) = \gamma_k$
+
+Conclui-se assim que a autovariância de ${Y_t}$ é a mesma que a de ${X_t}$.
+
+#### Item C
+Por ter um termo que depende do tempo, "$2t$", ${Y_t}$ não é estacionária, já que esse termo faz com que a média não seja constante. E como visto em sala, a série é estacionária se $E(Y_t) = \mu$ para todo $t$. 
+
 ## Exercício 2.6
 
 Let ${X_t}$ be a stationary time series, and define 
 $$
 Y_t = \begin{cases}
-\mbox{$X_t$} \hspace{1.5cm} \text{for $t$ odd}\\
-\mbox{$X_t +3$} \hspace{0.6cm} \text{for $t$ even}
+\mbox{$X_t$} \hspace{1.4cm} \text{for $t$ odd}\\
+\mbox{$X_t +3$} \hspace{0.7cm} \text{for $t$ even}
 \end{cases}
 $$
 
 a. Show that $Cov(Y_t, Y_t – k)$ is free of t for all lags k.
 
 b. Is ${Y_t}$ stationary?
+
+### Respostas
+
+#### Item A
+i. Se $t$ par e $k$ par:
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t+3,X_{t_k}+3)$
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+
+ii. Se $t$ par e $k$ ímpar:
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t+3,X_{t_k})$
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+
+iii. Se $t$ ímpar e $k$ par:
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+
+iv. Se $t$ ímpar e $k$ ímpar:
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k}+3)$
+
+> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+
+${X_t}$ é estacionária, logo $Cov(X_t,X_{t_k})$ não depende de $t$. Assim, como disposto acima $Cov(Y_t,Y_{t_k})$ também não depende de $t$. 
+
+#### Item B
+
+Apesar de no item anterior ser possível mostrar que  $Cov(Y_t,Y_{t_k})$ não depende de $t$, o mesmo não ocorre com a média de ${Y_t}$.
+
+Dado que ${X_t}$ é estacionária, a média $\overline{X}$ é constante de tal forma que:
+
+$$
+E(Y_t) = \begin{cases}
+\mbox{$\overline{X}$} \hspace{1.4cm} \text{se $t$ par}\\
+\mbox{$\overline{X} +3$} \hspace{0.7cm} \text{se $t$ ímpar}
+\end{cases}
+$$
+
+Assim, $E(Y_t)$ não é constante para todo $t$, logo ${Y_t}$ não é estacionária.
