@@ -13,6 +13,7 @@ format: pdf
 Antes de iniciar os exercícios propostos, carrega-se os pacotes necessários:
 ```{r}
 #| message: false
+#| warning: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse,TSA)
 ```
@@ -24,9 +25,23 @@ Use software to produce the time series plot shown in Exhibit 1.2, on page 2. Th
 
 Em primeiro lugar, é necessário trazer as informações dadas no livro texto. O enunciado fala sobre reproduzir a série temporal de Exhibit 1.2, que é na verdade um Gráfico de Dispersão. Assim, reproduzindo a Exhibit 1.1 (que é realmente uma série temporal), tem-se utilizando o código do livro:
 ```{r}
+#| message: false
+#| warning: false
 data(larain)
 plot(larain,ylab='Inches',xlab='Year',type='o')
 ```
+
+Agora utilizando o `ggplot`:
+```{r}
+#| message: false
+#| warning: false
+ggplot(data = data.frame(larain), aes(x = time(larain), y = as.vector(larain))) +
+  geom_line() +
+  labs(x = "Year", y = "Inches") +
+  theme_minimal()
+```
+
+
 
 ## Exercício 1.2
 Produce the time series plot displayed in Exhibit 1.3, on page 3. The data file is named color.
@@ -37,6 +52,16 @@ Utilizando o código do livro:
 ```{r}
 data(color)
 plot(color,ylab='Color Property',xlab='Batch',type='o')
+```
+
+Agora utilizando o `ggplot`:
+```{r}
+#| message: false
+#| warning: false
+ggplot(data = data.frame(color), aes(x = time(color), y = as.vector(color))) +
+  geom_line() +
+  labs(x = "Batch", y = "Color Property") +
+  theme_minimal()
 ```
 
 ## Exercício 1.3
@@ -107,4 +132,17 @@ Utilizando o código do livro:
 data(oilfilters)
 plot(oilfilters,type='l',ylab='Sales')
 points(y=oilfilters,x=time(oilfilters), pch=as.vector(season(oilfilters)))
+```
+
+Agora utilizando o `ggplot`:
+```{r}
+#| message: false
+#| warning: false
+ggplot(data = data.frame(oilfilters), 
+    aes(x = time(oilfilters), y = as.vector(oilfilters))) +
+  geom_line() +
+  geom_text(aes(label = substr(as.character(season(oilfilters)), 1, 1)), 
+  check_overlap = FALSE) +
+  labs(x = "Year", y = "Sales") +
+  theme_minimal()
 ```
