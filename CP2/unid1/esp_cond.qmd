@@ -1,0 +1,167 @@
+---
+title: "Distribuição e Esperança Condicional"
+subtitle: "Cálculo de Probabilidade 2"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# Conteúdo
+
+## Função de Distribuição Condicional
+
+Dado um espaço de probabilidade $(\Omega, \mathcal{A}, P)$. Onde $B \leq \Omega$ e $P(B) > 0$. A probabilidade condicional de $A$ dado $B$ é definida como:
+
+$$P(A|B) = \frac{P(A \cap B)}{P(B)}$$
+
+Quando $B$ é fixado, $P(.|B)$ é uma probabilidade sobre $\mathcal{A}$.
+
+Se $X$ é uma variável aleatória discreta, define-se a função de distribuição acumulada de $X$ como:
+
+> $F_{X|B}(x) = P(X \leq x | B)$
+
+> $F_{X|B}(x) = \frac{P(\{X \leq x\} \cap B)}{P(B)}$
+
+Onde:
+
+> $X \in \{X_1,...\}$
+
+> $B_i = (X = x_i)$
+
+E a função de distribuição marginal de $X$ é dada por:
+
+> $F_X(x) = P(X \leq x)$
+
+> $F_X(x) = \sum_{i \geq x_i} P(X \neq x_i | B_i) * P(B_i)$
+
+> $F_X(x) = \sum_{i \geq x_i} P(X = x_i) * F_{X|B_i}(x)$
+
+
+## Esperança Condicional
+
+Se $X$ é uma variável aleatória discreta, a esperança condicional de $X$ dado $B$ é definida como:
+
+> $E(X|B) = \sum_{i} x_i * P(X = x_i | B)$
+
+Se $X$ é uma variável aleatória contínua, a esperança condicional de $X$ dado $B$ é definida como:
+
+> $E(X|B) = \int_{-\infty}^{\infty} x * d F_{X|B}(x)$
+
+> Se $F(X|B)' \exists$
+
+> $E(X|B) = \int_{-\infty}^{\infty} x * f_{X|B}(x) dx$
+
+A esperença condicional conta com algumas propriedades, sendo elas:
+
+i. $E(X|B) = E(X)$ se $X$ é independente de $B$
+
+ii. $E(aX + bY|B) = aE(X|B) + bE(Y|B)$
+
+iii. $E(E(X|B)) = E(X)$
+
+iv. $E(XY|B) = E(X|B)E(Y|B)$ se $X$ e $Y$ são independentes de $B$
+
+v. $E(X|B) = E(X|C) \forall C \in \mathcal{A}$ tal que $P(C) > 0$
+
+
+# Exemplos
+
+## Exemplo 1
+
+Uma certa lâmpada tem vida em horas, tendo distribuição exponencial com parâmetro $\lambda = 1$. Uma pessoa acende a lâmpada e, enquanto a lâmpada estiver acesa, um dado honesto é jogado a cada 15 segundos.
+
+A. Qual o número esperado de "3"s lançados até a lâmpada se apagar?
+
+B. Qual o número esperado de lançamentos do dado até a lâmpada se apagar?
+
+C. Qual o número esperado de "3"s lançados até a lâmpada se apagar, dado que a lâmpada se apagou após 10 horas?
+
+D. Qual o número esperado de lançamentos do dado até a lâmpada se apagar, dado que a lâmpada se apagou após 10 horas?
+
+E. Qual o número esperado de "3"s lançados até a lâmpada se apagar, dado que a lâmpada se apagou após 10 horas e o primeiro lançamento do dado foi um "3"?
+
+### Resposta A
+
+Dividindo a resolução em passos, tem-se que:
+
+1. Estabelecendo os objetos:
+
+> $X$ = tempo de vida da lâmpada
+
+> $X \sim Exp(1)$
+
+> $N = número de lançamentos até a lâmpada se apagar$
+
+> $Y = número de "3"s lançados nos N lançamentos$
+
+2. Conectando informações:
+
+> $N \sim Geom(1 - e^{-X})$
+
+> $Y|N \sim Bin(N, 1/6)$
+
+3. Calculando a esperança:
+
+> $E(Y) = E(E(Y|N))$
+
+> $E(Y|N) = N * 1/6$
+
+> $E(Y) = E(N) * 1/6$
+
+4. Calculando a esperança de $N$:
+
+Considerando $\alpha=15$ segundos ou $\alpha=1/240$ horas, tem-se uma progressão geométrica com razão $e^{-\alpha}$, logo $P(X> n\alpha) = e^{-n\alpha}$. Então:
+
+> $E(N) = \sum_{n=0}^{\infty} e^{-n\alpha}$
+
+Por ser uma progressão geométrica, $\sum_{n=0}^{\infty} e^{-n\alpha}$ converge em $\frac{1}{1 - e^{-\alpha}}$, logo:
+
+> $E(N) = \frac{1}{1 - e^{-\alpha}}$
+
+5. Substituindo os valores:
+
+> $E(Y) = \frac{1}{1 - e^{-\alpha}} * 1/6$
+
+> $E(Y) = \frac{1}{1 - e^{-1/240}} * 1/6$
+
+```{r}
+ey = 1/(1 - exp(-1/240)) * 1/6
+```
+
+> $E(Y) \approx$ `r round(ey,3)`
+
+### Resposta B
+
+Utilizando as informações calculadas no item anterior, o número esperado de lançamentos do dado até a lâmpada se apagar é:
+
+> $E(N) \approx$ `r round(1/(1 - exp(-1/240)),3)`
+
+### Resposta C
+
+Para calcular o número esperado de "3"s lançados até a lâmpada se apagar, dado que a lâmpada se apagou após 10 horas, tem-se que:
+
+1. Estabelecendo os objetos:
+
+> $X$ = 10 horas
+
+> $X \sim Exp(1)$
+
+> $N = número de lançamentos até a lâmpada se apagar$
+
+> $Y = número de "3"s lançados nos N lançamentos$
+
+2. Conectando informações:
+
+Utilizando a fórmula de Bayes, tem-se que:
+
+> $E(Y|X=10) = E(E(Y|N, X=10))$
+
+...
+
+
+
+
+
+
+
+
+

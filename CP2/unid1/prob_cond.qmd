@@ -1,0 +1,147 @@
+---
+title: "Probabilidade Condicional"
+subtitle: "Cálculo de Probabilidade 2"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+# Conteúdo
+Probabilidade condicional é a probabilidade de um evento ocorrer, dado que outro evento já ocorreu. A probabilidade condicional é denotada por P(A|B), que é a probabilidade de A ocorrer dado que B já ocorreu. A fórmula para calcular a probabilidade condicional é dada por:
+
+$$
+P(A|B) = \frac{P(A \cap B)}{P(B)}
+$$
+
+Existem algumas propriedades, são elas:
+
+i. Se A e B são eventos independentes, então a probabilidade condicional de A dado B é igual à probabilidade de A, ou seja, P(A|B) = P(A).
+
+ii. Se A e B são eventos mutuamente exclusivos, ou seja, não podem ocorrer simultaneamente, então a probabilidade condicional de A dado B é igual a zero, ou seja, P(A|B) = 0.
+
+iii. Se A e B são eventos complementares, então a probabilidade condicional de A dado B é igual a 1 menos a probabilidade de A, ou seja, P(A|B) = 1 - P(A).
+
+Importante também descrever a propriedade multiplicativa, que é dada por:
+
+$$
+P(A \cap B) = P(A|B) * P(B)
+$$
+
+
+# Exemplos
+## Exemplo 1
+Considere uma urna "A" tem 5 bolas brancas e 7 bolas pretas. A urna "B" tem 3 bolas brancas e 12 bolas pretas. Joga-se uma moeda honesta, se der coroa retira-se uma bola da urna B, se der cara retira-se uma bola da urna A. 
+
+A. Suponha que a bola retirada foi branca. Qual a probabilidade de ter sido retirada da urna B?
+
+B. Suponha que a bola retirada foi preta. Qual a probabilidade de ter sido retirada da urna A?
+
+## Resposta A
+A probabilidade de ter sido retirada uma bola da urna B, dado que a bola retirada foi branca, pode ser calculada usando a fórmula da probabilidade condicional:
+
+> $P(B|Branca) = P(Branca|B) * \frac{P(B)}{P(Branca)}$
+
+Onde:
+$P(B|Branca)$ é a probabilidade de ter sido retirada uma bola da urna B, dado que a bola retirada foi branca.
+$P(Branca|B)$ é a probabilidade de ter sido retirada uma bola branca da urna B.
+$P(B)$ é a probabilidade de ter sido retirada uma bola da urna B.
+$P(Branca)$ é a probabilidade de ter sido retirada uma bola branca.
+
+$P(Branca|B) = 3/15$ porque a urna B tem 3 bolas brancas e 15 bolas no total.
+$P(B) = 1/2$ porque a moeda é honesta e tem 2 lados.
+$P(Branca) = (3/15) * (1/2) + (5/12) * (1/2)$ porque a probabilidade de retirar uma bola branca da urna B é 3/15 e a probabilidade de retirar uma bola branca da urna A é 5/12.
+
+Substituindo, temos:
+
+> $P(B|Branca) = (3/15) * \frac{(15/35)}{(8/35)}$
+
+> $P(B|Branca) = 0.2 * \frac{0.4286}{0.2286}$
+
+> $P(B|Branca) = 0.2 * 1.875$
+
+> $P(B|Branca) = 0.375$
+
+## Resposta B
+A probabilidade de ter sido retirada uma bola da urna A, dado que a bola retirada foi preta, pode ser calculada usando a fórmula da probabilidade condicional:
+
+> $P(A|Preta) = P(Preta|A) * P(A) / P(Preta)$
+
+Onde:
+$P(A|Preta)$ é a probabilidade de ter sido retirada uma bola da urna A, dado que a bola retirada foi preta.
+$P(Preta|A)$ é a probabilidade de ter sido retirada uma bola preta da urna A.
+$P(A)$ é a probabilidade de ter sido retirada uma bola da urna A.
+$P(Preta)$ é a probabilidade de ter sido retirada uma bola preta.
+
+$P(Preta|A) = 7/12$ porque a urna A tem 7 bolas pretas e 12 bolas no total.
+$P(A) = 1/2$ porque a moeda é honesta e tem 2 lados.
+$P(Preta) = (7/12) * (1/2) + (12/15) * (1/2)$ porque a probabilidade de retirar uma bola preta da urna A é 7/12 e a probabilidade de retirar uma bola preta da urna B é 12/15.
+
+Substituindo, temos:
+
+> $P(A|Preta) = (7/12) * \frac{(12/35)}{(17/35)}$
+
+> $P(A|Preta) = 0.5833 * \frac{0.3429}{0.4857}$
+
+> $P(A|Preta) = 0.5833 * 0.7059$
+
+> $P(A|Preta) = 0.4118$
+
+## Exemplo 2
+Urna de Poya: Uma urna tem 7 bolas brancas e 5 bolas pretas. Cada vez que uma bola é retirada, sua cor é anotada e ela é recolocada na urna com mais 2 outras bolas da mesma cor. 
+
+A. Qual é a probabilide de que as primeiras 2 bolas retiradas sejam pretas e as 2 seguintes sejam brancas?
+
+### Resposta A
+A probabilidade pode ser calculada a partir da propriedade multiplicativa:
+
+> $P(P_1;P_2;B_3;B_4) = P(P_1) * P(P_2|P_1) * P(B_3|P_1;P_2) * P(B_4|P_1;P_2;B_3)$
+
+Tem-se que:
+
+> $P(P_1) = 5/12$
+
+> $P(P_2|P_1) = 7/14$
+
+> $P(B_3|P_1;P_2) = 7/16$
+
+> $P(B_4|P_1;P_2;B_3) = 9/18$
+
+Substituindo, temos:
+
+> $P(P_1;P_2;B_3;B_4) = (5/12) * (7/14) * (7/16) * (9/18)$
+
+> $P(P_1;P_2;B_3;B_4) = 0.2083$
+
+## Exemplo 3
+Uma questão de Verdadeiro ou Falso foi aplicada para 2 pessoas em um jogo de perguntas. Ambos sabem a resposta correta de forma independente com probabilidade $p$.
+
+A. Qual das seguintes estratégias é mais eficaz para ganhar o jogo: i. escolher 1 pessoa para responder a pergunta ou ii. ambos pensam e dão a resposta em comum se estiverem de acordo ou decidem na moeda se discordarem?
+
+### Resposta A
+
+Descrevendo os eventos, tem -se que:
+
+> $A$ = Ambos concordam e acertam a resposta
+
+> $B$ = Ambos concordam e erram a resposta
+
+> $C$ = Discordam
+
+> $D$ = Ambos acertam a resposta
+
+Na opção i, $P(G)$ será a probabilidade da (uma) pessoa escolhida acertar, logo:
+
+> $P(G)=p$
+
+Na opção ii, $P(G)$ será a probabilidade de $G$ dado $A$, $B$ e $C$, logo:
+
+> $P(G)=P(A)P(G|A)+P(B)P(G|B)+P(C)P(G|C)$
+
+> $P(G)=p^2\cdot 1+ 0 + p(1-p) + (1-p)p \cdot (1/2)$
+
+> $P(G)=p^2 + 2p(1-p) \cdot 1/2$
+
+> $P(G)=p^2 + p(1-p)$
+
+> $P(G)=p$
+
+Logo, é possível observar que as duas opções são equivalentes, tendo a mesma probabilidade de acerto.
+
