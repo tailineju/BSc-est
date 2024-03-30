@@ -2,7 +2,7 @@
 title: "Exercícios em Sala"
 subtitle: "ANÁLISE DE DADOS CATEGORIZADOS"
 author: "Tailine J. S. Nonato"
-format: pdf
+format: html
 ---
 
 # 28 de março

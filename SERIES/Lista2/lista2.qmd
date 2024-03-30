@@ -2,7 +2,7 @@
 title: "LISTA 2"
 subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
 author: "Tailine J. S. Nonato"
-date: "03/29/2023"
+date: "03/30/2023"
 format: pdf
 ---
 
@@ -23,19 +23,23 @@ c. $Corr(X + Y, X − Y)$
 
 #### Item A 
 
-(I) $Var(X+Y) = Var(X) + Var (Y) + 2 \cdot Cov (X,Y)$
+(I) $Var(X+Y) = Var(X) + Var(Y) + 2 \cdot Cov(X,Y)$
 
-Para encontrar $Cov (X,Y)$, tem-se:
+Para encontrar $Cov(X,Y)$, tem-se:
 
-> $Cov (X,Y) = Corr(X, Y) \sqrt{Var(X) Var(Y)}$
+> $Cov(X,Y) = Corr(X,Y) \cdot \sqrt{Var(X) \cdot Var(Y)}$
 
-> $Cov (X,Y) = 0.25 \cdot \sqrt{9 \cdot 4}$
+> $Cov(X,Y) = 0.25 \cdot \sqrt{9 \cdot 4}$
 
-> $Cov (X,Y) = 1.5$
+> $Cov(X,Y) = 0.25 \cdot 6$
+
+> $Cov(X,Y) = 1.5$
 
 Substituindo em (I), tem-se:
 
-> $Var(X+Y) = 9 + 4 + 2 \cdot 1.5$
+> $Var(X+Y) = 9 + 4 + 2(1.5)$
+
+> $Var(X+Y) = 9 + 4 + 3$
 
 > $Var(X+Y) = 16$
 
@@ -59,15 +63,15 @@ Assim:
 
 i. Pelo *Item A*,
 
-> $Var(X+Y) = 14.5$
+> $Var(X+Y) = 16$
 
 ii. Calcula-se a variância de $X-Y$
 
-> $Var(X-Y) = Var(x) + Var(Y) - Cov(X,Y)$
+> $Var(X-Y) = Var(X) + Var(Y) - 2 \cdot Cov(X,Y)$
 
-> $Var(X-Y) = 9 + 4 - 1.5$ 
+> $Var(X-Y) = 9 + 4 - 3$ 
 
-> $Var(X-Y) = 11.5$
+> $Var(X-Y) = 10$
 
 iii. Calcula-se a covariância de $X+Y$ e $X-Y$:
 
@@ -86,10 +90,11 @@ Por fim, é possível substituir em (I) de tal forma que:
 
 > $Corr(X+Y,X-Y)=\frac{Cov(X+Y,X-Y)}{\sqrt{Var(X+Y) \cdot Var(X - Y)}}$
 
-> $Corr(X+Y,X-Y)=\frac{5}{\sqrt{14.5 \cdot 11.5}}$
+> $Corr(X+Y,X-Y)=\frac{5}{\sqrt{16 \cdot 10}}$
 
-> $Corr(X+Y,X-Y) \approx 0.3872$
+> $Corr(X+Y,X-Y)=\frac{5}{\sqrt{160}}$
 
+> $Corr(X+Y,X-Y) \approx 0.396$
 
 ## Exercício 2.2
 If $X$ and $Y$ are dependent but $Var(X) = Var(Y)$, find $Cov(X + Y, X − Y)$.
@@ -111,7 +116,7 @@ Agora, como $Var(X) = Var(Y)$, então:
 ## Exercício 2.4
 Let ${e_t}$ be a zero mean white noise process. Suppose that the observed process is $Y_t = e_t + \theta e_{t − 1}$, where $\theta$ is either 3 or 1/3.
 
-a. Find the autocorrelation function for ${Y_t}$ both when $\theta = 3$ and when $\theta = 1/3$.
+a. Find t he autocorrelation function for ${Y_t}$ both when $\theta = 3$ and when $\theta = 1/3$.
 
 b. You should have discovered that the time series is stationary regardless of the value of $\theta$ and that the autocorrelation functions are the same for $\theta = 3$ and $\theta = 1/3$. For simplicity, suppose that the process mean is known to be zero and the variance of $Y_t$ is known to be 1. You observe the series ${Y_t}$ for $t = 1, 2,..., n$ and suppose that you can produce good estimates of the autocorrelations $\rho _k$. Do you think that you could determine which value of $\theta$ is correct (3 or 1/3) based on the estimate of $\rho _k$? Why or why not?
 
