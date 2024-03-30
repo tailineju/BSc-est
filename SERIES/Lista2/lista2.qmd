@@ -2,19 +2,13 @@
 title: "LISTA 2"
 subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
 author: "Tailine J. S. Nonato"
-date: "04/01/2023"
+date: "03/29/2023"
 format: pdf
 ---
 
 # Descrição da atividade 
 
 Exercícios 2.1, 2.2, 2.4, 2.5 e 2.6 do Cap.2 (pag.20) de Cryer & Chan (2008)
-```{r}
-#| message: false
-#| echo: false
-if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse)
-```
 
 ## Exercício 2.1
 Suppose $E(X) = 2$, $Var(X) = 9$, $E(Y) = 0$, $Var(Y) = 4$, and $Corr(X,Y) = 0.25$. Find: 
@@ -29,21 +23,21 @@ c. $Corr(X + Y, X − Y)$
 
 #### Item A 
 
-(I) $Var(X+Y) = Var(X) + Var (Y) + Cov (X+Y)$
+(I) $Var(X+Y) = Var(X) + Var (Y) + 2 \cdot Cov (X,Y)$
 
-Para encontrar $Cov (X+Y)$, tem-se:
+Para encontrar $Cov (X,Y)$, tem-se:
 
-> $Cov (X+Y) = Corr(X, Y) \sqrt{Var(X) Var(Y)}$
+> $Cov (X,Y) = Corr(X, Y) \sqrt{Var(X) Var(Y)}$
 
-> $Cov (X+Y) = 0.25 \cdot \sqrt{9 \cdot 4}$
+> $Cov (X,Y) = 0.25 \cdot \sqrt{9 \cdot 4}$
 
-> $Cov (X+Y) = 1.5$
+> $Cov (X,Y) = 1.5$
 
 Substituindo em (I), tem-se:
 
-> $Var(X+Y) = 9 + 4 + 1.5$
+> $Var(X+Y) = 9 + 4 + 2 \cdot 1.5$
 
-> $Var(X+Y) = 14.5$
+> $Var(X+Y) = 16$
 
 #### Item B 
 
@@ -253,31 +247,31 @@ b. Is ${Y_t}$ stationary?
 #### Item A
 i. Se $t$ par e $k$ par:
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t+3,X_{t_k}+3)$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t+3,X_{t-k}+3)$
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t,X_{t-k})$
 
 ii. Se $t$ par e $k$ ímpar:
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t+3,X_{t_k})$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t+3,X_{t-k})$
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t,X_{t-k})$
 
 iii. Se $t$ ímpar e $k$ par:
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t,X_{t-k})$
 
 iv. Se $t$ ímpar e $k$ ímpar:
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k}+3)$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t,X_{t-k}+3)$
 
-> $Cov(Y_t,Y_{t_k}) = Cov(X_t,X_{t_k})$
+> $Cov(Y_t,Y_{t-k}) = Cov(X_t,X_{t-k})$
 
-${X_t}$ é estacionária, logo $Cov(X_t,X_{t_k})$ não depende de $t$. Assim, como disposto acima $Cov(Y_t,Y_{t_k})$ também não depende de $t$. 
+${X_t}$ é estacionária, logo $Cov(X_t,X_{t-k})$ não depende de $t$. Assim, como disposto acima $Cov(Y_t,Y_{t-k})$ também não depende de $t$. 
 
 #### Item B
 
-Apesar de no item anterior ser possível mostrar que  $Cov(Y_t,Y_{t_k})$ não depende de $t$, o mesmo não ocorre com a média de ${Y_t}$.
+Apesar de no item anterior ser possível mostrar que  $Cov(Y_t,Y_{t-k})$ não depende de $t$, o mesmo não ocorre com a média de ${Y_t}$.
 
 Dado que ${X_t}$ é estacionária, a média $\overline{X}$ é constante de tal forma que:
 
