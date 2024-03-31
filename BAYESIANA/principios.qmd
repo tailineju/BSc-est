@@ -1,0 +1,39 @@
+---
+title: "Introdução/Princípios"
+subtitle: "Inferência Bayesiana"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# Conteúdo
+
+## Princípio da Verossimilhança
+Afirma que a informação contida nos dados é a única informação relevante para a inferência. Assim, toda a informação sobre o parâmetro de interesse contida na amostra está contida na função de verossimilhança $\theta \rightarrow L_x(\theta) = f_\theta(x)$, onde $x$ é a amostra observada (e somente ela).
+
+Possíveis resultados experimentais que **não** ocorreram não devem ser considerados na inferência, já que não fornecem informação sobre o parâmetro de interesse.
+
+## Princípio da Condicionalidade
+
+Afirma que quando um experimento é escolhido por algum mecanismo aleatório cuja distribuição de probabilidade **não** depende do parâmetro de interesse, a inferência deve ser condicionada ao resultado observado.
+
+## Princípio de Suficiência
+
+Afirma que a evidência contida em $X=x$ em um dado experimento é a mesma que a evidência contida em $T(x)$, onde $T$ é uma função de $x$ que não depende do parâmetro de interesse, ou seja, $T(x)$ é uma estatística suficiente para o parâmetro de interesse.
+
+## Teorema de Birnbaum
+
+Afirma que a inferência bayesiana é a única inferência que satisfaz os princípios da verossimilhança, da condicionalidade e da suficiência.
+
+Define-se o conceito de evidência como:
+
+$$
+Ev(E_f,x)
+$$
+
+**Definição 1:** Pelo princípio da verossimilhança $Ev(E_f,x) = Ev(E_g,y)$ onde $X \sim f_\theta$ e $Y \sim g_\theta$ e existe uma constante $c=c(x,y)$ que não depende de $\theta$.   
+
+**Definição 2:** Pelo princípio da condicionalidade $Ev(E^c,(E,z)) = Ev(E,z)$ onde $E^c$ é um experiente de lançar uma moeda honesta e receber cara e E é é o experimento realizado caso $E^c$ aconteça e $z$ é o 
+
+**Teorema 1:** O princípio da verossimilhança vale se, e somente se, os princípios da condicionalidade e da suficiência valem.
+
+
