@@ -89,9 +89,9 @@ Dividindo a resolução em passos, tem-se que:
 
 > $X \sim Exp(1)$
 
-> $N = número de lançamentos até a lâmpada se apagar$
+> $N$ = número de lançamentos até a lâmpada se apagar
 
-> $Y = número de "3"s lançados nos N lançamentos$
+> $Y$ = número de "3"s lançados nos N lançamentos
 
 2. Conectando informações:
 
@@ -145,9 +145,9 @@ Para calcular o número esperado de "3"s lançados até a lâmpada se apagar, da
 
 > $X \sim Exp(1)$
 
-> $N = número de lançamentos até a lâmpada se apagar$
+> $N =$ número de lançamentos até a lâmpada se apagar
 
-> $Y = número de "3"s lançados nos N lançamentos$
+> $Y =$ número de "3"s lançados nos N lançamentos
 
 2. Conectando informações:
 
