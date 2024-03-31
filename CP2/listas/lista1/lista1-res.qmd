@@ -1,0 +1,124 @@
+---
+title: "Lista 1 - Cátia"
+subtitle: "Cálculo de Probabilidade 2"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# Exercício 1
+Seja $X$ uma v.a. com distribuição geométrica de parâmetro $0 < p < 1$. Encontre a função de probabilidade condicional de $X$ dado o evento $B = (\theta < X \leq n)$, onde $n \geq 1$ é um número natural.
+
+## Gabarito
+
+$$
+P(X = k | 0<X \leq n) = \begin{cases}
+\mbox{$\frac{p(1-p)^{k-1}}{1-(1-p)^n}$}  \hspace{1.8cm} \text{k=1,2,...,n}\\
+\mbox{$0$} \hspace{3cm} \text{caso contrário}
+\end{cases}
+$$
+
+## Solução
+
+Estabelecendo os objetos, temos que o espaço de probabilidade é $(\Omega, \mathbfcal{A}, P)$, onde $\Omega = \{1,2,3,...\}$, $\mathbfcal{A} = 2^{\Omega}$ e $P$ é a probabilidade geométrica. 
+
+Seja $X$ uma v.a. com distribuição geométrica de parâmetro $0 < p < 1$. A função de probabilidade de $X$ é dada por:
+
+> $P(X = k) = p(1-p)^{k-1}$, para $k = 1,2,...$
+
+A função de probabilidade condicional de $X$ dado o evento $B = (\theta < X \leq n)$ é dada por:
+
+> $P(X = k | 0<X \leq n) = \frac{P(X = k \cap B)}{P(B)}$
+
+i. Calcula-se $P(X = k \cap B)$:
+
+Como $B$ é um evento do tipo $(\theta < X \leq n)$, a interseção de $X = k$ com $B$ ocorre quando $k \leq n$ e é equivalente a $X = k$ ocorrer.
+
+> $P(X = k \cap B) = P(X = k)$
+
+> $P(X = k \cap B) = p(1-p)^{k-1}$
+
+ii. Calcula-se $P(B)$:
+
+> $P(B) = P(\theta < X \leq n)$
+
+> $P(B) = P(X \leq n) - P(X \leq \theta)$
+
+Assim, sabendo que $P(X \leq \theta) = 0$ e a função de distribuição de probabilidade acumulada da geométrica é $P(X \leq x) = 1 - (1-p)^x$, temos:
+
+> $P(B) = 1 - (1-p)^n$
+
+iii. Substitindo:
+
+> $P(X = k | 0<X \leq n) = \frac{p(1-p)^{k-1}}{1-(1-p)^n}$
+
+E então
+
+$$
+P(X = k | 0<X \leq n) = \begin{cases}
+\mbox{$\frac{p(1-p)^{k-1}}{1-(1-p)^n}$}  \hspace{1.8cm} \text{k=1,2,...,n}\\
+\mbox{$0$} \hspace{3cm} \text{caso contrário}
+\end{cases}
+$$
+
+
+# Exercício 2
+
+Seja $X$ uma v.a. com distribuição Normal padrão, $N(0,1)$, e considere o evento $A = (X > 0)$. Obtenha a função de distribuição e a função de densidade condicionais de $X$ dado o evento $A = (X > 0)$.
+
+## Gabarito 
+
+$$
+F_X(x|X>0)  = \begin{cases}
+\mbox{$2F_X(x)$}  \hspace{1.8cm} \text{$x > 0$}\\
+\mbox{$0$} \hspace{3cm} \text{$x \leq 0$}
+\end{cases}
+$$
+
+$$
+f_X(x|X>0)  = \begin{cases}
+\mbox{$\frac{2}{\sqrt{2\pi}}e^{x^2/2}$}  \hspace{1.8cm} \text{$x > 0$}\\
+\mbox{$0$} \hspace{3cm} \text{$x \leq 0$}
+\end{cases}
+$$
+
+## Solução 
+
+Estabelecendo os objetos, temos que o espaço de probabilidade é $(\Omega, \mathbfcal{A}, P)$, onde $\Omega = \mathbb{R}$, $\mathbfcal{A} = 2^{\Omega}$ e $P$ é a probabilidade normal padrão.
+
+A função de densidade de probabilidade da normal padrão é dada por $f(x) = \frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}$.
+
+A função de distribuição de probabilidade da normal padrão é dada por $F(x) = \int_{-\infty}^{x} f(t)dt$.
+
+Assim, a função de densidade condicional de $X$ dado o evento $A = (X > 0)$ será dada por:
+
+> $f(x | X > 0) = \frac{f(x)}{P(X > 0)}$
+
+i. Calcula-se $P(X > 0)$:
+
+> $P(X > 0) = 1 - P(X \leq 0)$
+
+> $P(X > 0) = 1 - F(0)$
+
+> $P(X > 0) = 1 - \int_{-\infty}^{0} f(t)dt$
+
+> $P(X > 0) = 1 - \int_{-\infty}^{0} \frac{1}{\sqrt{2\pi}}e^{-\frac{t^2}{2}}dt$
+
+> Tirando as constantes de dentro da integral, temos:
+
+> $P(X > 0) = 1 - \frac{1}{\sqrt{2\pi}}\int_{-\infty}^{0} e^{-\frac{t^2}{2}}dt$
+
+> Integrar de $-\infty$ até $0$ é o mesmo que integrar de $0$ até $\infty$ com o sinal negativo, logo:
+
+> $P(X > 0) = 1 - \frac{1}{\sqrt{2\pi}}\int_{0}^{\infty} e^{-\frac{t^2}{2}}dt$
+
+> Em termos de $x$:
+
+** MISSING INFORMATION **
+
+ii. Substituindo:
+
+> $f(x | X > 0) = \frac{f(x)}{P(X > 0)}$
+
+> $f(x | X > 0) = \frac{\frac{1}{\sqrt{2\pi}}e^{-\frac{x^2}{2}}}{1 - \frac{1}{\sqrt{2\pi}}\int_{0}^{\infty} e^{-\frac{x^2}{2}}dx}$
+
+
