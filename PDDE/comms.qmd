@@ -1,0 +1,51 @@
+---
+title: "Cecampe-CO/PDDE"
+subtitle: "Mapa de Comunicação"
+author: "Tailine J. S. Nonato"
+date: "04/02/2024"
+format: html
+---
+
+1. Identificar o público-alvo
+    1. Gestores das escolas que recebem o benefício 
+2. Definir os objetivos da comunicação
+    1. Obter respostas ao questionário sobre o uso do benefício 
+    2. Atualizar dados de contato
+3. Planejar as mensagens e os canais de entrega
+    1. E-mails explicativos sobre o questionário e a importância de sua resposta
+    2. Ligações telefônicas informando que o e-mail foi enviado, confirmando o recebimento
+    3. Ligações telefônicas para coleta de dados
+4. Organizar dados de contato existentes
+5. Implementar a estratégia de comunicação
+6. Monitorar e ajustar a estratégia conforme necessário
+
+```{r}
+#| message: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,DiagrammeR)
+```
+
+```{r}
+graph <- create_graph() %>%
+  add_node(label = "1. Identificar o público-alvo", type = "topic") %>%
+  add_node(label = "1.1. Gestores das escolas que recebem o benefício", type = "subtopic") %>%
+  add_edge(from = 1, to = 2) %>%
+  add_node(label = "2. Definir os objetivos da comunicação", type = "topic") %>%
+  add_node(label = "2.1. Obter respostas ao questionário sobre o uso do benefício", type = "subtopic") %>%
+  add_node(label = "2.2. Atualizar dados de contato", type = "subtopic") %>%
+  add_edge(from = 3, to = 4) %>%
+  add_edge(from = 3, to = 5) %>%
+  add_node(label = "3. Planejar as mensagens e os canais de entrega", type = "topic") %>%
+  add_node(label = "3.1. E-mails explicativos sobre o questionário e a importância de sua resposta", type = "subtopic") %>%
+  add_node(label = "3.2. Ligações telefônicas informando que o e-mail foi enviado, confirmando o recebimento", type = "subtopic") %>%
+  add_node(label = "3.3. Ligações telefônicas para coleta de dados", type = "subtopic") %>%
+  add_edge(from = 6, to = 7) %>%
+  add_edge(from = 6, to = 8) %>%
+  add_edge(from = 6, to = 9) %>%
+  add_node(label = "4. Organizar dados de contato existentes", type = "topic") %>%
+  add_node(label = "5. Implementar a estratégia de comunicação", type = "topic") %>%
+  add_node(label = "6. Monitorar e ajustar a estratégia conforme necessário", type = "topic")
+
+render_graph(graph)
+```

@@ -26,13 +26,13 @@ f(x,y) = \begin{cases}
 \end{cases}
 $$
 
-Calcule $FY (y|X = 2)$ e $FX (x|Y = 1/2)$.
+Calcule $F_Y (y|X = 2)$ e $FX (x|Y = 1/2)$.
 
 ## Solução
 
-Para calcular $FY (y|X = 2)$, vamos utilizar a definição de distribuição condicional:
+Para calcular $F_Y (y|X = 2)$, vamos utilizar a definição de distribuição condicional:
 
-> $FY (y|X = 2) = \frac{f(2,y)}{f_X(2)}$
+> $F_Y (y|X = 2) = \frac{f(2,y)}{f_X(2)}$
 
 Calculando $f_X(2)$
 
@@ -48,13 +48,13 @@ Calculando $f(2,y)$
 
 Portanto, 
 
-> $FY (y|X = 2) = \frac{2y}{3} \cdot 3$ 
+> $F_Y (y|X = 2) = \frac{2y}{3} \cdot 3$ 
 
-> $FY (y|X = 2)= 2y$
+> $F_Y (y|X = 2)= 2y$
 
 Para calcular $FX (x|Y = 1/2)$, vamos utilizar a definição de distribuição condicional:
 
-> $FX (x|Y = 1/2) = \frac{f(x,1/2)}{f_Y(1/2)}$
+> $F_X (x|Y = 1/2) = \frac{f(x,1/2)}{f_Y(1/2)}$
 
 Calculando $f_Y(1/2)$
 
@@ -74,7 +74,87 @@ Calculando $f(x,1/2)$, com $x = 1,2,3$
 
 Portanto,
 
-> $FX (x|Y = 1/2) = \frac{f(x,1/2)}{11/24}$
+> $F_X (x|Y = 1/2) = \frac{f(x,1/2)}{11/24}$
+
+### Solução alternativa (em sala)
+
+> $F_Y (y|X = 2) = \frac{P(Y \leq y, X = 2)}{P(X = 2)}$ 
+
+Obtendo as distribuições marginais em $X$:
+
+$P(X=1)$
+
+> $P(X=1) = \int_{0}^{1} f(1,y) dy$
+
+> $P(X=1) = \int_{0}^{1} \frac{1*y^{1-1}}{3} dy$
+
+> $P(X=1) = \int_{0}^{1} \frac{1}{3} dy$
+
+> $P(X=1) = \frac{1}{3}$
+
+$P(X=2)$
+
+> $P(X=2) = \int_{0}^{1} f(2,y) dy$
+
+> $P(X=2) = \int_{0}^{1} \frac{2*y^{2-1}}{3} dy$
+
+> $P(X=2) = \int_{0}^{1} \frac{2y}{3} dy$
+
+> $P(X=2) = \frac{1}{3}$
+
+$P(X=3)$
+
+> $P(X=3) = \int_{0}^{1} f(3,y) dy$
+
+> $P(X=3) = \int_{0}^{1} \frac{3*y^{3-1}}{3} dy$
+
+> $P(X=3) = \int_{0}^{1} y^{2} dy$
+
+> $P(X=3) = \frac{1}{3}$
+
+Agora, calculando $P(X=2,Y \leq y)$
+
+> $P(X=2,Y \leq y) = \int_{0}^{y} f(2,t) dt$
+
+> $P(X=2,Y \leq y) = \int_{0}^{y} \frac{2t^{2-1}}{3} dt$
+
+> $P(X=2,Y \leq y) = 2/3 \cdot \int_{0}^{y} t dt$
+
+> $P(X=2,Y \leq y) = 2/3 \cdot \frac{t^2}{2} \Big|_{0}^{y}$
+
+> $P(X=2,Y \leq y) = \frac{y^2}{3}$
+
+Portanto,
+
+$$
+F_Y (y|X = 2) = \begin{cases}
+0, & \text{se } y < 0 \\
+y^2, & \text{se } 0 \leq y \leq 1 \\
+1, & \text{se } y > 1
+\end{cases}
+$$
+
+
+Se fosse solicitado para calcular $E(Y|X=2)$, teríamos que:
+
+> $E(Y|X=2) = \int_{0}^{1} y \cdot dF(y|X=2)$
+
+> $E(Y|X=2) = \int_{0}^{1} y \cdot 2y dy$
+
+> $E(Y|X=2) = 2 \int_{0}^{1} y^2 dy$
+
+> $E(Y|X=2) = 2 \cdot \frac{y^3}{3} \Big|_{0}^{1}$
+
+> $E(Y|X=2) = \frac{2}{3}$
+
+Agora calculando $F_X (x|Y = 1/2)$
+
+> $F_X (x|Y = 1/2) = \frac{P(X \leq x, Y = 1/2)}{P(Y = 1/2)}$
+
+Calcular $P(Y = 1/2)$ é incorreto porque $Y$ é contínua.
+
+
+
 
 
 # Exercício 3
