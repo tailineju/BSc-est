@@ -30,9 +30,9 @@ Calcule $F_Y (y|X = 2)$ e $FX (x|Y = 1/2)$.
 
 ## Solução
 
-Para calcular $F_Y (y|X = 2)$, vamos utilizar a definição de distribuição condicional:
+Para calcular $F_Y (y|X = 2)$, vamos utilizar a definição de densidade condicional:
 
-> $F_Y (y|X = 2) = \frac{f(2,y)}{f_X(2)}$
+> $f_Y (y|X = 2) = \frac{f(2,y)}{f_X(2)}$
 
 Calculando $f_X(2)$
 
@@ -52,9 +52,9 @@ Portanto,
 
 > $F_Y (y|X = 2)= 2y$
 
-Para calcular $FX (x|Y = 1/2)$, vamos utilizar a definição de distribuição condicional:
+Para calcular $FX (x|Y = 1/2)$, vamos utilizar a definição de densidade condicional:
 
-> $F_X (x|Y = 1/2) = \frac{f(x,1/2)}{f_Y(1/2)}$
+> $f_X (x|Y = 1/2) = \frac{f(x,1/2)}{f_Y(1/2)}$
 
 Calculando $f_Y(1/2)$
 
@@ -74,7 +74,7 @@ Calculando $f(x,1/2)$, com $x = 1,2,3$
 
 Portanto,
 
-> $F_X (x|Y = 1/2) = \frac{f(x,1/2)}{11/24}$
+> $f_X (x|Y = 1/2) = \frac{f(x,1/2)}{11/24}$
 
 ### Solução alternativa (em sala)
 
