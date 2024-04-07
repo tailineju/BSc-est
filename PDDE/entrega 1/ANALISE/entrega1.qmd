@@ -5,44 +5,22 @@ author: "Tailine J. S. Nonato"
 format: pdf
 ---
 
+# Objetivo
+
+Organizar os dados para identificar as escolas que não participaram do PDDE 2023. Depois de algum tratamento estas escolas serão objeto de monitoramento (Por que não estão no programa? Como o CECAMPE CO – MONITORAMENTO pode ajudá-las a ingressar no programa?)
+
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, knitr, openxlsx)
-setwd("C:/Users/User/Documents/GitHub/gradest/PDDE/entrega 1")
+#setwd("C:/Users/User/Documents/GitHub/gradest/PDDE/entrega 1")
+setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
 ```
 
-# Objetivo
-
-Organizar os dados para identificar as escolas que não participaram do PDDE 2023. Depois de algum tratamento estas escolas serão objeto de monitoramento (Por que não estão no programa? Como o CECAMPE CO – MONITORAMENTO pode ajudá-las a ingressar no programa?)
-
-# Resultados
-
-## Mainupalação dos dados
-```{r}	
-#| warning: false
-#| message: false
-#| echo: false
-censo22_co <- read.csv("dados/censo22_co.csv")
-pdde_pagos <- read.csv("dados/pdde_pagos.csv", skip = 5)
-pdde_naopagos <- read.csv("dados/pdde_naopagos.csv", skip = 5)
-
-# Cruzamento dos dados (juntar as bases do censo e do pdde utlizando o código da escola como chave)
-censo22_co$CO_ENTIDADE <- as.character(censo22_co$CO_ENTIDADE)
-pdde_pagos$Código.Escola <- as.character(pdde_pagos$Código.Escola)
-pdde_naopagos$Código.Escola <- as.character(pdde_naopagos$Código.Escola)
-
-dados <- censo22_co %>% 
-  left_join(pdde_pagos, by = c("CO_ENTIDADE" = "Código.Escola")) %>% 
-  left_join(pdde_naopagos, by = c("CO_ENTIDADE" = "Código.Escola")) %>% 
-  {if (all(c("NO_ENTIDADE", "CO_ENTIDADE", "NO_MUNICIPIO", "NO_UF", "TP_DEPENDENCIA", "TP_SITUACAO_FUNCIONAMENTO", "TP_LOCALIZACAO_DIFERENCIADA", "Situação.x", "Situação.y") %in% colnames(.))) 
-    select(., NO_ENTIDADE, CO_ENTIDADE, NO_MUNICIPIO, NO_UF, TP_DEPENDENCIA, TP_SITUACAO_FUNCIONAMENTO, TP_LOCALIZACAO_DIFERENCIADA, Situação.x, Situação.y) else .} %>% 
-  rename_at(vars(matches("Situação")), 
-            ~c("PDDE_Pago", "PDDE_Não_Pago")[match(., c("Situação.x", "Situação.y"))]) %>% 
-  mutate_at(vars(matches("Situação")), ~ifelse(is.na(.), "Não participa", .))
-
+```{r}
+dados <- read.csv("ETL/dados/base_completa.csv")
 ```
 
 1. Número de escolas públicas segundo a dependência administrativa e a UF – Centro-Oeste
@@ -53,7 +31,7 @@ dados <- censo22_co %>%
 #| warning: false
 #| message: false
 #| echo: false
-tab1 <- censo22_co %>% 
+tab1 <- dados %>% 
         group_by(NO_UF, TP_DEPENDENCIA) %>% 
         summarise(n = n()) %>% 
         spread(TP_DEPENDENCIA, n, fill = 0) %>% 
@@ -70,7 +48,7 @@ kable(tab1)
 #| warning: false
 #| message: false
 #| echo: false
-tab2 <- censo22_co %>% 
+tab2 <- dados %>% 
   group_by(NO_UF, TP_SITUACAO_FUNCIONAMENTO) %>% 
   summarise(n = n()) %>% 
   spread(TP_SITUACAO_FUNCIONAMENTO, n, fill = 0) %>% 
@@ -89,7 +67,7 @@ kable(tab2)
 #| warning: false
 #| message: false
 #| echo: false
-tab3 <- censo22_co %>% 
+tab3 <- dados %>% 
   group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>% 
   summarise(n = n()) %>% 
   spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
@@ -101,11 +79,6 @@ kable(tab3)
 ```
 
 ## PDDE 2023 (Consulta Escola/FNDE)
-
-Descrição da manipulação:
-- Importação dos dados no Consulta Escola
-- Conversão de xls para csv utilizando CloudConverter
-- Importação dos dados no R
 
 1. Número de escolas participantes do PDDE: Escolas PAGAS em 2023
 - Coluna: Situação
