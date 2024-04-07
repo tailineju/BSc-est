@@ -8,7 +8,7 @@ format: pdf
 ```{r}
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, knitr, openxlsx)
-#setwd("C:/Users/User/Documents/GitHub/gradest/PDDE/entrega 1")
+setwd("C:/Users/User/Documents/GitHub/gradest/PDDE/entrega 1")
 #setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
 ```
 
@@ -27,8 +27,8 @@ Descrição da manipulação:
 - Importação dos dados no R
 
 ```{r}
-pdde_pagos <- read.csv("ETL/dados/pdde_pagos.csv", skip = 5)
-pdde_naopagos <- read.csv("ETL/dados/pdde_naopagos.csv", skip = 5)
+pdde_pagos <- read.csv("dados/pdde_pagos.csv", skip = 5)
+pdde_naopagos <- read.csv("dados/pdde_naopagos.csv", skip = 5)
 ```
 
 
@@ -40,7 +40,7 @@ censo22_co <- censo22 %>%
     filter(NO_REGIAO == "Centro-Oeste")
 
 write.csv(censo22_co, "dados/censo22_co.csv", row.names = FALSE)
-censo22_co <- read.csv("ETL/dados/censo22_co.csv")
+censo22_co <- read.csv("dados/censo22_co.csv")
 ```
 
 PDDE 2023 com pagos e não-pagos:
@@ -64,6 +64,5 @@ dados <- censo22_co %>% left_join(pdde, by = c("CO_ENTIDADE" = "Código.Escola")
 #| warning: false
 #| message: false
 #| echo: false
-
-write.csv(dados, "ETL/dados/base_completa.csv")
+write.csv(dados, "dados/base_completa.csv")
 ```
