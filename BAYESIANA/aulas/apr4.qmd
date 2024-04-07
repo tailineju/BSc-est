@@ -1,0 +1,26 @@
+---
+title: "Aula 6 - Inferência Bayesiana"
+subtitle: "Inferência Bayesiana"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+```{r}
+#| message: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,LearnBayes)
+```
+
+Posteriori é nada mais que o produto da verossimilhança pela priori, dividido pela constante de normalização, no caso da função `pdisc' a constante de normalização é o inverso da soma dos produtos da verossimilhança pela priori.
+
+```{r}
+pdisc
+````
+
+```{r}
+quantile2=list(p=0.95,x=0.6)
+quantile1=list(p=0.05,x=0.4)
+beta.select(quantile1,quantile2)
+```
+
