@@ -169,7 +169,7 @@ Considerar “escola que não participa do PDDE 2023” aquelas que não receber
 #| echo: false
 
 tab6 <- dados %>% 
-        filter(!fonte %in% c("pdde_pagos","pdde_naopagos")) %>% 
+        filter(fonte %in% c("pdde_pagos","pdde_naopagos")) %>%
         group_by(NO_UF, TP_DEPENDENCIA) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
         spread(TP_DEPENDENCIA, n, fill = 0) %>% 
@@ -226,5 +226,5 @@ addWorksheet(wb, "tab6")
 writeData(wb, "tab6", tab6)
 addWorksheet(wb, "tab7")
 writeData(wb, "tab7", tab7)
-saveWorkbook(wb, "relatorio.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "relatorio2.xlsx", overwrite = TRUE)
 ```
