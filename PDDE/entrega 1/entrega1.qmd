@@ -12,10 +12,14 @@ Organizar os dados para identificar as escolas que não participaram do PDDE 202
 # Metodologia
 
 A princípio, realizou-se a um processo de ETL, no qual os dados foram extraídos, transformados e carregados:
+
 - Na etapa de extração, os microdados do Censo Escolar de 2022 foram obtidos do site do INEP, enquanto os dados do PDDE foram adquiridos por meio da utilização do Consulta Escola do FNDE. Para garantir a leitura correta dos dados do PDDE, os arquivos foram convertidos para o formato CSV. 
+
 - Na etapa de transformação, os dados foram filtrados para selecionar apenas as escolas localizadas na região Centro-Oeste. Em seguida, os dados foram submetidos ao cruzamento de informações do Censo Escolar com o PDDE, utilizando o código da escola como chave.
 
-Ao manter todo o processo documentado e replicável, obtemos uma base de dados completa. No entanto, os resultados apresentados a seguir foram obtidos após a remoção de duplicatas e a utilização das variáveis "NO_UF", "TP_DEPENDENCIA", "TP_SITUACAO_FUNCIONAMENTO", "TP_LOCALIZACAO_DIFERENCIADA" e "fonte", sendo esta última responsável por diferenciar as escolas pagas e não pagas.
+- Ao manter todo o processo documentado e replicável, obteve-se uma base de dados completa a qual foi realizada a extração.
+
+Os resultados apresentados a seguir foram obtidos após a remoção de duplicatas e a utilização das variáveis "NO_UF", "TP_DEPENDENCIA", "TP_SITUACAO_FUNCIONAMENTO", "TP_LOCALIZACAO_DIFERENCIADA" e "fonte", sendo esta última responsável por diferenciar as escolas pagas e não pagas.
 
 # Resultados
 
@@ -24,7 +28,7 @@ Ao manter todo o processo documentado e replicável, obtemos uma base de dados c
 #| warning: false
 #| echo: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, knitr, openxlsx)
+pacman::p_load(tidyverse, knitr, openxlsx, kableExtra)
 ```
 
 ```{r}
@@ -37,10 +41,6 @@ dados <- dados %>%
         select(CO_ENTIDADE, NO_UF, TP_DEPENDENCIA, TP_SITUACAO_FUNCIONAMENTO, TP_LOCALIZACAO_DIFERENCIADA, fonte) %>%
         distinct(CO_ENTIDADE, .keep_all = TRUE)
 ```
-
-1. Número de escolas públicas segundo a dependência administrativa e a UF – Centro-Oeste
-- Colunas: TP_DEPENDENCIA
-- Linhas: NO_UF
 
 ```{r}	
 #| warning: false
@@ -59,12 +59,13 @@ tab1 <- dados %>%
                 Municipal = sum(.$Municipal, na.rm = TRUE), 
                 Privada = sum(.$Privada, na.rm = TRUE), 
                 Total = sum(.$Total, na.rm = TRUE))
-kable(tab1,align = "l")
+
+tab1 %>%
+  kable(align = "l", 
+        caption = "Número de escolas públicas segundo a dependência administrativa e a UF – Centro-Oeste") %>%
+  footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```	
 
-2. Número de escolas públicas segundo a situação de funcionamento e a UF – Centro-Oeste
-- Coluna: TP_SITUACAO_FUNCIONAMENTO
-- Linhas: NO_UF
 
 ```{r}
 #| warning: false
@@ -81,12 +82,11 @@ tab2 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab2,align = "l")
+tab2 %>%
+  kable(align = "l", 
+        caption = "Número de escolas públicas segundo a situação de funcionamento e a UF – Centro-Oeste") %>%
+  footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```
-
-3. Número de escolas públicas segundo a localização e a UF – Centro-Oeste (identificação das escolas em localização diferenciada)
-- Coluna: TP_LOCALIZACAO_DIFERENCIADA
-- Linhas: NO_UF
 
 ```{r}
 #| warning: false
@@ -105,15 +105,11 @@ tab3 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab3,align = "l")
+tab3 %>%
+  kable(align = "l", 
+        caption = "Número de escolas públicas segundo a localização e a UF – Centro-Oeste (identificação das escolas em localização diferenciada)") %>%
+  footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```
-
-## PDDE 2023 (Consulta Escola/FNDE)
-
-1. Número de escolas participantes do PDDE: Escolas PAGAS em 2023
-- Coluna: TP_DEPENDENCIA
-- Linhas: NO_UF
-- Filtro: fonte = pagos
 
 ```{r}	
 #| warning: false
@@ -131,13 +127,12 @@ tab4 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab4,align = "l")
+tab4 %>%
+  kable(align = "l", 
+        caption = "Número de escolas participantes do PDDE: Escolas PAGAS em 2023") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
-2. Número de escolas participantes do PDDE: Escolas NÃO PAGAS em 2023
-- Coluna: TP_DEPENDENCIA
-- Linhas: NO_UF
-- Filtro: fonte = naopagos
 
 ```{r}	
 #| warning: false
@@ -155,16 +150,13 @@ tab5 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab5,align = "l")
+
+tab5 %>%
+  kable(align = "l", 
+        caption = "Número de escolas participantes do PDDE: Escolas NÃO PAGAS em 2023") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
-## Cruzamentos de Informações
-
-Agora, com objetivo de identificar as escolas que estão no Censo 2022 mas não participam do PDDE 2023 (não aparecem nos arquivos “PAGAS e NÃO PAGAS”) - 1ª APROXIMAÇÃO DO NÚMERO DE ESCOLAS QUE NÃO ESTÃO NO PROGRAMA
-
-Considerar “escola que não participa do PDDE 2023” aquelas que não receberam nenhuma parcela em 2023.
-
-1. Escolas participantes do PDDE 2023
 ```{r}
 #| warning: false
 #| message: false
@@ -181,10 +173,13 @@ tab6 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab6,align = "l")
+
+tab6 %>%
+  kable(align = "l", 
+        caption = "Número de escolas participantes do PDDE 2023") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
-2. Escolas não participantes do PDDE 2023
 ```{r}
 #| warning: false
 #| message: false
@@ -201,7 +196,11 @@ tab7 <- dados %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
-kable(tab7,align = "l")
+
+tab7 %>%
+  kable(align = "l", 
+        caption = "Número de escolas não participantes do PDDE") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
 
