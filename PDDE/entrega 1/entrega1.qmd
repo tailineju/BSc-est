@@ -11,11 +11,11 @@ Organizar os dados para identificar as escolas que não participaram do PDDE 202
 
 # Metodologia
 
-A princípio realizou-se um procedimento de ETL, onde os dados foram extraídos, transformados e carregados. Na extração, os microdados do Censo Escolar de 2022 foram obtidos do site do INEP e os do PDDE utilizando o Consulta Escola do FNDE, para realizar a leitura correta dos dados do PDDE, os arquivos foram transformados em `csv`. No tratamento os dados foram filtrados para que fossem selecionadas apenas as escolas do Centro-Oeste, foi realizado o cruzamento dos dados do Censo Escolar com os do PDDE utilizando o código da escola como chave.
+A princípio, realizou-se a um processo de ETL, no qual os dados foram extraídos, transformados e carregados:
+- Na etapa de extração, os microdados do Censo Escolar de 2022 foram obtidos do site do INEP, enquanto os dados do PDDE foram adquiridos por meio da utilização do Consulta Escola do FNDE. Para garantir a leitura correta dos dados do PDDE, os arquivos foram convertidos para o formato CSV. 
+- Na etapa de transformação, os dados foram filtrados para selecionar apenas as escolas localizadas na região Centro-Oeste. Em seguida, os dados foram submetidos ao cruzamento de informações do Censo Escolar com o PDDE, utilizando o código da escola como chave.
 
-Mantendo todo o processo documentado e replicável, tem-se a base de dados completa. Para os resultados a seguir as duplicatas foram retiradas e foram utilizadas as variáveis `NO_UF`, `TP_DEPENDENCIA`, `TP_SITUACAO_FUNCIONAMENTO`, `TP_LOCALIZACAO_DIFERENCIADA` e `fonte`, sendo esta última a que diferencia escolas pagas e não pagas.
-
-Em seguida, foram realizadas análises exploratórias.
+Ao manter todo o processo documentado e replicável, obtemos uma base de dados completa. No entanto, os resultados apresentados a seguir foram obtidos após a remoção de duplicatas e a utilização das variáveis "NO_UF", "TP_DEPENDENCIA", "TP_SITUACAO_FUNCIONAMENTO", "TP_LOCALIZACAO_DIFERENCIADA" e "fonte", sendo esta última responsável por diferenciar as escolas pagas e não pagas.
 
 # Resultados
 
@@ -92,14 +92,16 @@ kable(tab2,align = "l")
 #| warning: false
 #| message: false
 #| echo: false
+dados <- dados %>% 
+  mutate(TP_LOCALIZACAO_DIFERENCIADA = ifelse(is.na(TP_LOCALIZACAO_DIFERENCIADA), "5", TP_LOCALIZACAO_DIFERENCIADA))
 
 tab3 <- dados %>% 
-        group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>% 
+        group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>%
         summarise(n = n(), .groups = 'drop') %>% 
         spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
-        mutate_at(vars(matches("^[01234]$")), as.numeric) %>% 
-        rename_at(vars(matches("^[01234]$")), 
-                  ~c("Não diferenciada", "Urbana", "Rural", "Rural de difícil acesso", "Indígena")[match(., c("0","1", "2", "3", "4"))]) %>%
+        mutate_at(vars(matches("^[012345]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[012345]$")), 
+                  ~c("Não diferenciada", "Urbana", "Rural", "Rural de difícil acesso", "Indígena","NA")[match(., c("0","1", "2", "3", "4","5"))]) %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
