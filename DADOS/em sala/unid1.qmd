@@ -89,3 +89,92 @@ inf<- pib + qnorm(1-(alpha))*sqrt((pib*(1-pib))/n)
 ic <- data.frame(sup,inf)
 kable(round(ic,2),align='c')
 ```
+
+# 09 de abril
+
+## Descrição da atividade
+Calcular o risco relativo pontual e intervalar.
+Dados de um estudo de caso-controle: aspirina e placebo para prevenção de infarto.
+
+**Dados**
+```{r}
+alpha<- 0.05
+n1=11034
+n2=11037
+p1=0.0171
+p2=0.0094
+
+p12=p1-p2
+kable(p12,align='c')
+
+riscorelativo<-p1/p2
+kable(riscorelativo,align='c')
+
+suplog<- log(p1/p2) - qnorm(1-(alpha/2))*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+inflog<- log(p1/p2) + qnorm(1-(alpha/2))*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+iclog<- c(suplog,inflog)
+kable(iclog,align='c')
+
+ic<- exp(iclog)
+kable(ic,align='c')
+```
+
+Agora testando outras proporções:
+```{r}
+alpha<- 0.05
+n1=11034
+n2=11037
+p1=0.510
+p2=0.501
+
+p12=p1-p2
+kable(p12,align='c')
+
+riscorelativo<-p1/p2
+kable(riscorelativo,align='c')
+
+suplog<- log(p1/p2) - qnorm(1-(alpha/2))*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+inflog<- log(p1/p2) + qnorm(1-(alpha/2))*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+iclog<- c(suplog,inflog)
+kable(iclog,align='c')
+
+ic<- exp(iclog)
+kable(ic,align='c')
+```
+
+Calcuando Odds Ratio
+
+```{r}
+alpha<- 0.05
+n11=189
+n21=104
+n12=10845
+n22=10933
+p1=0.0171
+p2=0.0094
+
+odds1<- p1/(1-p1)
+kable(odds1,align='c')
+
+odds2<- p2/(1-p2)
+kable(odds2,align='c')
+
+oddsratio<- odds1/odds2
+kable(oddsratio,align='c')
+
+#ou
+
+oddsratio<- (n11*n22)/(n12*n21)
+kable(oddsratio,align='c')
+
+ASE<- sqrt((1/n11)+(1/n12)+(1/n21)+(1/n22))
+kable(ASE,align='c')
+
+suplog<- log(odds1/odds2) + qnorm(alpha/2)*ASE
+inflog<- log(odds1/odds2) - qnorm(alpha/2)*ASE
+iclog<- c(suplog,inflog)
+kable(iclog,align='c')
+
+ic<- exp(iclog)
+kable(ic,align='c')
+```
