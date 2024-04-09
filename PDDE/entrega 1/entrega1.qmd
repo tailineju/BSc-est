@@ -1,8 +1,8 @@
 ---
 title: "Cecampe-CO/PDDE"
-subtitle: "Entrega 1"
+subtitle: "ANÁLISE - Entrega 1"
 author: "Tailine J. S. Nonato"
-format: pdf
+format: html
 ---
 
 # Objetivo
@@ -39,6 +39,7 @@ pacman::p_load(tidyverse, knitr, openxlsx, kableExtra)
 dados <- read.csv("dados/base_completa.csv")
 dados <- dados %>% 
         select(CO_ENTIDADE, NO_UF, TP_DEPENDENCIA, TP_SITUACAO_FUNCIONAMENTO, TP_LOCALIZACAO_DIFERENCIADA, fonte) %>%
+        filter(TP_DEPENDENCIA %in% c(2:3)) %>% 
         distinct(CO_ENTIDADE, .keep_all = TRUE)
 ```
 
@@ -50,14 +51,13 @@ tab1 <- dados %>%
         group_by(NO_UF, TP_DEPENDENCIA) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
         spread(TP_DEPENDENCIA, n, fill = 0) %>% 
-        mutate_at(vars(`1`, `2`, `3`, `4`), as.numeric) %>% 
-        select(NO_UF, `1`, `2`, `3`, `4`) %>% 
-        rename(`Federal` = `1`, `Estadual` = `2`, `Municipal` = `3`, `Privada` = `4`) %>%
+        mutate_at(vars(`2`, `3`), as.numeric) %>% 
+        select(NO_UF, `2`, `3`) %>% 
+        rename(`Estadual` = `2`, `Municipal` = `3`) %>%
         mutate(Total = rowSums(select(., -NO_UF))) %>%
-        add_row(NO_UF = "Total", Federal = sum(.$Federal, na.rm = TRUE), 
+        add_row(NO_UF = "Total", 
                 Estadual = sum(.$Estadual, na.rm = TRUE), 
                 Municipal = sum(.$Municipal, na.rm = TRUE), 
-                Privada = sum(.$Privada, na.rm = TRUE), 
                 Total = sum(.$Total, na.rm = TRUE))
 
 tab1 %>%
@@ -76,9 +76,9 @@ tab2 <- dados %>%
         group_by(NO_UF, TP_SITUACAO_FUNCIONAMENTO) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
         spread(TP_SITUACAO_FUNCIONAMENTO, n, fill = 0) %>% 
-        mutate_at(vars(matches("^[12345]$")), as.numeric) %>% 
-        rename_at(vars(matches("^[12345]$")), 
-                  ~c("Em atividade", "Paralisada", "Extinta", "Em atividade de educação especial", "Paralisada de educação especial")[match(., c("1", "2", "3", "4", "5"))]) %>%
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Em atividade", "Paralisada", "Extinta (ano do Censo)", "Extinta em Anos Anteriores")[match(., c("1", "2", "3", "4"))]) %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
@@ -93,21 +93,39 @@ tab2 %>%
 #| message: false
 #| echo: false
 dados <- dados %>% 
-  mutate(TP_LOCALIZACAO_DIFERENCIADA = ifelse(is.na(TP_LOCALIZACAO_DIFERENCIADA), "5", TP_LOCALIZACAO_DIFERENCIADA))
+  mutate(TP_LOCALIZACAO_DIFERENCIADA = ifelse(is.na(TP_LOCALIZACAO_DIFERENCIADA), "4", TP_LOCALIZACAO_DIFERENCIADA))
 
 tab3 <- dados %>% 
         group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>%
         summarise(n = n(), .groups = 'drop') %>% 
         spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
-        mutate_at(vars(matches("^[012345]$")), as.numeric) %>% 
-        rename_at(vars(matches("^[012345]$")), 
-                  ~c("Não diferenciada", "Urbana", "Rural", "Rural de difícil acesso", "Indígena","NA")[match(., c("0","1", "2", "3", "4","5"))]) %>%
+        mutate_at(vars(matches("^[01234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[01234]$")), 
+                  ~c("Não diferenciada","Assentamento", 
+                  "Terra Indígena", "Remanescente de quilombos",
+                  "NA")[match(., c("0","1", "2", "3", "4"))]) %>%
         mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
 tab3 %>%
   kable(align = "l", 
-        caption = "Número de escolas públicas segundo a localização e a UF – Centro-Oeste (identificação das escolas em localização diferenciada)") %>%
+        caption = "Número de escolas públicas segundo a localização e a UF – Centro-Oeste") %>%
+  footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
+
+tab31 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA %in% c(1:3)) %>% 
+        group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>%
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[123]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[123]$")), 
+                  ~c("Assentamento", "Terra Indígena", "Remanescente de quilombos")[match(., c("1", "2", "3"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
+
+tab31 %>%
+  kable(align = "l", 
+        caption = "Número de escolas públicas em localização diferenciada segundo a localização e a UF – Centro-Oeste") %>%
   footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```
 
@@ -203,7 +221,28 @@ tab7 %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
 
+tab8 <- dados %>% 
+        filter(!fonte %in% c("pdde_pagos","pdde_naopagos"), TP_SITUACAO_FUNCIONAMENTO == 1) %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
+
+
+tab8 %>%
+  kable(align = "l", 
+        caption = "Número de escolas não participantes do PDDE em atividade") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
+```
 
 ```{r}
 #| warning: false
@@ -219,6 +258,8 @@ addWorksheet(wb, "tab2")
 writeData(wb, "tab2", tab2)
 addWorksheet(wb, "tab3")
 writeData(wb, "tab3", tab3)
+addWorksheet(wb, "tab31")
+writeData(wb, "tab31", tab31)
 addWorksheet(wb, "tab4")
 writeData(wb, "tab4", tab4)
 addWorksheet(wb, "tab5")
