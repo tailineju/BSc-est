@@ -142,7 +142,7 @@ ic<- exp(iclog)
 kable(ic,align='c')
 ```
 
-Calcuando Odds Ratio
+Calculando Odds Ratio
 
 ```{r}
 alpha<- 0.05
@@ -178,3 +178,76 @@ kable(iclog,align='c')
 ic<- exp(iclog)
 kable(ic,align='c')
 ```
+
+# 11 de abril
+
+## Descrição da atividade
+Calcular o risco relativo pontual e intervalar.
+Dados de um estudo: acredita em vida após a morte e gênero.
+
+**Dados**
+```{r}
+alpha=0.05
+n11=435
+n21=375
+n12=147
+n22=134
+n1=582
+n2=509
+
+p1<- n11/(n11+n12)
+kable(p1,align='c')
+
+p2<- n21/(n21+n22)
+kable(p2,align='c')
+
+p12<- p1-p2
+kable(p12,align='c')
+
+riscorelativo11<- p1/p2
+kable(riscorelativo11,align='c')
+
+suplog11<- log(p1/p2) + qnorm(alpha/2)*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+inflog11<- log(p1/p2)- qnorm(alpha/2)*sqrt(((1-p1)/(n1*p1))+((1-p2)/(n2*p2)))
+iclog<- c(suplog11,inflog11)
+kable(iclog,align='c')
+
+ic<- exp(iclog)
+kable(ic,align='c')
+
+```
+
+O risco relativo é de `r round(riscorelativo11,2)`, com intervalo de confiança de `r round(exp(suplog11),2)` a `r round(exp(inflog11),2)`. Isso significa que a chance de acreditar em vida após a morte é `r round(riscorelativo,2)` vezes maior para mulheres do que para homens, ou seja `r round(riscorelativo11,2)`% maior.
+
+Risco relativo -> **probabilidade** de um evento ocorrer em um grupo dividido pela probabilidade de um evento ocorrer em outro grupo.
+
+```{r}
+odds1<- p1/(1-p1)
+kable(odds1,align='c')
+
+odds2<- p2/(1-p2)
+kable(odds2,align='c')
+
+theta<- odds1/odds2
+kable(oddsratio,align='c')
+
+#ou
+
+theta<- (n11*n22)/(n12*n21)
+kable(oddsratio,align='c')
+
+ASE<- sqrt((1/n11)+(1/n12)+(1/n21)+(1/n22))
+kable(ASE,align='c')
+
+suplog<- log(odds1/odds2) + qnorm(alpha/2)*ASE
+inflog<- log(odds1/odds2) - qnorm(alpha/2)*ASE
+iclog<- c(suplog,inflog)
+kable(iclog,align='c')
+
+ic<- exp(iclog)
+kable(ic,align='c')
+```
+
+Odds ratio é de 1.22, com intervalo de confiança de 0.89 a 1.67. Isso significa que a chance de acreditar em vida após a morte é 1.22 vezes maior para mulheres do que para homens. 
+
+Odds ratio -> **razão de chances** de um evento ocorrer em um grupo dividida pela razão de chances de um evento ocorrer em outro grupo.

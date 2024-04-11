@@ -491,7 +491,7 @@ H_{1}: \mbox{$\pi &gt; 0.6$}
 </table>
 </div>
 </div>
-<p>Calcuando Odds Ratio</p>
+<p>Calculando Odds Ratio</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>alpha<span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>n11<span class="ot">=</span><span class="dv">189</span></span>
@@ -624,6 +624,256 @@ H_{1}: \mbox{$\pi &gt; 0.6$}
 </table>
 </div>
 </div>
+</section>
+</section>
+<section id="de-abril-1" class="level1">
+<h1>11 de abril</h1>
+<section id="descrição-da-atividade-3" class="level2">
+<h2 class="anchored" data-anchor-id="descrição-da-atividade-3">Descrição da atividade</h2>
+<p>Calcular o risco relativo pontual e intervalar. Dados de um estudo: acredita em vida após a morte e gênero.</p>
+<p><strong>Dados</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>alpha<span class="ot">=</span><span class="fl">0.05</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>n11<span class="ot">=</span><span class="dv">435</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>n21<span class="ot">=</span><span class="dv">375</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>n12<span class="ot">=</span><span class="dv">147</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>n22<span class="ot">=</span><span class="dv">134</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>n1<span class="ot">=</span><span class="dv">582</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>n2<span class="ot">=</span><span class="dv">509</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>p1<span class="ot">&lt;-</span> n11<span class="sc">/</span>(n11<span class="sc">+</span>n12)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(p1,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.7474227</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>p2<span class="ot">&lt;-</span> n21<span class="sc">/</span>(n21<span class="sc">+</span>n22)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(p2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.7367387</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>p12<span class="ot">&lt;-</span> p1<span class="sc">-</span>p2</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(p12,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.010684</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>riscorelativo11<span class="ot">&lt;-</span> p1<span class="sc">/</span>p2</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(riscorelativo11,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1.014502</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>suplog11<span class="ot">&lt;-</span> <span class="fu">log</span>(p1<span class="sc">/</span>p2) <span class="sc">+</span> <span class="fu">qnorm</span>(alpha<span class="sc">/</span><span class="dv">2</span>)<span class="sc">*</span><span class="fu">sqrt</span>(((<span class="dv">1</span><span class="sc">-</span>p1)<span class="sc">/</span>(n1<span class="sc">*</span>p1))<span class="sc">+</span>((<span class="dv">1</span><span class="sc">-</span>p2)<span class="sc">/</span>(n2<span class="sc">*</span>p2)))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>inflog11<span class="ot">&lt;-</span> <span class="fu">log</span>(p1<span class="sc">/</span>p2)<span class="sc">-</span> <span class="fu">qnorm</span>(alpha<span class="sc">/</span><span class="dv">2</span>)<span class="sc">*</span><span class="fu">sqrt</span>(((<span class="dv">1</span><span class="sc">-</span>p1)<span class="sc">/</span>(n1<span class="sc">*</span>p1))<span class="sc">+</span>((<span class="dv">1</span><span class="sc">-</span>p2)<span class="sc">/</span>(n2<span class="sc">*</span>p2)))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>iclog<span class="ot">&lt;-</span> <span class="fu">c</span>(suplog11,inflog11)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(iclog,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">-0.0557973</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0.0845924</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>ic<span class="ot">&lt;-</span> <span class="fu">exp</span>(iclog)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(ic,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.9457309</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1.0882734</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>O risco relativo é de 1.01, com intervalo de confiança de 0.95 a 1.09. Isso significa que a chance de acreditar em vida após a morte é 1.02 vezes maior para mulheres do que para homens, ou seja 1.01% maior.</p>
+<p>Risco relativo -&gt; <strong>probabilidade</strong> de um evento ocorrer em um grupo dividido pela probabilidade de um evento ocorrer em outro grupo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>odds1<span class="ot">&lt;-</span> p1<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>p1)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(odds1,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2.959184</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>odds2<span class="ot">&lt;-</span> p2<span class="sc">/</span>(<span class="dv">1</span><span class="sc">-</span>p2)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(odds2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2.798507</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>theta<span class="ot">&lt;-</span> odds1<span class="sc">/</span>odds2</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1.832054</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ou</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>theta<span class="ot">&lt;-</span> (n11<span class="sc">*</span>n22)<span class="sc">/</span>(n12<span class="sc">*</span>n21)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1.832054</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>ASE<span class="ot">&lt;-</span> <span class="fu">sqrt</span>((<span class="dv">1</span><span class="sc">/</span>n11)<span class="sc">+</span>(<span class="dv">1</span><span class="sc">/</span>n12)<span class="sc">+</span>(<span class="dv">1</span><span class="sc">/</span>n21)<span class="sc">+</span>(<span class="dv">1</span><span class="sc">/</span>n22))</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(ASE,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.1386756</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>suplog<span class="ot">&lt;-</span> <span class="fu">log</span>(odds1<span class="sc">/</span>odds2) <span class="sc">+</span> <span class="fu">qnorm</span>(alpha<span class="sc">/</span><span class="dv">2</span>)<span class="sc">*</span>ASE</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>inflog<span class="ot">&lt;-</span> <span class="fu">log</span>(odds1<span class="sc">/</span>odds2) <span class="sc">-</span> <span class="fu">qnorm</span>(alpha<span class="sc">/</span><span class="dv">2</span>)<span class="sc">*</span>ASE</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>iclog<span class="ot">&lt;-</span> <span class="fu">c</span>(suplog,inflog)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(iclog,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">-0.2159720</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0.3276264</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ic<span class="ot">&lt;-</span> <span class="fu">exp</span>(iclog)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(ic,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.8057579</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1.3876705</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Odds ratio é de 1.22, com intervalo de confiança de 0.89 a 1.67. Isso significa que a chance de acreditar em vida após a morte é 1.22 vezes maior para mulheres do que para homens.</p>
+<p>Odds ratio -&gt; <strong>razão de chances</strong> de um evento ocorrer em um grupo dividida pela razão de chances de um evento ocorrer em outro grupo.</p>
 </section>
 </section>
 
