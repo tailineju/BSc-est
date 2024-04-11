@@ -1,0 +1,362 @@
+---
+title: "LISTA 3"
+subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
+author: "Tailine J. S. Nonato"
+date: "04/10/2024"
+format: pdf
+---
+
+# Descrição da atividade 
+Exercícios 4.1, 4.5, 4.15, 4.18 e 4.24 do Cap.4 (pp. 81-83) de Cryer & Chan (2008)
+
+## Exercício 4.1
+Use first principles to find the autocorrelation function for the stationary process defined by $Y_i = 5 + e_i - \frac{1}{2} \cdot e_{i-1} + \frac{1}{4} \cdot e_{i-2}$.
+
+### Respostas
+
+A autocorrelação é dada por $\rho_k = \frac{Cov(Y_t, Y_{t-k})}{Var(Y_t)}$.
+Logo, temos que:
+
+i. Calculando $Cov(Y_t, Y_{t-k}) = \gamma_k$:
+
+> $\gamma_k = Cov(5 + e_t - \frac{1}{2} \cdot e_{t-1} + \frac{1}{4} \cdot e_{t-2}, 5 + e_{t-k} - \frac{1}{2} \cdot e_{t-k-1} + \frac{1}{4} \cdot e_{t-k-2})$
+
+> $\gamma_k  = Cov(e_t, e_{t-k}) - \frac{1}{2} \cdot Cov(e_{t-1}, e_{t-k}) + \frac{1}{4} \cdot Cov(e_{t-2}, e_{t-k})$
+
+- Se $k = 1$, então:
+
+> $\gamma_1 = -\frac{1}{2} \cdot Var(e_{t-1}) - \frac{1}{8} \cdot Var(e_{t-2}) = -\frac{5}{8} \sigma^2$
+
+
+- Se $k = 2$, então:
+
+> $\gamma_2 = -\frac{1}{4} \cdot Var(e_{t-2}) = -\frac{1}{4} \sigma^2$
+
+- Se $k > 2$, então:
+
+> $Cov(Y_t, Y_{t-k}) = 0$
+
+ii. Calculando $Var(Y_t) = \gamma_0$:
+
+> $\gamma_0 = Var(5 + e_t - \frac{1}{2} e_{t-1} + \frac{1}{4} e_{t-2})$
+
+> $\gamma_0 = Var(e_t) + \frac{1}{4} Var(e_{t-1}) + \frac{1}{16} Var(e_{t-2})$
+
+> $\gamma_0 = \sigma^2 + \frac{1}{4} \sigma^2 + \frac{1}{16} \sigma^2$
+
+> $\gamma_0 = \frac{21}{16} \sigma^2$
+
+iii. Assim, a autocovariancia é dada por:
+
+$$\gamma_k = \begin{cases} 
+\frac{21}{16} \sigma^2, & \mbox{se } k = 0 \\
+-\frac{5}{8} \sigma^2, & \mbox{se } k = 1 \\ 
+-\frac{1}{4} \sigma^2, & \mbox{se } k = 2 \\ 
+0, & \mbox{se } k > 2 
+\end{cases}
+$$
+
+iv. Agora, calculando a autocorrelação tem-se que:
+
+> $\rho_k = \frac{\gamma_k}{\gamma_0}$
+
+$$
+\rho_k = \begin{cases}
+1, & \mbox{se } k = 0 \\
+-\frac{10}{21}, & \mbox{se } k = 1 \\
+-\frac{4}{21}, & \mbox{se } k = 2 \\
+0, & \mbox{se } k > 2
+\end{cases}
+$$
+
+
+## Exercício 4.5
+Calculate  and  sketch  the  autocorrelation  functions  for  each  of  the  following $AR(1)$ models. Plot for sufficient lags that the autocorrelation function has nearly died out.
+
+a. $\phi_1 = 0.6$
+
+b. $\phi_1 = −0.6$
+
+c. $\phi_1 = 0.95$ (Do out to 20 lags.)
+
+d. $\phi_1 = 0.3$
+
+### Respostas
+
+A autocorrelação é dada por $\rho_k = \phi^k$. Para criar o gráfico, foi criada a função `ex45` que recebe o valor de $\phi$ e plota a autocorrelação para 20 lags. Antes de plotar, é necessário definir a função `rho` que calcula a autocorrelação para um determinado lag $k$.
+
+Na função `ex45`, é criado um vetor `k` com os lags de 0 a 20 e, em seguida, é calculado a autocorrelação para cada lag utilizando a função `sapply`. Por fim, é plotado o gráfico da autocorrelação para os lags de 0 a 20.
+
+```{r}
+rho <- function(phi, k){
+  if(k == 0){return(1)} 
+  else {return(phi^k)}}
+
+ex45 <- function(phi){
+  k <- seq(0, 20, 1)
+  y <- sapply(k, function(x) rho(phi, x))
+  plot(k, y, type = "h",
+       xlab = "Lags", 
+       ylab = "Autocorrelação", 
+       main = paste("Autocorrelação para phi = ", 
+       phi))}
+```	
+
+i. Para $\phi_1 = 0.6$:
+
+$$
+\rho_k = \begin{cases}
+1, & \mbox{se } k = 0 \\
+0.6^k, & \mbox{se } k > 0
+\end{cases}
+$$
+
+```{r}
+ex45(0.6)
+```
+
+ii. Para $\phi_1 = -0.6$:
+
+$$
+\rho_k = \begin{cases}
+1, & \mbox{se } k = 0 \\
+(-0.6)^k, & \mbox{se } k > 0
+\end{cases}
+$$
+
+```{r}
+ex45(-0.6)
+```
+
+iii. Para $\phi_1 = 0.95$:
+
+$$
+\rho_k = \begin{cases}
+1, & \mbox{se } k = 0 \\
+0.95^k, & \mbox{se } k > 0
+\end{cases}
+$$
+
+```{r}
+ex45(0.95)
+```
+
+iv. Para $\phi_1 = 0.3$:
+
+$$
+\rho_k = \begin{cases}
+1, & \mbox{se } k = 0 \\
+0.3^k, & \mbox{se } k > 0
+\end{cases}
+$$
+
+```{r}
+ex45(0.3)
+```
+
+
+## Exercício 4.15
+
+Consider the $AR(1)$ model $Y_t = \phi Y_{t − 1} + e_t$. Show that if $|\phi| = 1$ the process cannot be stationary. (Hint: Take variances of both sides.)
+
+### Respostas
+
+Se $|\phi| = 1$, então a equação do modelo $AR(1)$ se torna $Y_t = Y_{t-1} + e_t$. Para verificar se o processo é estacionário, é necessário verificar se a média e a variância são constantes ao longo do tempo.
+
+i. Calculando a média:
+
+> $E(Y_t) = E(Y_{t-1} + e_t) = E(Y_{t-1}) + E(e_t)$
+
+> $E(Y_t) = E(Y_{t-1})$
+
+> $E(Y_t) = E(Y_{t-2})$
+
+> ...
+
+> $E(Y_t) = E(Y_{t-k})$
+
+ii. Calculando a variância:
+
+> $Var(Y_t) = Var(Y_{t-1} + e_t)$
+
+> $Var(Y_t) = Var(Y_{t-1}) + Var(e_t)$
+
+> $Var(Y_t) = Var(Y_{t-1}) + \sigma^2$
+
+> $Var(Y_t) = Var(Y_{t-2}) + 2\sigma^2$
+
+> ...
+
+> $Var(Y_t) = Var(Y_{t-k}) + k\sigma^2$
+
+Como a média é constante ao longo do tempo, então o processo poderia ser dito estacionário. No entando, como a variância não é constante ao longo do tempo, então o processo não é estacionário.
+
+Assim, se $|\phi| = 1$, o processo não é estacionário, já que a variância causa uma contradicão.
+
+
+## Exercício 4.18
+Consider a process that satisfies the zero-mean, “stationary” $AR(1)$ equation $Y_t = \phi Y_{t − 1} + e_t$ with $−1 < \phi < 1$ . Let $c$ be any nonzero constant, and define $W_t = Y_t + c\phi^t$.
+
+a. Show that $E(W_t) = c\phi^t$.
+
+b. Show that ${W_t}$ satisfies the “stationary” $AR(1)$ equation $W_t = \phi W_{t − 1} + e_t$.
+
+c. Is ${W_t}$ stationary?
+
+### Respostas
+
+#### Item A
+
+Para calcular a média de $W_t$, temos que:
+
+> $E(W_t) = E(Y_t + c\phi^t)$
+
+> $E(W_t) = E(Y_t) + E(c\phi^t)$
+
+Como $E(Y_t) = 0$, então:
+
+> $E(W_t) = 0 + c\phi^t$
+
+> $E(W_t) = c\phi^t$
+
+#### Item B
+
+Para verificar se $W_t$ satisfaz a equação $AR(1)$, temos que:
+
+> $\phi W_{t-1} + e_t = \phi (Y_{t-1} + c\phi^{t-1}) + e_t$
+
+> $\phi W_{t-1} + e_t = \phi Y_{t-1} + c\phi^t + e_t$
+
+> $\phi W_{t-1} + e_t = Y_t + c\phi^t$
+
+> $\phi W_{t-1} + e_t = W_t$
+
+#### Item C
+
+Para verificar se $W_t$ é estacionário, é necessário verificar se a média e a variância são constantes ao longo do tempo.
+
+i. Calculando a média:
+
+> $E(W_t) = c\phi^t$
+
+A média depende de $t$, logo não é constante ao longo do tempo, então o processo não é estacionário.
+
+ii. Calculando a variância:
+
+> $Var(W_t) = Var(Y_t + c\phi^t)$
+
+> $Var(W_t) = Var(Y_t) + Var(c\phi^t)$
+
+> $Var(W_t) = Var(Y_t) + 0$
+
+> $Var(W_t) = Var(Y_t)$
+
+Como a variância é constante ao longo do tempo, então o processo poderia ser dito estacionário. No entanto, observou-se que a média depende de $t$ e essa informação já era suficiente para determinar que o processo não é estacionário.
+
+
+## Exercício 4.24
+Let  ${e_t}$  be  a  zero-mean,  unit-variance  white  noise  process.  Consider  a  process that begins at time $t = 0$ and is defined recursively as follows. Let $Y_0 = c_1 e_0$ and $Y_1 = c_2 Y_0 + e_1$. Then let $Y_t = \phi_1 Y_{t − 1} + \phi_2 Y_{t − 2} + e_t$ for $t > 1$ as in an $AR(2)$ process.
+
+a. Show that the process mean is zero.
+
+b. For particular values of $\phi_1$ and $\phi_2$ within the stationarity region for an $AR(2)$ model, show how to choose $c_1$ and $c_2$ so that both $Var (Y_0) = Var (Y_1)$ and the lag 1 autocorrelation between $Y_1$ and $Y_0$ match that of a stationary $AR(2)$ process with parameters $\phi_1$ and $\phi_2$.
+
+c. Once the process ${Y_t}$ is generated, show how to transform it to a new process that has any desired mean and variance. (This exercise suggests a convenient method for simulating stationary $AR(2)$ processes.)
+
+### Respostas
+
+#### Item A
+
+Para calcular a média do processo, temos que:
+
+> $E(Y_t) = E(\phi_1 Y_{t-1} + \phi_2 Y_{t-2} + e_t)$
+
+> $E(Y_t) = \phi_1 E(Y_{t-1}) + \phi_2 E(Y_{t-2}) + E(e_t)$
+
+> $E(Y_t) = \phi_1 E(Y_{t-1}) + \phi_2 E(Y_{t-2})$
+
+> $E(Y_t) = \phi_1 \phi_1 E(Y_{t-2}) + \phi_2 E(Y_{t-2})$
+
+> $E(Y_t) = \phi_1 \phi_1 \phi_1 E(Y_{t-3}) + \phi_2 \phi_1 E(Y_{t-3})$
+
+> ...
+
+> $E(Y_t) = \phi_1^t E(Y_0)$
+
+Como $E(Y_0) = 0$, então:
+
+> $E(Y_t) = 0$
+
+#### Item B
+
+Para escolher $c_1$ e $c_2$ de forma que $Var(Y_0) = Var(Y_1)$ e a autocorrelação entre $Y_1$ e $Y_0$ seja a mesma de um processo $AR(2)$ estacionário, temos que:
+
+i. Calculando a variância:
+
+> $Var(Y_0) = Var(c_1 e_0)$
+
+> $Var(Y_0) = c_1^2 Var(e_0)$
+
+> $Var(Y_0) = c_1^2$
+
+E
+
+> $Var(Y_1) = Var(c_2 Y_0 + e_1)$
+
+> $Var(Y_1) = c_2^2 Var(Y_0) + Var(e_1)$
+
+> $Var(Y_1) = c_2^2 c_1^2 + 1$
+
+Para que $Var(Y_0) = Var(Y_1)$, então:
+
+> $c_1^2 = c_2^2 c_1^2 + 1$
+
+> $1 = c_2^2 + \frac{1}{c_1^2}$
+
+> $c_2^2 = 1 - \frac{1}{c_1^2}$
+
+ii. Calculando a autocorrelação:
+
+> $\rho_{Y_1, Y_0} = \frac{Cov(Y_1, Y_0)}{\sqrt{Var(Y_1) Var(Y_0)}}$
+
+> $\rho_{Y_1, Y_0} = \frac{Cov(c_2 Y_0 + e_1, c_1 e_0)}{\sqrt{Var(Y_1) Var(Y_0)}}$
+
+> $\rho_{Y_1, Y_0} = \frac{c_2 c_1 Var(e_0)}{\sqrt{Var(Y_1) Var(Y_0)}}$
+
+> $\rho_{Y_1, Y_0} = \frac{c_2 c_1}{\sqrt{Var(Y_1) Var(Y_0)}}$
+
+> $\rho_{Y_1, Y_0} = \frac{c_2 c_1}{\sqrt{(c_2^2 c_1^2 + 1) c_1^2}}$
+
+Para que a autocorrelação entre $Y_1$ e $Y_0$ seja a mesma de um processo $AR(2)$ estacionário, então:
+
+> $\rho_{Y_1, Y_0} = \frac{c_2 c_1}{\sqrt{(c_2^2 c_1^2 + 1) c_1^2}} = \frac{\phi_2}{\sqrt{1 + \phi_1^2}}$
+
+Dessa forma, é possível escolher:
+
+> $c_1 = \sqrt{\frac{1}{1 - \phi_2^2}}$
+
+> $c_2 = \sqrt{1 - \frac{1}{c_1^2}}$
+
+Cabe verificar se estas constantes satisfazem $Var(Y_0) = Var(Y_1)$ e $\rho_{Y_1, Y_0} = \frac{\phi_2}{\sqrt{1 + \phi_1^2}}$.
+
+> $Var(Y_0) = Var(c_1 e_0) = c_1^2 = \frac{1}{1 - \phi_2^2} = 1$
+
+> $Var(Y_1) = Var(c_2 Y_0 + e_1) = c_2^2 Var(Y_0) + 1 = 1$
+
+> $\rho_{Y_1, Y_0} = \frac{c_2 c_1}{\sqrt{(c_2^2 c_1^2 + 1) c_1^2}} = \frac{\phi_2}{\sqrt{1 + \phi_1^2}}$
+
+
+#### Item C
+
+Para transformar o processo $Y_t$ em um novo processo com qualquer média e qualquer variância, é posssível realizar uma padronização. Assim, o novo processo $Z_t$ é dado por:
+
+> $Z_t = \frac{Y_t - E(Y_t)}{\sqrt{Var(Y_t)}}$
+
+Dessa forma, o novo processo $Z_t$ terá média zero e variância unitária. Para obter um processo com qualquer média e qualquer variância, basta multiplicar o processo $Z_t$ pela raiz da variância desejada e somar a média desejada:
+
+> $Z_t = \sigma Z_t + \mu$
+
+Assim, o novo processo $Z_t$ terá média $\mu$ e variância $\sigma^2$.
+
+
+
