@@ -1,8 +1,8 @@
 ---
 title: "Cecampe-CO/PDDE"
-subtitle: "ANÁLISE - Entrega 1"
+subtitle: "Entrega 1: Análise"
 author: "Tailine J. S. Nonato"
-format: html
+format: pdf
 ---
 
 # Objetivo
@@ -43,6 +43,7 @@ dados <- dados %>%
         distinct(CO_ENTIDADE, .keep_all = TRUE)
 ```
 
+Tabela 1 - Número de escolas públicas segundo a dependência administrativa e a UF (Centro-Oeste)
 ```{r}	
 #| warning: false
 #| message: false
@@ -61,12 +62,11 @@ tab1 <- dados %>%
                 Total = sum(.$Total, na.rm = TRUE))
 
 tab1 %>%
-  kable(align = "l", 
-        caption = "Número de escolas públicas segundo a dependência administrativa e a UF – Centro-Oeste") %>%
+  kable(align = "l") %>%
   footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```	
 
-
+Tabela 2 - Número de escolas públicas segundo a situação de funcionamento e a UF (Centro-Oeste)
 ```{r}
 #| warning: false
 #| message: false
@@ -83,10 +83,16 @@ tab2 <- dados %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
 tab2 %>%
-  kable(align = "l", 
-        caption = "Número de escolas públicas segundo a situação de funcionamento e a UF – Centro-Oeste") %>%
+  kable(align = "l") %>%
   footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```
+
+Tabela 3.1 - Número de escolas públicas segundo a localização e a UF (Centro-Oeste)
+
+\begingroup
+\setlength{\LTleft}{0pt minus 700pt}
+\setlength{\LTright}{0pt minus 700pt}
+\addtolength{\tabcolsep}{-3pt}
 
 ```{r}
 #| warning: false
@@ -108,9 +114,18 @@ tab3 <- dados %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
 tab3 %>%
-  kable(align = "l", 
-        caption = "Número de escolas públicas segundo a localização e a UF – Centro-Oeste") %>%
+  kable(align = "l") %>%
   footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
+```
+
+\endgroup
+
+Tabela 3.2 - Número de escolas públicas em localização diferenciada segundo a localização e a UF (Centro-Oeste)
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
 
 tab31 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA %in% c(1:3)) %>% 
@@ -124,10 +139,11 @@ tab31 <- dados %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
 tab31 %>%
-  kable(align = "l", 
-        caption = "Número de escolas públicas em localização diferenciada segundo a localização e a UF – Centro-Oeste") %>%
+  kable(align = "l") %>%
   footnote(general = "Censo Escolar 2022", general_title = "Fonte:")
 ```
+
+Tabela 4 - Número de escolas participantes do PDDE: Escolas PAGAS em 2023
 
 ```{r}	
 #| warning: false
@@ -146,11 +162,11 @@ tab4 <- dados %>%
         add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
 
 tab4 %>%
-  kable(align = "l", 
-        caption = "Número de escolas participantes do PDDE: Escolas PAGAS em 2023") %>%
+  kable(align = "l") %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
+Tabela 5: Número de escolas participantes do PDDE - Escolas NÃO PAGAS em 2023
 
 ```{r}	
 #| warning: false
@@ -170,11 +186,11 @@ tab5 <- dados %>%
 
 
 tab5 %>%
-  kable(align = "l", 
-        caption = "Número de escolas participantes do PDDE: Escolas NÃO PAGAS em 2023") %>%
+  kable(align = "l") %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
+Tabela 6 - Número de escolas participantes do PDDE 2023 (Pagas e Não Pagas)
 ```{r}
 #| warning: false
 #| message: false
@@ -193,10 +209,11 @@ tab6 <- dados %>%
 
 
 tab6 %>%
-  kable(align = "l", 
-        caption = "Número de escolas participantes do PDDE 2023") %>%
+  kable(align = "l") %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
+
+Tabela 7 - Número de escolas não participantes do PDDE
 
 ```{r}
 #| warning: false
@@ -216,10 +233,11 @@ tab7 <- dados %>%
 
 
 tab7 %>%
-  kable(align = "l", 
-        caption = "Número de escolas não participantes do PDDE") %>%
+  kable(align = "l") %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
+
+Tabela 8 - Número de escolas não participantes do PDDE que estão em atividade
 
 ```{r}
 #| warning: false
@@ -239,8 +257,32 @@ tab8 <- dados %>%
 
 
 tab8 %>%
-  kable(align = "l", 
-        caption = "Número de escolas não participantes do PDDE em atividade") %>%
+  kable(align = "l") %>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
+```
+
+Tabela 9 - Número de escolas não participantes do PDDE que estão em atividade e em estão em localização diferenciada
+
+```{r}
+#| warning: false
+#| message: false
+#| echo: false
+
+tab9 <- dados %>% 
+        filter(!fonte %in% c("pdde_pagos","pdde_naopagos"), 
+                TP_SITUACAO_FUNCIONAMENTO == 1,
+                TP_LOCALIZACAO_DIFERENCIADA %in% c(1:3)) %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))
+
+tab9 %>%
+  kable(align = "l") %>%
   footnote(general = "Consulta Escola/FNDE; Censo Escolar 2022", general_title = "Fonte:")
 ```
 
@@ -268,5 +310,9 @@ addWorksheet(wb, "tab6")
 writeData(wb, "tab6", tab6)
 addWorksheet(wb, "tab7")
 writeData(wb, "tab7", tab7)
+addWorksheet(wb, "tab8")
+writeData(wb, "tab8", tab8)
+addWorksheet(wb, "tab9")
+writeData(wb, "tab9", tab9)
 saveWorkbook(wb, "relatorio2.xlsx", overwrite = TRUE)
 ```
