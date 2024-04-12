@@ -1,11 +1,16 @@
 ---
-title: "Modelo de avaliação de desempenho escolar através dos dados do SAEB 2021 e do PDDE 2021: Uma abordagem multinível"
+title: "Brainstorming - TCC 1"
 author: "Tailine J. S. Nonato"
+date: "2024-04-12"
 format: pdf
 ---
 
+# Título
+Modelo de avaliação de desempenho escolar através dos dados do SAEB 2021 e do PDDE 2022: Uma abordagem multinível
+
 # Introdução
-O desempenho escolar é um dos principais indicadores da qualidade do ensino. Através do desempenho dos alunos é possível avaliar a eficácia das políticas educacionais e identificar possíveis melhorias. O desempenho escolar é influenciado por diversos fatores, como características individuais dos alunos, características escolares, e políticas educacionais. O objetivo deste trabalho é analisar os dados do SAEB 2021 e do PDDE 2021 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
+(texto motivacional) 
+O desempenho escolar é um dos principais indicadores da qualidade do ensino. Através do desempenho dos alunos é possível avaliar a eficácia das políticas educacionais e identificar possíveis melhorias. O desempenho escolar é influenciado por diversos fatores, como características individuais dos alunos, características escolares, e políticas educacionais. O objetivo deste trabalho é analisar os dados do SAEB 2021 e do PDDE 2022 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
 
 ## Problema
 Quais são as características escolares associadas ao desempenho acadêmico dos estudantes do ensino básico?
@@ -22,14 +27,16 @@ Quais são as características escolares associadas ao desempenho acadêmico dos
 
 
 # Justificativa
+(texto motivacional) 
+
 A avaliação do desempenho escolar é fundamental para a melhoria da qualidade do ensino. Através da análise dos dados do SAEB e do PDDE é possível identificar características escolares associadas ao desempenho acadêmico dos alunos. A utilização de modelos multiníveis permite controlar as características individuais dos alunos e avaliar o impacto das características escolares nas notas dos alunos. 
 
 # Objetivos
 ## Objetivo Geral
-Analisar os dados do SAEB 2021 e do PDDE 2021 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
+Analisar os dados do SAEB 2021 e do PDDE 2022 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
 
 ## Objetivos Específicos
-- Integrar os dados do SAEB 2021/INEP e do PDDE 2021/FNDE;
+- Integrar os dados do SAEB 2021/INEP e do PDDE 2022/FNDE;
 
 - Controlando as características individuais, avaliar se existem associações entre características escolares e desempenho acadêmico;
 
@@ -42,16 +49,12 @@ Analisar os dados do SAEB 2021 e do PDDE 2021 afim de identificar característic
 # Metodologia
 
 ## Dados
-Os dados utilizados são provenientes do SAEB 2021 e do PDDE 2021. O SAEB é uma avaliação realizada pelo INEP que tem como objetivo avaliar a qualidade do ensino no Brasil. O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas.
+Os dados utilizados são provenientes do SAEB 2021 e do PDDE 2022. O SAEB é uma avaliação realizada pelo INEP que tem como objetivo avaliar a qualidade do ensino no Brasil. O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas, para que a escola receba o recurso basta ter uma UEx (Unidade Executora) regular, estar com o cadastro atualizado e estar em dia com prestações de contas. 
 
 ## Modelo
 O modelo utilizado é um modelo multinível, onde as notas dos alunos são modeladas em função de características individuais e escolares. O modelo é dado por:
 
-$$
-y_{ij} = \beta_0 + \beta_1 x_{ij} + u_{0j} + u_{1j} x_{ij} + e_{ij}
-$$
-
-onde $y_{ij}$ é a nota do aluno $i$ da escola $j$, $x_{ij}$ é um vetor de características individuais, $\beta_0$ e $\beta_1$ são coeficientes fixos, $u_{0j}$ e $u_{1j}$ são coeficientes aleatórios, e $e_{ij}$ é o erro.
+????
 
 # Resultados
 
