@@ -5,59 +5,63 @@ date: "2024-04-12"
 format: pdf
 ---
 
+# Orientações
+
+* O título não pode mencionar as palarvas "avaliação" ou "impacto", já que não está sendo realizado um experimento e sim um estudo de relações.
+
+* A introdução deve fazer menção ao problema, as hipóteses e a justificativa e deve seguir a seguinte estrutura de parágrafos: 
+
+    I. Contexto sobre avaliação de políticas públicas e desempenho escolar; 
+    
+    II. Contexto sobre o PDDE e o SAEB; 
+    
+    III. Estudos já realizados para avaliar o PDDE; 
+    
+    IV. Objetivos deste estudo.
+
+* O problema do estudo ainda deve ser melhor definido em torno do PDDE, mas a pricípio trabalha-se com a ideia de 'Quais são as características escolares associadas ao desempenho acadêmico dos estudantes do ensino básico?'
+
+* As hipósteses também precisam ser melhor definidas em torno do PDDE, mas inicialmente podem ser pensadas como:
+
+    + Escolas que executam o saldo do PDDE apresentam melhores notas dos alunos;
+
+    + Escolas com maior investimento em infraestrutura e recursos didáticos apresentam melhores notas dos alunos;
+
+    + Escolas com maior número de professores qualificados apresentam melhores notas dos alunos;
+
+    + Escolas com maior número de alunos por turma apresentam piores notas dos alunos.
+
+
+-------------------------------------------------------
+
 # Título
-Modelo de avaliação de desempenho escolar através dos dados do SAEB 2021 e do PDDE 2022: Uma abordagem multinível
+
+Estudo de relações entre o Programa Dinheiro Direto na Escola (PDDE) e o desempenho escolar dos alunos do ensino básico no Sistema de Avaliação da Educação Básica (SAEB).
 
 # Introdução
-(texto motivacional) 
-O desempenho escolar é um dos principais indicadores da qualidade do ensino. Através do desempenho dos alunos é possível avaliar a eficácia das políticas educacionais e identificar possíveis melhorias. O desempenho escolar é influenciado por diversos fatores, como características individuais dos alunos, características escolares, e políticas educacionais. O objetivo deste trabalho é analisar os dados do SAEB 2021 e do PDDE 2022 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
-
-## Problema
-Quais são as características escolares associadas ao desempenho acadêmico dos estudantes do ensino básico?
-
-## Hipóteses
-
-- Escolas que executam o saldo do PDDE apresentam melhores notas dos alunos;
-
-- Escolas com maior investimento em infraestrutura e recursos didáticos apresentam melhores notas dos alunos;
-
-- Escolas com maior número de professores qualificados apresentam melhores notas dos alunos;
-
-- Escolas com maior número de alunos por turma apresentam piores notas dos alunos.
 
 
-# Justificativa
-(texto motivacional) 
-
-A avaliação do desempenho escolar é fundamental para a melhoria da qualidade do ensino. Através da análise dos dados do SAEB e do PDDE é possível identificar características escolares associadas ao desempenho acadêmico dos alunos. A utilização de modelos multiníveis permite controlar as características individuais dos alunos e avaliar o impacto das características escolares nas notas dos alunos. 
 
 # Objetivos
 ## Objetivo Geral
-Analisar os dados do SAEB 2021 e do PDDE 2022 afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
+Analisar os dados do SAEB e do PDDE afim de identificar características escolares associadas as notas dos alunos através de um modelo multinível.
 
 ## Objetivos Específicos
-- Integrar os dados do SAEB 2021/INEP e do PDDE 2022/FNDE;
+- Integrar os dados do SAEB/INEP e do PDDE/FNDE;
 
-- Controlando as características individuais, avaliar se existem associações entre características escolares e desempenho acadêmico;
+- Identificar os fatores referentes as condições da escola associados as notas dos alunos;
 
 - Estabelecer os níveis de associação de fatores referentes as condições da escola nas notas dos alunos;
 
 - Avaliar a associação do uso de recursos do PDDE nas notas dos alunos;
 
-- Compreender e aprimorar o uso de Modelos Multiníveis para avaliação de desempenho escolar. 
+- Compreender e aprimorar o uso de Modelos Multiníveis para o estudo de relações no desempenho escolar. 
 
 # Metodologia
 
-## Dados
-Os dados utilizados são provenientes do SAEB 2021 e do PDDE 2022. O SAEB é uma avaliação realizada pelo INEP que tem como objetivo avaliar a qualidade do ensino no Brasil. O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas, para que a escola receba o recurso basta ter uma UEx (Unidade Executora) regular, estar com o cadastro atualizado e estar em dia com prestações de contas. 
+## Conjunto de dados
+Os dados utilizados são provenientes de uma integração entre o SAEB e do PDDE. 
 
-## Modelo
-O modelo utilizado é um modelo multinível, onde as notas dos alunos são modeladas em função de características individuais e escolares. O modelo é dado por:
+O SAEB é uma avaliação realizada pelo INEP a cada 2 anos. Tem por objetivo avaliar a qualidade do ensino no Brasil.
 
-????
-
-# Resultados
-
-# Conclusão
-
-# Referências
+O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas. Para que a escola receba o recurso é necessário ter vínculo público (estadual, municipal ou federal), ter uma UEx (Unidade Executora) regular, estar com o cadastro atualizado e estar em dia com prestações de contas, o que torna boa parte das escolas brasileiras elegíveis ao programa. 
