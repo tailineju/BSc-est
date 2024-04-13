@@ -11,13 +11,13 @@ format: pdf
 
 * A introdução deve fazer menção ao problema, as hipóteses e a justificativa e deve seguir a seguinte estrutura de parágrafos: 
 
-    I. Contexto sobre avaliação de políticas públicas e desempenho escolar; 
+    1. Contexto sobre avaliação de políticas públicas e desempenho escolar; 
     
-    II. Contexto sobre o PDDE e o SAEB; 
+    2. Contexto sobre o PDDE e o SAEB; 
     
-    III. Estudos já realizados para avaliar o PDDE; 
+    3. Estudos já realizados para avaliar o PDDE; 
     
-    IV. Objetivos deste estudo.
+    4. Objetivos deste estudo.
 
 * O problema do estudo ainda deve ser melhor definido em torno do PDDE, mas a pricípio trabalha-se com a ideia de 'Quais são as características escolares associadas ao desempenho acadêmico dos estudantes do ensino básico?'
 
@@ -32,14 +32,21 @@ format: pdf
     + Escolas com maior número de alunos por turma apresentam piores notas dos alunos.
 
 
--------------------------------------------------------
-
 # Título
 
-Estudo de relações entre o Programa Dinheiro Direto na Escola (PDDE) e o desempenho escolar dos alunos do ensino básico no Sistema de Avaliação da Educação Básica (SAEB).
+V1: Estudo de relações entre o Programa Dinheiro Direto na Escola (PDDE) e o desempenho escolar dos alunos do ensino básico no Sistema de Avaliação da Educação Básica (SAEB).
+
+V2: Estudo de relações entre o PDDE e o desempenho acadêmico dos estudantes do ensino básico no SAEB
 
 # Introdução
 
+A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, a avaliação de políticas públicas é essencial para garantir a qualidade do ensino e o desenvolvimento dos estudantes, sendo o desempenho escolar um dos principais indicadores de qualidade do ensino, indicador este que pode estar associado a fatores, como a qualidade dos professores, a infraestrutura das escolas, o material didático utilizado, recursos financeiros, entre outros.
+
+O Programa Dinheiro Direto na Escola (PDDE) é um programa do Fundo Nacional de Desenvolvimento da Educação (FNDE) que tem como objetivo prestar assistência financeira para as escolas públicas. O PDDE é um programa de transferência de recursos financeiros que visa melhorar a infraestrutura física e pedagógica das escolas, bem como promover a melhoria da qualidade do ensino. O SAEB, por sua vez, é uma avaliação realizada pelo Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira (INEP) que tem como objetivo avaliar a qualidade do ensino no Brasil. O SAEB é composto por provas de Língua Portuguesa e Matemática aplicadas para alunos do 5º e 9º ano do ensino fundamental e do 3º ano do ensino médio em escolas públicas e privadas a cada dois anos. O SAEB traz informações sobre as notas dos alunos, características individuais dos alunos, e características escolares das escolas.
+
+Diversos estudos já foram realizados para avaliar o impacto do PDDE na qualidade do ensino. Alguns estudos mostram que o PDDE tem contribuído para a melhoria da infraestrutura das escolas e para a redução da evasão escolar, como o estudo de ?? que analisou ??. 
+
+No entanto, ainda há poucos estudos que investigam a relação entre o PDDE e o desempenho acadêmico dos alunos. Portanto, este estudo tem como objetivo analisar a relação entre o PDDE e o desempenho acadêmico dos estudantes do ensino básico no SAEB, identificando as características escolares associadas ao desempenho dos alunos e avaliando uma possível associção do PDDE com a qualidade do ensino.
 
 
 # Objetivos
@@ -60,8 +67,13 @@ Analisar os dados do SAEB e do PDDE afim de identificar características escolar
 # Metodologia
 
 ## Conjunto de dados
-Os dados utilizados são provenientes de uma integração entre o SAEB e do PDDE. 
+Os dados utilizados são provenientes doe uma integração entre os dados do SAEB e do PDDE. 
 
-O SAEB é uma avaliação realizada pelo INEP a cada 2 anos. Tem por objetivo avaliar a qualidade do ensino no Brasil.
+O SAEB é uma avaliação realizada pelo INEP que tem como objetivo avaliar a qualidade do ensino no Brasil, e é composto por provas de Língua Portuguesa e Matemática aplicadas para alunos do 5º e 9º ano do ensino fundamental e do 3º ano do ensino médio em escolas públicas e privadas. O SAEB traz informações sobre as notas dos alunos, características individuais dos alunos, e características escolares das escolas. O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas. 
 
-O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas. Para que a escola receba o recurso é necessário ter vínculo público (estadual, municipal ou federal), ter uma UEx (Unidade Executora) regular, estar com o cadastro atualizado e estar em dia com prestações de contas, o que torna boa parte das escolas brasileiras elegíveis ao programa. 
+O PDDE é um programa do FNDE que visa prestar assistência financeira para as escolas públicas e é associado a diversos programas, como o Programa Nacional de Alimentação Escolar (PNAE), Programa Nacional de Apoio ao Transporte do Escolar (PNATE), e Programa Nacional do Livro e do Material Didático (PNLD). Para que a escola seja elegível para o benefício do PDDE, basta ter o cadastro de gestores e de UEx (Unidade Executora) atualizado no sistema PDDE Interativo e estar em dia com prestações de contas de anos anteriores. O pagamento de recursos financeiros é feito diretamente na conta da escola, que deve ser aberta em nome da UEx e é feito com base nos dados do Censo Escolar do ano anterior. 
+
+# Referências
+
+
+-------------------------------------------------------
