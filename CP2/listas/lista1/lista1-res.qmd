@@ -7,8 +7,10 @@ format: pdf
 
 # Exercício 1 
 Um programa de TV dura 1 hora, e um telespectador impaciente vai mudar de canal a qualquer momento durante o programa (Isso significa que o instante em que ele mudará de canal é uma variável aleatória $X \sim U[0,1]$). Então considere as seguintes questões:
-- a. Qual a probabilidade dele assistir a maior parte do programa?
-- b. Se ele assistiu a maior parte do programa, qual a probabilidade dele desligar a TV ou mudar de canal nos últimos 10 minutos?
+
+a. Qual a probabilidade dele assistir a maior parte do programa?
+
+b. Se ele assistiu a maior parte do programa, qual a probabilidade dele desligar a TV ou mudar de canal nos últimos 10 minutos?
 
 ## Solução
 
@@ -151,11 +153,37 @@ Agora calculando $F_X (x|Y = 1/2)$
 
 > $F_X (x|Y = 1/2) = \frac{P(X \leq x, Y = 1/2)}{P(Y = 1/2)}$
 
-Calcular $P(Y = 1/2)$ é incorreto porque $Y$ é contínua.
+Calcular $P(Y = 1/2)$ é incorreto porque $Y$ é contínua. Logo, a resposta correta é:
 
+> $F_X (x|Y = 1/2) = \sum_{k=1}^{min(x,3)} f(k | y= 1/2)$
 
+> $F_X (x|Y = 1/2) = \sum_{k=1}^{min(x,3)} \frac{f(x,1/2)}{f_Y(1/2)}$
 
+Logo,
 
+$$
+F_X (x|Y = 1/2) = \begin{cases}
+0, & x < 1 \\
+4/11, & 1 \leq x < 2 \\
+8/11, & 2 \leq x < 3 \\
+1, & x \geq 3
+\end{cases}
+$$
+
+Assim, pode-se verificar a função de densidade conjunta como:
+
+$$
+f(x,y) = \begin{cases}
+\frac{xy^{x-1}}{3}, & \text{se } x = 1,2,3 \text{ e } y \in [0,1] \\
+0, & \text{caso contrário}
+\end{cases}
+$$
+
+E 
+
+> $f(k,1/2) = \frac{k(1/2)}{3}$ para k = 1,2,3
+
+> $f_Y(1/2) = \frac{(1/2)^0}{3} = \frac{1}{3}$
 
 # Exercício 3
 Sejam $X_1$ e $X_2$ variáveis aleatórias independentes, cada uma com distribuição geométrica dada por $P[X_1 = k] = P[X_2 = k] = p(1 −p)$ onde $k = 1,2,...,$ e $\theta < p < 1$. Então, calcule:
@@ -285,8 +313,78 @@ Sejam $Y \sim Exp(1)$ e $(X|Y = y) \sim Poisson(y)$. Mostre que $P[X = n] = \fra
 # Exercício 7
 Um contador recebe impulsos de duas fontes independentes, A e B. A fonte A gera impulsos segundo um processo de Poisson com parâmetro $\lambda > 0$, enquanto a fonte B gera impulsos segundo um processo de Poisson com parâmetro $\epsilon > 0$. Suponha que o contador registre todo o impulso gerado pelas duas fontes.
 
-- a. Seja $X_t$ o número de impulsos registrados até o tempo $t$, $t > 0$ ($X_0 = 0$). Explique porque $X_t$ tem distribuição Poisson. Qual parâmetro?
+a. Seja $X_t$ o número de impulsos registrados até o tempo $t$, $t > 0$ ($X_0 = 0$). Explique porque $X_t$ tem distribuição Poisson. Qual parâmetro?
 
-- b. Qual a probabilidade de que o primeiro impulso gerado seja da fonte A?
+b. Qual a probabilidade de que o primeiro impulso gerado seja da fonte A?
 
-- c. Dado que exatamente 100 impulsos foram contados durante a primeira unidade de tempo, qual a distribuição que você atribui ao número emitido pela fonte A?
+c. Dado que exatamente 100 impulsos foram contados durante a primeira unidade de tempo, qual a distribuição que você atribui ao número emitido pela fonte A?
+
+
+# Exercício 8 (em sala)
+
+Seja $X$ uma variável aleatória com função de densidade dada por:
+
+$$
+f(x) = \begin{cases}
+\frac{1}{x^2}, & x > 1 \\
+0, & \text{caso contrário}
+\end{cases}
+$$
+
+E $B= \{X\leq 3\}$.
+
+a. Calcule $F(X|B)$.
+
+b. Calcule $f(x|Y=y)$
+
+c. Calcule $E(X|Y=y)$
+
+d. Calcule $F(X|Y=y)$
+
+## Solução
+
+a. Para calcular $F(X|B)$, vamos utilizar a definição de distribuição condicional:
+
+> $F(X|B) = \frac{P(X \leq x, B)}{P(B)}$
+
+> $F(X|B) = \frac{P(X \leq x, X \leq 3)}{P(X \leq 3)}$
+
+i. Calculando $P(X \leq 3)$
+
+> $P(X \leq 3) = \int_{-\infty}^{3} f(x) dx$
+
+> $P(X \leq 3) = \int_{1}^{3} \frac{1}{x^2} dx$
+
+> $P(X \leq 3) = -\frac{1}{x} \Big|_{1}^{3}$
+
+> $P(X \leq 3) = -\frac{1}{3} + 1$
+
+> $P(X \leq 3) = \frac{2}{3}$
+
+ii. Calculando $P(X \leq x, X \leq 3)$
+
+$$
+P(X \leq x \cap X \leq 3) = \begin{cases}
+P(X \leq x), & \text{se } x < 3 \\
+P(X \leq 3), & \text{se } x \geq 3
+\end{cases}
+$$
+
+Que é o mesmo que:
+
+$$
+P(X \leq x \cap X \leq 3) = \begin{cases}
+\int_{-\infty}^{x} fa da, & \text{se } x < 3 \\
+2/3, & \text{se } x \geq 3
+\end{cases}
+$$
+
+Portanto,
+
+$$
+F(X|B) = \begin{cases}
+0, & \text{se } x < 1 \\
+1-\frac{1}{x}, & \text{se } 1 \leq x < 3 \\
+2/3, & \text{se } x \geq 3
+\end{cases}
+$$
