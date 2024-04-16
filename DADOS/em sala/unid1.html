@@ -876,6 +876,121 @@ H_{1}: \mbox{$\pi &gt; 0.6$}
 <p>Odds ratio -&gt; <strong>razão de chances</strong> de um evento ocorrer em um grupo dividida pela razão de chances de um evento ocorrer em outro grupo.</p>
 </section>
 </section>
+<section id="de-abril-2" class="level1">
+<h1>16 de abril</h1>
+<section id="descrição-da-atividade-4" class="level2">
+<h2 class="anchored" data-anchor-id="descrição-da-atividade-4">Descrição da atividade</h2>
+<p>Testes de Qui Quadrado (Independência) para os dados de identificação partidária.</p>
+<section id="hipóteses" class="level3">
+<h3 class="anchored" data-anchor-id="hipóteses">Hipóteses:</h3>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{X e Y independentes, ou seja $\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>alpha<span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>obs<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">279</span>,<span class="dv">73</span>,<span class="dv">225</span>,<span class="dv">165</span>,<span class="dv">47</span>,<span class="dv">191</span>),<span class="at">nrow=</span><span class="dv">2</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Fem'</span>,<span class="st">'Masc'</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Dem'</span>,<span class="st">'Ind'</span>,<span class="st">'Rep'</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Dem</th>
+<th style="text-align: center;">Ind</th>
+<th style="text-align: center;">Rep</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Fem</td>
+<td style="text-align: center;">279</td>
+<td style="text-align: center;">73</td>
+<td style="text-align: center;">225</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Masc</td>
+<td style="text-align: center;">165</td>
+<td style="text-align: center;">47</td>
+<td style="text-align: center;">191</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pim<span class="ot">&lt;-</span> <span class="fu">rowSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>pjm<span class="ot">&lt;-</span> <span class="fu">colSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>quis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic,qui<span class="sc">$</span>p.value)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Qui</th>
+<th style="text-align: center;">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X-squared</td>
+<td style="text-align: center;">7.009544</td>
+<td style="text-align: center;">0.0300536</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> (obs <span class="sc">-</span> qui<span class="sc">$</span>expected)<span class="sc">/</span><span class="fu">sqrt</span>(qui<span class="sc">$</span>expected<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pim)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pjm))</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>residualsf <span class="ot">&lt;-</span> qui<span class="sc">$</span>residuals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Odds ratio</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>oddsratio<span class="ot">&lt;-</span> (obs[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">3</span>])<span class="sc">/</span>(obs[<span class="dv">1</span>,<span class="dv">3</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">1</span>])</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1.435394</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Ou seja, a chance de se identificar como Democrata (em vez de Republicano) é 1.44 vezes maior para mulheres do que para homens.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>oddsratioh <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>oddsratio</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratioh,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">0.6966729</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Ou seja, a chance de se identificar como Republicano (em vez de Democrata) é 0.7% menor para homens do que para mulheres.</p>
+</section>
+</section>
+</section>
 
 </main>
 <!-- /main column -->
