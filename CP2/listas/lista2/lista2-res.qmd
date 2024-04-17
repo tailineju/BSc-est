@@ -120,8 +120,7 @@ c. Usando o item anterior, temos
 Considere as variáveis aleatórias $X$ e $Y$ com densidade conjunta dada por
 
 $$
-f_{X,Y} (x, y) =
-e^{-x} e^{-y} y, \hspace{1cm} \text{onde} \hspace{0.5cm} 0 < x < \infty, 0 < y < \infty
+f_{X,Y} (x, y) = \frac{e^{-\frac{x}{y}}e^{-y}}{y}, \hspace{1cm} \text{onde} \hspace{0.5cm} 0 < x < \infty, 0 < y < \infty
 $$
 
 Então:
@@ -133,6 +132,67 @@ b. determine a densidade condicional $f (x|Y = y)$;
 c. calcule $P[0 < X < 1|Y = 2]$;
 
 d. calcule a esperança condicional $E(X|Y)$.
+
+## Solução
+
+a. Para determinar a densidade marginal $f_Y$, temos
+
+> $f_Y(y) = \int_{0}^{\infty} f(x, y)dx$
+
+Como $x$ varia de $0$ a $\infty$, temos
+
+> $f_Y(y) = \int_{0}^{\infty} \frac{e^{-\frac{x}{y}}e^{-y}}{y}dx$
+
+> $f_Y(y) = \frac{e^{-y}}{y} \int_{0}^{\infty} e^{-\frac{x}{y}}dx$
+
+> $f_Y(y) = \frac{e^{-y}}{y} \left[ -y e^{-\frac{x}{y}} \right]_{0}^{\infty}$
+
+> $f_Y(y) = \frac{e^{-y}}{y} \left[ -y e^{-\frac{\infty}{y}} + y e^0 \right]$
+
+> $f_Y(y) = \frac{e^{-y}}{y} \left[ 0 + y \right]$
+
+> $f_Y(y) = e^{-y}$
+
+b. Para determinar a densidade condicional $f (x|Y = y)$, temos
+
+> $f (x|Y = y) = \frac{f(x, y)}{f_Y(y)}$
+
+> $f (x|Y = y) = \frac{\frac{e^{-\frac{x}{y}}e^{-y}}{y}}{e^{-y}}$
+
+> $f (x|Y = y) = \frac{e^{-\frac{x}{y}}}{y}$
+
+c. Para calcular $P[0 < X < 1|Y = 2]$, usamos a definicão de probabilidade condicional
+
+> $P[0 < X < 1|Y = 2] = \frac{P[0 < X < 1, Y = 2]}{P[Y = 2]}$
+
+> $P[0 < X < 1|Y = 2] = \frac{\int_{0}^{1} f(x, 2)dx}{f_Y(2)}$
+
+> $P[0 < X < 1|Y = 2] = \frac{\int_{0}^{1} \frac{e^{-\frac{x}{2}}e^{-2}}{2}dx}{e^{-2}}$
+
+> $P[0 < X < 1|Y = 2] = \frac{\frac{e^{-2}}{2} \int_{0}^{1} e^{-\frac{x}{2}}dx}{e^{-2}}$
+
+> $P[0 < X < 1|Y = 2] = \frac{\frac{e^{-2}}{2} \left[ -2e^{-\frac{x}{2}}\right]^1_0}{e^{-2}}$
+
+> $P[0 < X < 1|Y = 2] = \frac{2}{2}(-e^{-\frac{1}{2}}+1)$
+
+> $P[0 < X < 1|Y = 2] = -e^{-\frac{1}{2}} + 1$
+
+d. Para calcular a esperança condicional $E(X|Y)$, temos
+
+> $E(X|Y) = \int^\infty_{-\infty} x \cdot f(x|Y=y)dx$
+
+Como $0<x< \infty$
+
+> $E(X|Y) = \int^\infty_0 x \cdot \frac{e^{-\frac{x}{y}}}{y}dx$
+
+> $E(X|Y) = \frac{1}{y}\int^\infty_0 x \cdot e^{-\frac{x}{y}}dx$
+
+> $E(X|Y) = \frac{1}{y} \left[ \frac{x^2}{2}\cdot -ye^{-\frac{x}{y}} \right]^\infty_0$
+
+> $E(X|Y) = \frac{1}{y} \left[0 \right]$
+
+> $E(X|Y) = \frac{1}{y}$
+
 
 # Exercício 3
 Considere as variáveis aleatórias $X$ e $Y$ com densidade conjunta dada por
@@ -151,3 +211,37 @@ a. determine as densidades marginais $f_X$ e $f_Y$;
 b. determine as densidades condicionais $f (x|Y = y)$ e $f (y|X = x)$;
 
 c. calcule as esperanças condicionais $E(X|Y)$ e $E(Y|X)$.
+
+## Solução
+
+a. Para $0<x<y<1$,
+
+Para determinar $f_X$, tem-se que:
+
+> $f_X = \int_{-\infty}^\infty f(x,y)dy$
+
+> $f_X = \int^1_0 x + y dy$
+
+> $f_X = \left[ xy + \frac{y^2}{2} \right]^1_0$
+
+> $f_X = \left[ x + \frac{1}{2} -0\right]$
+
+> $f_X =  x + \frac{1}{2}$
+
+Para determinar $f_Y$, tem-se que
+
+> $f_Y = \int_{-\infty}^\infty f(x,y)dx$
+
+> $f_Y = \int^1_0 x + y dx$
+
+> $f_Y = y + \frac{1}{2}$
+
+b. Para $0<x<y<1$
+
+> $f (x|Y = y) = \frac{f(x,y)}{f_X}$
+
+> $f (x|Y = y) = \frac{x+y}{x + \frac{1}{2}}$
+
+> $f (x|Y = y) = \frac{x+y}{\frac{2x+1}{2}}$
+
+> .....
