@@ -362,6 +362,7 @@ colnames(obs)<- c('Ausente','Presente')
 kable(obs,align='c')
 
 expected <- outer(rowSums(obs),colSums(obs))/sum(obs)
+kable(expected,align='c')
 ```
 
 1. Consumo de álcool (quantitativa discreta - categorizada em faixas ordinais) e malformação congênita (qualitative nominal).
@@ -371,8 +372,10 @@ expected <- outer(rowSums(obs),colSums(obs))/sum(obs)
 3. Proporção de malformação congênita para cada nível de consumo de álcool:
 
 ```{r}
-p_i <- obs[,2]/rowSums(obs)
+p_i <- 100*obs[,2]/rowSums(obs)
 kable(p_i,align='c')
+
+barplot(p_i,main='Proporção de malformação congênita por nível de consumo de álcool',xlab='Consumo de álcool',ylab='Proporção de malformação congênita')
 ```
 
 4. Teste de Qui Quadrado para associação/independência. 
@@ -396,7 +399,6 @@ H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 $$
 
 ```{r}
-#| warning: false
 gl <- (nrow(obs)-1)*(ncol(obs)-1)
 qui_crit<- qchisq(1-alpha,df=gl)
 kable(qui_crit,align='c')
@@ -414,3 +416,15 @@ $\chi^{2}_{obs}$> $\chi^{2}_{crit}$
 p-valor < $\alpha$
 
 Logo, rejeita-se $H_0$.  
+
+No entanto, é possível identificar algumas limitações:
+
+- No teste de Qui Quadrado, como a necessidade de amostras grandes (na amostra existem caselas com frequência esperada menor que 5).
+    
+- No teste Qui Quadrado não é levada em consideração de ordem entre as categorias (consumo de álcool é uma variável ordinal).
+
+- É possível identificar uma associação, mas não a direção da associação (quanto maior o consumo de álcool, maior a probabilidade de malformação congênita?). O apoio gráfico é útil para identificar a direção da associação.
+
+
+Uma solução possível é agrupar as categorias de consumo de álcool em três categorias: Zero consumo (0), Baixo consumo (1-2) e Alto consumo(3+). E caso ainda haja frequências esperadas menores que 5, é possível agrupar as categorias em duas categorias: Zero consumo (0) e Consumo (1+).
+
