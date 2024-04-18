@@ -1,0 +1,47 @@
+---
+title: "Aula 10 - Inferência Bayesiana"
+subtitle: "Inferência Bayesiana"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+```{r}
+#| message: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,LearnBayes)
+```
+
+# Hipóteses
+
+$$
+\begin{cases}
+H_{0}: \mbox{\mu=170} \\
+H_{1}: \mbox{\mu \neq 170}
+\end{cases}
+$$
+
+
+# Distribuição a priori
+
+$P(\mu=170) = 0.5$
+
+$\mu \sim N(170, \tau )$ com peso 0.5
+
+
+# Bayes Factor
+
+Razão de chances da priori pela razão de chances da posteriori
+
+> $BF = \frac{P(x|H_0)/P(x|H_1)}{P(H_0)/P(H_1)}$ 
+
+> $BF = \frac{\frac{n^{1/2}}{\sigma}exp\left[-\frac{n(\bar{y}-\mu_0)^2}{2\sigma^2}\right]}{(\frac{\sigma^2}{n+\tau^2})^{1/2} exp\left[-\frac{1}{2\frac{\sigma^2}{n+\tau^2}(\bar{y}-\mu_0)^2}\right]}$
+
+# Exemplo
+
+```{r}
+y <- c(182,172,173,176,180,173,174,179,175)
+data<- c(mean(y),length(y),3)
+t<- c(.5,1,2,4,8)
+mnormt.twosided(170,.5,t,data)
+```
