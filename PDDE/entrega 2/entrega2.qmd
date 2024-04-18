@@ -1,0 +1,239 @@
+---
+title: "Cecampe-CO/PDDE"
+subtitle: "Entrega 2: Análise Crítica"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# Descrição da Atividade
+
+No Consulta escola, explorar as abas d os menus Consulta por Escola (abre 1 aba) e relatórios (abre 5 abas) . 
+
+Listar (pode ser uma tabela) o que há disponível em cada uma das abas - variáveis e arquivos possíveis em Excel temos como objetivo: 
+
+1. Explorar melhor as possibilidades dos dados disponíveis p nosso trabalho (bases de dados)
+
+2. Utilizar material para  prestar assessoria aos gestores para acessar dados das escolas
+
+# Resultados
+
+## Aba 1: Consulta por Escola
+### Filtros disponíveis
+
+- Ano (obrigatório)
+
+- Código da Escola - INEP
+
+- CNPJ
+
+- Rede de ensino (obrigatório)
+
+- UF (obrigatório)
+
+- Município
+
+### Variáveis disponíveis
+
+- **Dados da Escola**
+  - Código da Escola
+  - Nome da Escola
+  - UF
+  - Município
+  - Rede de Ensino
+  - Nível Ensino
+  - Quantidade de Alunos
+
+- **Unidade Executora Própria**
+    - Nome da UEx
+    - CNPJ
+    - UF
+    - Município
+
+- **Dados Bancários**
+    - Programa/Ação
+    - Banco
+    - Agência
+    - Conta Corrente
+    - Saldo
+    - Solicitação
+    - Fase da Solicitação
+    - Ocorrência
+
+- **Situação da UEx**
+    - Dados cadastrais
+    - Mandato do dirigente
+    - Prestação de contas
+
+- **Situação da EEx**
+    - Adesão ao PDDE
+    - Prestação de contas
+
+- **Saldos**
+    - Destinação
+    - Valor devido custeio
+    - Valor devido capital
+    - Valor devido total
+    - Valor ajuste custeio
+    - Valor ajuste capital
+    - Valor ajuste total
+    - Valor final devido total
+    - Valor pago custeio
+    - Valor pago capital
+    - Valor pago total
+    - Data Ord. Pagamento
+
+### Exportações disponíveis
+
+- Relatório Excel (escolas selecionadas)
+
+- Relatório Excel de Todos
+
+- Relatório de Escolas Atendidas pela EEx
+
+## Aba 2.1: Relatórios / Situação Cadastral das Entidades
+
+### Filtros disponíveis
+
+- Ano (obrigatório)
+
+- UF
+
+- Município
+
+- CNPJ
+
+- Código INEP
+
+- UF (seleção múltipla)
+
+- Rede de Atendimento (seleção múltipla)
+
+- Tipo de relatório
+
+- Situação Cadastral
+
+- Localização
+
+- Mandato Dirigente
+
+### Variáveis disponíveis
+
+- Ano
+
+- Região
+
+- UF
+
+- CNPJ EEX
+
+- Código Escola
+
+- Escola
+
+- Localização
+
+- CNPJ UEX
+
+- Razão Social
+
+- DDD
+
+- Telefone
+
+- Rede de Atendimento
+
+- Mandato Dirigente
+
+- Data fim do mandato
+
+- Data atualização
+
+- Hora atualização
+
+### Exportações disponíveis
+
+- Relatório Excel
+
+## Aba 2.2: Relatórios / Situação de Atendimento da Entidade
+
+### Filtros disponíveis
+
+- Ano (obrigatório)
+
+- Programa
+
+- Destinação 
+
+- CNPJ
+
+- Código INEP
+
+- Rede de Atendimento
+
+- UF (seleção múltipla e única)
+
+- Município
+
+- Situação
+
+- Tipo de relatório
+
+### Variáveis disponíveis
+
+- Ano
+
+- Região
+
+- UF
+
+- Município
+
+- Código Município IBGE
+
+- CNJP Município/SEDUC (EEX) 
+
+- Nome escola
+
+- Código INEP
+
+- Rede de Atendimento
+
+- Quantidade de Alunos
+
+- CNPJ Executora
+
+- Nome Executora
+
+- Programa
+
+- Destinação
+
+- Valor custeio
+
+- Valor capital
+
+- Valor total
+
+- Data solicitação
+
+### Exportações disponíveis
+
+- Relatório Excel
+
+## Análises possíveis
+
+Tendo em mente que estaremos analisando apenas as escolas do Centro-Oeste e que é esperado um cuidado extra com as escolas em localização diferenciada:
+
+- **Consulta por Escola**
+    
+    - Análise da situação das escolas: é possível propor um aglomerado de informações sobre a quantidade de alunos, quantidade de escolas em situação irregular de prestação de contas.
+
+    - Análise de saldos: é possível verificar se há escolas com saldos negativos, escolas que estão com saldos acumulados e escolas que estão com saldos zerados.
+
+- **Relatórios / Situação Cadastral das Entidades**
+
+    - Análise da situação cadastral das escolas: é possível verificar quantas escolas estão com mandatos de dirigentes vencidos, série temporal de atualização dos dados cadastrais das escolas.
+
+- **Relatórios / Situação de Atendimento da Entidade**
+
+    - Análise da situação de atendimento das escolas: é possível verificar quantas escolas receberam apenas 1 das parcelas, uma análise consistência sobre as abas de pagas e não pagas.
