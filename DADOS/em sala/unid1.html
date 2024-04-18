@@ -891,10 +891,26 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 \]</span></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>alpha<span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>obs<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">279</span>,<span class="dv">73</span>,<span class="dv">225</span>,<span class="dv">165</span>,<span class="dv">47</span>,<span class="dv">191</span>),<span class="at">nrow=</span><span class="dv">2</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Fem'</span>,<span class="st">'Masc'</span>)</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Dem'</span>,<span class="st">'Ind'</span>,<span class="st">'Rep'</span>)</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>quicrit<span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span><span class="sc">-</span>alpha,<span class="at">df=</span><span class="dv">2</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quicrit,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">5.991465</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>obs<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">279</span>,<span class="dv">73</span>,<span class="dv">225</span>,<span class="dv">165</span>,<span class="dv">47</span>,<span class="dv">191</span>),<span class="at">nrow=</span><span class="dv">2</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Fem'</span>,<span class="st">'Masc'</span>)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Dem'</span>,<span class="st">'Ind'</span>,<span class="st">'Rep'</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -921,13 +937,13 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </tbody>
 </table>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>pim<span class="ot">&lt;-</span> <span class="fu">rowSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>pjm<span class="ot">&lt;-</span> <span class="fu">colSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>quis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic,qui<span class="sc">$</span>p.value)</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>pim<span class="ot">&lt;-</span> <span class="fu">rowSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>pjm<span class="ot">&lt;-</span> <span class="fu">colSums</span>(obs)<span class="sc">/</span><span class="fu">sum</span>(obs)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>quis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic,qui<span class="sc">$</span>p.value)</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -946,13 +962,13 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </tbody>
 </table>
 </div>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> (obs <span class="sc">-</span> qui<span class="sc">$</span>expected)<span class="sc">/</span><span class="fu">sqrt</span>(qui<span class="sc">$</span>expected<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pim)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pjm))</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>residualsf <span class="ot">&lt;-</span> qui<span class="sc">$</span>residuals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> (obs <span class="sc">-</span> qui<span class="sc">$</span>expected)<span class="sc">/</span><span class="fu">sqrt</span>(qui<span class="sc">$</span>expected<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pim)<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>pjm))</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>residualsf <span class="ot">&lt;-</span> qui<span class="sc">$</span>residuals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Odds ratio</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>oddsratio<span class="ot">&lt;-</span> (obs[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">3</span>])<span class="sc">/</span>(obs[<span class="dv">1</span>,<span class="dv">3</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">1</span>])</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>oddsratio<span class="ot">&lt;-</span> (obs[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">3</span>])<span class="sc">/</span>(obs[<span class="dv">1</span>,<span class="dv">3</span>]<span class="sc">*</span>obs[<span class="dv">2</span>,<span class="dv">1</span>])</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -970,8 +986,8 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </div>
 <p>Ou seja, a chance de se identificar como Democrata (em vez de Republicano) é 1.44 vezes maior para mulheres do que para homens.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>oddsratioh <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>oddsratio</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratioh,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>oddsratioh <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>oddsratio</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratioh,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <thead>
@@ -988,6 +1004,210 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </div>
 </div>
 <p>Ou seja, a chance de se identificar como Republicano (em vez de Democrata) é 0.7% menor para homens do que para mulheres.</p>
+</section>
+</section>
+</section>
+<section id="de-abril-3" class="level1">
+<h1>18 de abril</h1>
+<section id="descrição-da-atividade-5" class="level2">
+<h2 class="anchored" data-anchor-id="descrição-da-atividade-5">Descrição da atividade</h2>
+<p>Calcular Razao de Verossimilhança para os dados de identificação partidária.</p>
+<section id="hipóteses-1" class="level3">
+<h3 class="anchored" data-anchor-id="hipóteses-1">Hipóteses:</h3>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{X e Y independentes, ou seja $\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$ para qualquer $i,j$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>G<span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">sum</span>(obs<span class="sc">*</span><span class="fu">log</span>(obs<span class="sc">/</span>qui<span class="sc">$</span>expected))</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(G,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">7.002594</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><span class="math inline">\(G^2\)</span> tem distribuição Qui Quadrado com V graus de liberdade, onde V é o nº de parâmetros sob <span class="math inline">\(H_1\)</span> - o nº de parâmetros sob <span class="math inline">\(H_0\)</span>,</p>
+<p>Sob <span class="math inline">\(H_1\)</span>, <span class="math inline">\(V_1=(i*j)-1\)</span></p>
+<p>Sob <span class="math inline">\(H_0\)</span>, <span class="math inline">\(V_0=(i-1)+(j-1)\)</span></p>
+<p>Logo,</p>
+<p><span class="math inline">\(V=V_1-V_0\)</span></p>
+<p><span class="math inline">\(V=(i*j)-1-\left[(i-1)+(j-1)\right]\)</span></p>
+<p><span class="math inline">\(V=(j-1)(i-1)\)</span></p>
+<p>Como <span class="math inline">\(i=2\)</span> e <span class="math inline">\(j=3\)</span>, então <span class="math inline">\(V=2\)</span></p>
+<p>Sabe-se que para <span class="math inline">\(\alpha=0.05\)</span>, <span class="math inline">\(G_{crit}=\)</span> 5.99. Logo, como <span class="math inline">\(G^2\)</span> é maior que <span class="math inline">\(G_{crit}\)</span>, rejeita-se <span class="math inline">\(H_0\)</span>.</p>
+<p>Em amostras grandes, <span class="math inline">\(G^2\)</span> terá um resultado muito próximo ao de <span class="math inline">\(\chi^2\)</span>. Mas em amostras pequenas, <span class="math inline">\(G^2\)</span> é mais confiável/robusto.</p>
+</section>
+</section>
+<section id="exercício---consumo-de-álcool-e-mal-formação-congênita" class="level2">
+<h2 class="anchored" data-anchor-id="exercício---consumo-de-álcool-e-mal-formação-congênita">Exercício - Consumo de álcool e mal formação congênita</h2>
+<ol type="1">
+<li><p>Identifique as variáveis em estudo e classifiqye quanto ao tipo.</p></li>
+<li><p>Identifique a variável resposta e a variável explicativa.</p></li>
+<li><p>Determine a proporção de presença de malformação congênita para cada nível de consumo de álcool e analise os resultados obtidos.</p></li>
+<li><p>Verifique se a presença de malformação congênita está associada ao consumo de álcool das mães a um nível de significância de 5%. e tratando as variáveis como qualitativas nominais e ordinais.</p></li>
+</ol>
+<section id="solução" class="level3">
+<h3 class="anchored" data-anchor-id="solução">Solução</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>obs<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">17066</span>,<span class="dv">48</span>,<span class="dv">14464</span>,<span class="dv">38</span>,<span class="dv">788</span>,<span class="dv">5</span>,<span class="dv">126</span>,<span class="dv">1</span>,<span class="dv">37</span>,<span class="dv">1</span>),<span class="at">nrow=</span><span class="dv">5</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'0'</span>,<span class="st">'&lt;1'</span>,<span class="st">'1-2'</span>,<span class="st">'3-5'</span>,<span class="st">'6+'</span>)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Ausente'</span>,<span class="st">'Presente'</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Ausente</th>
+<th style="text-align: center;">Presente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: center;">17066</td>
+<td style="text-align: center;">48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&lt;1</td>
+<td style="text-align: center;">14464</td>
+<td style="text-align: center;">38</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1-2</td>
+<td style="text-align: center;">788</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3-5</td>
+<td style="text-align: center;">126</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">6+</td>
+<td style="text-align: center;">37</td>
+<td style="text-align: center;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>expected <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="fu">rowSums</span>(obs),<span class="fu">colSums</span>(obs))<span class="sc">/</span><span class="fu">sum</span>(obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><p>Consumo de álcool (quantitativa discreta - categorizada em faixas ordinais) e malformação congênita (qualitative nominal).</p></li>
+<li><p>Variável resposta: malformação congênita. Variável explicativa: consumo de álcool.</p></li>
+<li><p>Proporção de malformação congênita para cada nível de consumo de álcool:</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>p_i <span class="ot">&lt;-</span> obs[,<span class="dv">2</span>]<span class="sc">/</span><span class="fu">rowSums</span>(obs)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(p_i,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: center;">0.0028047</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&lt;1</td>
+<td style="text-align: center;">0.0026203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1-2</td>
+<td style="text-align: center;">0.0063052</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3-5</td>
+<td style="text-align: center;">0.0078740</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">6+</td>
+<td style="text-align: center;">0.0263158</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<ol start="4" type="1">
+<li>Teste de Qui Quadrado para associação/independência.</li>
+</ol>
+<p>Hipóteses:</p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{Consumo de álcool e malformação congênita são independentes} \\
+H_{1}: \mbox{Consumo de álcool e malformação congênita são dependentes}
+\end{cases}
+\]</span></p>
+<p>em termos de proporções:</p>
+<p><span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>gl <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(obs)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">*</span>(<span class="fu">ncol</span>(obs)<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>qui_crit<span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span><span class="sc">-</span>alpha,<span class="at">df=</span>gl)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(qui_crit,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">9.487729</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>quis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic,qui<span class="sc">$</span>p.value)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Qui</th>
+<th style="text-align: center;">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X-squared</td>
+<td style="text-align: center;">12.08205</td>
+<td style="text-align: center;">0.0167514</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Com <span class="math inline">\(\alpha=0.05\)</span>,</p>
+<p><span class="math inline">\(\chi^{2}_{obs}\)</span>&gt; <span class="math inline">\(\chi^{2}_{crit}\)</span></p>
+<p>p-valor &lt; <span class="math inline">\(\alpha\)</span></p>
+<p>Logo, rejeita-se <span class="math inline">\(H_0\)</span>.</p>
 </section>
 </section>
 </section>

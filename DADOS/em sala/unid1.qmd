@@ -268,6 +268,9 @@ $$
 
 ```{r}
 alpha<- 0.05
+quicrit<- qchisq(1-alpha,df=2)
+kable(quicrit,align='c')
+
 obs<- matrix(c(279,73,225,165,47,191),nrow=2,byrow=TRUE)
 row.names(obs)<- c('Fem','Masc')
 colnames(obs)<- c('Dem','Ind','Rep')
@@ -300,3 +303,114 @@ kable(oddsratioh,align='c')
 ```
 
 Ou seja, a chance de se identificar como Republicano (em vez de Democrata) é `r round(oddsratioh,2)`% menor para homens do que para mulheres.
+
+# 18 de abril
+
+## Descrição da atividade
+Calcular Razao de Verossimilhança para os dados de identificação partidária.
+
+### Hipóteses:
+$$
+\begin{cases}
+H_{0}: \mbox{X e Y independentes, ou seja $\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$ para qualquer $i,j$}
+\end{cases}
+$$
+
+```{r}
+G<- 2*sum(obs*log(obs/qui$expected))
+kable(G,align='c')
+```
+
+$G^2$ tem distribuição Qui Quadrado com V graus de liberdade, onde V é o nº de parâmetros sob $H_1$ - o nº de parâmetros sob $H_0$, 
+
+Sob $H_1$, $V_1=(i*j)-1$
+
+Sob $H_0$, $V_0=(i-1)+(j-1)$
+
+Logo, 
+
+$V=V_1-V_0$
+
+$V=(i*j)-1-\left[(i-1)+(j-1)\right]$
+
+$V=(j-1)(i-1)$
+
+Como $i=2$ e $j=3$, então $V=2$
+
+Sabe-se que para $\alpha=0.05$, $G_{crit}=$ `r round(quicrit,2)`. Logo, como $G^2$ é maior que $G_{crit}$, rejeita-se $H_0$.
+
+
+Em amostras grandes, $G^2$ terá um resultado muito próximo ao de $\chi^2$. Mas em amostras pequenas, $G^2$ é mais confiável/robusto.
+
+## Exercício - Consumo de álcool e mal formação congênita
+
+1. Identifique as variáveis em estudo e classifiqye quanto ao tipo.
+
+2. Identifique a variável resposta e a variável explicativa.
+
+3. Determine a proporção de presença de malformação congênita para cada nível de consumo de álcool e analise os resultados obtidos.
+
+4. Verifique se a presença de malformação congênita está associada ao consumo de álcool das mães a um nível de significância de 5%. e tratando as variáveis como qualitativas nominais e ordinais.
+
+### Solução
+
+```{r}
+obs<- matrix(c(17066,48,14464,38,788,5,126,1,37,1),nrow=5,byrow=TRUE)
+row.names(obs)<- c('0','<1','1-2','3-5','6+')
+colnames(obs)<- c('Ausente','Presente')
+kable(obs,align='c')
+
+expected <- outer(rowSums(obs),colSums(obs))/sum(obs)
+```
+
+1. Consumo de álcool (quantitativa discreta - categorizada em faixas ordinais) e malformação congênita (qualitative nominal).
+
+2. Variável resposta: malformação congênita. Variável explicativa: consumo de álcool.
+
+3. Proporção de malformação congênita para cada nível de consumo de álcool:
+
+```{r}
+p_i <- obs[,2]/rowSums(obs)
+kable(p_i,align='c')
+```
+
+4. Teste de Qui Quadrado para associação/independência. 
+
+Hipóteses:
+
+$$
+\begin{cases}
+H_{0}: \mbox{Consumo de álcool e malformação congênita são independentes} \\
+H_{1}: \mbox{Consumo de álcool e malformação congênita são dependentes}
+\end{cases}
+$$
+
+em termos de proporções:
+
+$$
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+$$
+
+```{r}
+#| warning: false
+gl <- (nrow(obs)-1)*(ncol(obs)-1)
+qui_crit<- qchisq(1-alpha,df=gl)
+kable(qui_crit,align='c')
+
+qui <- chisq.test(obs)
+quis <- data.frame(qui$statistic,qui$p.value)
+colnames(quis)<- c('Qui','p-value')
+kable(quis,align='c')
+```
+
+Com $\alpha=0.05$, 
+
+$\chi^{2}_{obs}$> $\chi^{2}_{crit}$
+
+p-valor < $\alpha$
+
+Logo, rejeita-se $H_0$.  
