@@ -352,6 +352,16 @@ Em amostras grandes, $G^2$ terá um resultado muito próximo ao de $\chi^2$. Mas
 3. Determine a proporção de presença de malformação congênita para cada nível de consumo de álcool e analise os resultados obtidos.
 
 4. Verifique se a presença de malformação congênita está associada ao consumo de álcool das mães a um nível de significância de 5%. e tratando as variáveis como qualitativas nominais e ordinais.
+    
+    a. Comente a decisão tomada considerando o nível de significância solicitado. A decisão seria a mesma para outro nível de significância? Qual seria sua recomendação?
+
+    b. Os pressupostos do teste foram atendidos? O que poderia ser feito?
+
+5. Refaça o teste utilizado no item 4 agregando categorias para contornar o problema indicado no item 4b. Comente o a decisão tomada com relação aos aspectos considerados nos itens 4a e 4b.
+
+6. Os resultados dos testes realizados permitem concluir sobre a existência de tendências na associação entre as variáveis considerando o nível de consumo de álcool? Justifique sua resposta.
+
+7. Construa tabelas 2 x 2 que permitam medir a associação entre presença de mal formação congênita para cada nível de consumo de álcool em relação a ausência de consumo de álcool. Comente os resultados. Eles sugerem alguma tendência?
 
 ### Solução
 
@@ -399,11 +409,13 @@ H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 $$
 
 ```{r}
+#| warning: false
 gl <- (nrow(obs)-1)*(ncol(obs)-1)
 qui_crit<- qchisq(1-alpha,df=gl)
 kable(qui_crit,align='c')
 
 qui <- chisq.test(obs)
+qui$residuals
 quis <- data.frame(qui$statistic,qui$p.value)
 colnames(quis)<- c('Qui','p-value')
 kable(quis,align='c')
@@ -425,6 +437,114 @@ No entanto, é possível identificar algumas limitações:
 
 - É possível identificar uma associação, mas não a direção da associação (quanto maior o consumo de álcool, maior a probabilidade de malformação congênita?). O apoio gráfico é útil para identificar a direção da associação.
 
+a. A decisão muda para outros níveis de significância. Para $\alpha=0.01$, a decisão seria a mesma. Para $\alpha=0.10$, a decisão seria diferente. A recomendação é que sejam realizados testes de associação com amostras maiores e que sejam consideradas outras técnicas de análise.
 
-Uma solução possível é agrupar as categorias de consumo de álcool em três categorias: Zero consumo (0), Baixo consumo (1-2) e Alto consumo(3+). E caso ainda haja frequências esperadas menores que 5, é possível agrupar as categorias em duas categorias: Zero consumo (0) e Consumo (1+).
+b. Os pressupostos do teste Qui Quadrado são: independência entre as categorias, frequências esperadas maiores que 5 e amostras grandes. Uma solução possível é agrupar as categorias de consumo de álcool em três categorias: Zero consumo (0), Baixo consumo (1-2) e Alto consumo(3+). E caso ainda haja frequências esperadas menores que 5, é possível agrupar as categorias em duas categorias: Zero consumo (0) e Consumo (1+).
+
+**Realizando o teste de razão de verossimilhança:**
+
+```{r}
+G<- 2*sum(obs*log(obs/qui$expected))
+pvalorG <- 1-pchisq(G,df=gl)
+g2 <- data.frame(G,pvalorG)
+colnames(g2)<- c('G','p-valor')
+kable(g2,align='c')
+```
+
+Nesse caso, a decisão seria não rejeitar $H_0$, já que $G^2$ é menor que $G_{crit}$.
+
+
+**Calculando a Odds Ratio para consumo 0 e consumo 1-2:**
+
+De forma que sucesso é a presença de malformação congênita e fracasso é a ausência de malformação congênita.
+
+```{r}
+oddsratio<- (obs[1,1]*obs[3,2])/(obs[1,2]*obs[3,1])
+kable(oddsratio,align='c')
+```
+
+Assim, a chance de malformação congênita é `r round(oddsratio,2)` vezes maior para mães que consomem de 1 a 2 doses de álcool por dia do que para mães que não consomem álcool. Ou seja, a chance de malformação congênita é `r round(1/oddsratio,2)`% menor para que não consomem álcool.
+
+5. Teste de Qui Quadrado para associação/independência com categorias agrupadas.
+
+
+```{r}
+obs2<- matrix(c(17066,48,14464,38,951,7),nrow=3,byrow=TRUE)
+row.names(obs2)<- c('0','<1','1+')
+colnames(obs2)<- c('Ausente','Presente')
+kable(obs2,align='c')
+
+expected2 <- outer(rowSums(obs2),colSums(obs2))/sum(obs2)
+kable(expected2,align='c')
+```
+
+Hipóteses: 
+$$
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+$$
+
+```{r}
+gl2 <- (nrow(obs2)-1)*(ncol(obs2)-1)
+qui_crit2<- qchisq(1-alpha,df=gl2)
+kable(qui_crit2,align='c')
+```
+
+```{r}
+#| warning: false
+qui2 <- chisq.test(obs2)
+quis2 <- data.frame(qui2$statistic,qui2$p.value)
+qui2$residuals
+colnames(quis2)<- c('Qui','p-value')
+kable(quis2,align='c')
+```
+
+Com $\alpha=0.05$,
+
+$\chi^{2}_{obs}$> $\chi^{2}_{crit}$
+
+p-valor < $\alpha$
+
+Logo, rejeita-se $H_0$. No entanto, é possível observar que ainda com esse agrupamento, existem frequências esperadas menores que 5 e que $H_0$ não é rejeitada em todos os níveis de significância. Assim, é possível tentar mais uma vez mas agrupando as categorias em duas categorias: Zero consumo (0) e Consumo (1+).
+
+```{r}
+obs3<- matrix(c(17066,48,15415,45),nrow=2,byrow=TRUE)
+row.names(obs3)<- c('Não consome alcool','Consome')
+colnames(obs3)<- c('Ausente','Presente')
+kable(obs3,align='c')
+
+expected3 <- outer(rowSums(obs3),colSums(obs3))/sum(obs3)
+kable(expected3,align='c')
+```
+
+Hipóteses: 
+$$
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+$$
+
+```{r}
+gl3 <- (nrow(obs3)-1)*(ncol(obs3)-1)
+qui_crit3<- qchisq(1-alpha,df=gl3)
+kable(qui_crit3,align='c')
+```
+
+```{r}
+qui3 <- chisq.test(obs3)
+quis3 <- data.frame(qui3$statistic,qui3$p.value)
+colnames(quis3)<- c('Qui','p-value')
+kable(quis3,align='c')
+```
+
+Com $\alpha=0.05$,
+
+$\chi^{2}_{obs}$ < $\chi^{2}_{crit}$ 
+
+p-valor > $\alpha$
+
+Logo, não rejeita-se $H_0$ para nenhum nível de significância. 
 

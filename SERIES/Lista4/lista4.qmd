@@ -1,0 +1,32 @@
+---
+title: "LISTA 4"
+subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
+author: "Tailine J. S. Nonato"
+date: "04/27/2024"
+format: pdf
+---
+
+# Descrição da atividade 
+Incluido as seguintes informações referentes a março de 2024, Energia = 419 e Dias = 33, utilizando a técnica de previsão com base na função de autocorrelação amostral, obtenha a previsão do consumo a ser faturado em abril de 2024, reproduzindo todos os elementos apresentados na aula 9.
+
+## Elementos da aula 9
+
+# Respostas
+
+```{r}
+#| message: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,readxl, knitr)
+#setwd("/Users/tailine.nonato/Documents/VSCode/SERIES/Lista4")
+```
+
+## Leitura e manipulação dos dados
+
+```{r}
+#| message: false
+energia <- read_excel("ConsumoEnergiaEAgua.xlsx")
+energia <- energia[,c(1,3,4)]
+energia$consumo <- energia$Energia/energia$Dias
+kable(tail(energia), align = "c")
+```

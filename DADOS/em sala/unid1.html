@@ -1056,7 +1056,14 @@ H_{1}: \mbox{X e Y dependentes, ou seja $\pi_{ij} \neq \pi_{i.}\pi_{.j}$ para qu
 <li><p>Identifique as variáveis em estudo e classifiqye quanto ao tipo.</p></li>
 <li><p>Identifique a variável resposta e a variável explicativa.</p></li>
 <li><p>Determine a proporção de presença de malformação congênita para cada nível de consumo de álcool e analise os resultados obtidos.</p></li>
-<li><p>Verifique se a presença de malformação congênita está associada ao consumo de álcool das mães a um nível de significância de 5%. e tratando as variáveis como qualitativas nominais e ordinais.</p></li>
+<li><p>Verifique se a presença de malformação congênita está associada ao consumo de álcool das mães a um nível de significância de 5%. e tratando as variáveis como qualitativas nominais e ordinais.</p>
+<ol type="a">
+<li><p>Comente a decisão tomada considerando o nível de significância solicitado. A decisão seria a mesma para outro nível de significância? Qual seria sua recomendação?</p></li>
+<li><p>Os pressupostos do teste foram atendidos? O que poderia ser feito?</p></li>
+</ol></li>
+<li><p>Refaça o teste utilizado no item 4 agregando categorias para contornar o problema indicado no item 4b. Comente o a decisão tomada com relação aos aspectos considerados nos itens 4a e 4b.</p></li>
+<li><p>Os resultados dos testes realizados permitem concluir sobre a existência de tendências na associação entre as variáveis considerando o nível de consumo de álcool? Justifique sua resposta.</p></li>
+<li><p>Construa tabelas 2 x 2 que permitam medir a associação entre presença de mal formação congênita para cada nível de consumo de álcool em relação a ausência de consumo de álcool. Comente os resultados. Eles sugerem alguma tendência?</p></li>
 </ol>
 <section id="solução" class="level3">
 <h3 class="anchored" data-anchor-id="solução">Solução</h3>
@@ -1224,9 +1231,15 @@ H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </tbody>
 </table>
 </div>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in chisq.test(obs): Chi-squared approximation may be incorrect</code></pre>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>qui<span class="sc">$</span>residuals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>         Ausente   Presente
+0    0.006591843 -0.1231913
+&lt;1   0.028305154 -0.5289794
+1-2 -0.097295603  1.8183038
+3-5 -0.056641925  1.0585496
+6+  -0.144828680  2.7066232</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>quis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic,qui<span class="sc">$</span>p.value)</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
@@ -1260,7 +1273,290 @@ H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 <li><p>No teste Qui Quadrado não é levada em consideração de ordem entre as categorias (consumo de álcool é uma variável ordinal).</p></li>
 <li><p>É possível identificar uma associação, mas não a direção da associação (quanto maior o consumo de álcool, maior a probabilidade de malformação congênita?). O apoio gráfico é útil para identificar a direção da associação.</p></li>
 </ul>
-<p>Uma solução possível é agrupar as categorias de consumo de álcool em três categorias: Zero consumo (0), Baixo consumo (1-2) e Alto consumo(3+). E caso ainda haja frequências esperadas menores que 5, é possível agrupar as categorias em duas categorias: Zero consumo (0) e Consumo (1+).</p>
+<ol type="a">
+<li><p>A decisão muda para outros níveis de significância. Para <span class="math inline">\(\alpha=0.01\)</span>, a decisão seria a mesma. Para <span class="math inline">\(\alpha=0.10\)</span>, a decisão seria diferente. A recomendação é que sejam realizados testes de associação com amostras maiores e que sejam consideradas outras técnicas de análise.</p></li>
+<li><p>Os pressupostos do teste Qui Quadrado são: independência entre as categorias, frequências esperadas maiores que 5 e amostras grandes. Uma solução possível é agrupar as categorias de consumo de álcool em três categorias: Zero consumo (0), Baixo consumo (1-2) e Alto consumo(3+). E caso ainda haja frequências esperadas menores que 5, é possível agrupar as categorias em duas categorias: Zero consumo (0) e Consumo (1+).</p></li>
+</ol>
+<p><strong>Realizando o teste de razão de verossimilhança:</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>G<span class="ot">&lt;-</span> <span class="dv">2</span><span class="sc">*</span><span class="fu">sum</span>(obs<span class="sc">*</span><span class="fu">log</span>(obs<span class="sc">/</span>qui<span class="sc">$</span>expected))</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>pvalorG <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">-</span><span class="fu">pchisq</span>(G,<span class="at">df=</span>gl)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(G,pvalorG)</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(g2)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'G'</span>,<span class="st">'p-valor'</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(g2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">G</th>
+<th style="text-align: center;">p-valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">6.201998</td>
+<td style="text-align: center;">0.1845623</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Nesse caso, a decisão seria não rejeitar <span class="math inline">\(H_0\)</span>, já que <span class="math inline">\(G^2\)</span> é menor que <span class="math inline">\(G_{crit}\)</span>.</p>
+<p><strong>Calculando a Odds Ratio para consumo 0 e consumo 1-2:</strong></p>
+<p>De forma que sucesso é a presença de malformação congênita e fracasso é a ausência de malformação congênita.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>oddsratio<span class="ot">&lt;-</span> (obs[<span class="dv">1</span>,<span class="dv">1</span>]<span class="sc">*</span>obs[<span class="dv">3</span>,<span class="dv">2</span>])<span class="sc">/</span>(obs[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">*</span>obs[<span class="dv">3</span>,<span class="dv">1</span>])</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(oddsratio,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">2.255975</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Assim, a chance de malformação congênita é 2.26 vezes maior para mães que consomem de 1 a 2 doses de álcool por dia do que para mães que não consomem álcool. Ou seja, a chance de malformação congênita é 0.44% menor para que não consomem álcool.</p>
+<ol start="5" type="1">
+<li>Teste de Qui Quadrado para associação/independência com categorias agrupadas.</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>obs2<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">17066</span>,<span class="dv">48</span>,<span class="dv">14464</span>,<span class="dv">38</span>,<span class="dv">951</span>,<span class="dv">7</span>),<span class="at">nrow=</span><span class="dv">3</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs2)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'0'</span>,<span class="st">'&lt;1'</span>,<span class="st">'1+'</span>)</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs2)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Ausente'</span>,<span class="st">'Presente'</span>)</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Ausente</th>
+<th style="text-align: center;">Presente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: center;">17066</td>
+<td style="text-align: center;">48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&lt;1</td>
+<td style="text-align: center;">14464</td>
+<td style="text-align: center;">38</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1+</td>
+<td style="text-align: center;">951</td>
+<td style="text-align: center;">7</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>expected2 <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="fu">rowSums</span>(obs2),<span class="fu">colSums</span>(obs2))<span class="sc">/</span><span class="fu">sum</span>(obs2)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(expected2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Ausente</th>
+<th style="text-align: center;">Presente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">0</td>
+<td style="text-align: center;">17065.1389</td>
+<td style="text-align: center;">48.861116</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">&lt;1</td>
+<td style="text-align: center;">14460.5962</td>
+<td style="text-align: center;">41.403758</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1+</td>
+<td style="text-align: center;">955.2649</td>
+<td style="text-align: center;">2.735126</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Hipóteses: <span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>gl2 <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(obs2)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">*</span>(<span class="fu">ncol</span>(obs2)<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>qui_crit2<span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span><span class="sc">-</span>alpha,<span class="at">df=</span>gl2)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(qui_crit2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">5.991465</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>qui2 <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs2)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>quis2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui2<span class="sc">$</span>statistic,qui2<span class="sc">$</span>p.value)</span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>qui2<span class="sc">$</span>residuals</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Ausente   Presente
+0   0.006591843 -0.1231913
+&lt;1  0.028305154 -0.5289794
+1+ -0.137988941  2.5787991</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis2)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis2,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Qui</th>
+<th style="text-align: center;">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X-squared</td>
+<td style="text-align: center;">6.965085</td>
+<td style="text-align: center;">0.0307292</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Com <span class="math inline">\(\alpha=0.05\)</span>,</p>
+<p><span class="math inline">\(\chi^{2}_{obs}\)</span>&gt; <span class="math inline">\(\chi^{2}_{crit}\)</span></p>
+<p>p-valor &lt; <span class="math inline">\(\alpha\)</span></p>
+<p>Logo, rejeita-se <span class="math inline">\(H_0\)</span>. No entanto, é possível observar que ainda com esse agrupamento, existem frequências esperadas menores que 5 e que <span class="math inline">\(H_0\)</span> não é rejeitada em todos os níveis de significância. Assim, é possível tentar mais uma vez mas agrupando as categorias em duas categorias: Zero consumo (0) e Consumo (1+).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>obs3<span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">17066</span>,<span class="dv">48</span>,<span class="dv">15415</span>,<span class="dv">45</span>),<span class="at">nrow=</span><span class="dv">2</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs3)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Não consome alcool'</span>,<span class="st">'Consome'</span>)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs3)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Ausente'</span>,<span class="st">'Presente'</span>)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs3,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Ausente</th>
+<th style="text-align: center;">Presente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Não consome alcool</td>
+<td style="text-align: center;">17066</td>
+<td style="text-align: center;">48</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Consome</td>
+<td style="text-align: center;">15415</td>
+<td style="text-align: center;">45</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>expected3 <span class="ot">&lt;-</span> <span class="fu">outer</span>(<span class="fu">rowSums</span>(obs3),<span class="fu">colSums</span>(obs3))<span class="sc">/</span><span class="fu">sum</span>(obs3)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(expected3,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Ausente</th>
+<th style="text-align: center;">Presente</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Não consome alcool</td>
+<td style="text-align: center;">17065.14</td>
+<td style="text-align: center;">48.86112</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Consome</td>
+<td style="text-align: center;">15415.86</td>
+<td style="text-align: center;">44.13888</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Hipóteses: <span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{$\pi_{ij} = \pi_{i.}\pi_{.j}$} \\
+H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>gl3 <span class="ot">&lt;-</span> (<span class="fu">nrow</span>(obs3)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">*</span>(<span class="fu">ncol</span>(obs3)<span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>qui_crit3<span class="ot">&lt;-</span> <span class="fu">qchisq</span>(<span class="dv">1</span><span class="sc">-</span>alpha,<span class="at">df=</span>gl3)</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(qui_crit3,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">x</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">3.841459</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>qui3 <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs3)</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>quis3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui3<span class="sc">$</span>statistic,qui3<span class="sc">$</span>p.value)</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(quis3)<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Qui'</span>,<span class="st">'p-value'</span>)</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(quis3,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Qui</th>
+<th style="text-align: center;">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X-squared</td>
+<td style="text-align: center;">0.0056394</td>
+<td style="text-align: center;">0.9401383</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Com <span class="math inline">\(\alpha=0.05\)</span>,</p>
+<p><span class="math inline">\(\chi^{2}_{obs}\)</span> &lt; <span class="math inline">\(\chi^{2}_{crit}\)</span></p>
+<p>p-valor &gt; <span class="math inline">\(\alpha\)</span></p>
+<p>Logo, não rejeita-se <span class="math inline">\(H_0\)</span> para nenhum nível de significância.</p>
 </section>
 </section>
 </section>
