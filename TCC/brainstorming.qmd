@@ -21,6 +21,8 @@ format: pdf
 
 * O problema do estudo ainda deve ser melhor definido em torno do PDDE, mas a pricípio trabalha-se com a ideia de 'Quais são as características escolares associadas ao desempenho acadêmico dos estudantes do ensino básico?'
 
+    + Uma nova versão do problema pode ser: 'Existe relação entre o dinheiro investido nas escolas através do PDDE e o desempenho acadêmico dos estudantes do ensino básico?'
+
 * As hipósteses também precisam ser melhor definidas em torno do PDDE, mas inicialmente podem ser pensadas como:
 
     + Escolas que executam o saldo do PDDE apresentam melhores notas dos alunos;
@@ -40,7 +42,7 @@ V2: Estudo de relações entre o PDDE e o desempenho acadêmico dos estudantes d
 
 # Introdução
 
-A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, a avaliação de políticas públicas é essencial para garantir a qualidade do ensino e o desenvolvimento dos estudantes, sendo o desempenho escolar um dos principais indicadores de qualidade do ensino, indicador este que pode estar associado a fatores, como a qualidade dos professores, a infraestrutura das escolas, o material didático utilizado, recursos financeiros, entre outros.
+A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, é essencial para garantir a qualidade do ensino e o desenvolvimento dos estudantes, sendo o desempenho escolar um dos principais indicadores de qualidade do ensino, indicador este que pode estar associado a fatores, como a qualidade dos professores, a infraestrutura das escolas, o material didático utilizado, recursos financeiros, entre outros.
 
 O Programa Dinheiro Direto na Escola (PDDE) é um programa do Fundo Nacional de Desenvolvimento da Educação (FNDE) que tem como objetivo prestar assistência financeira para as escolas públicas. O PDDE é um programa de transferência de recursos financeiros que visa melhorar a infraestrutura física e pedagógica das escolas, bem como promover a melhoria da qualidade do ensino. O SAEB, por sua vez, é uma avaliação realizada pelo Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira (INEP) que tem como objetivo avaliar a qualidade do ensino no Brasil. O SAEB é composto por provas de Língua Portuguesa e Matemática aplicadas para alunos do 5º e 9º ano do ensino fundamental e do 3º ano do ensino médio em escolas públicas e privadas a cada dois anos. O SAEB traz informações sobre as notas dos alunos, características individuais dos alunos, e características escolares das escolas.
 
@@ -77,3 +79,80 @@ O PDDE é um programa do FNDE que visa prestar assistência financeira para as e
 
 
 -------------------------------------------------------
+
+Preparando solicitação de acesso aos dados.
+
+
+# Resumo 
+
+A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, as avaliações são essenciais para garantir a qualidade do ensino e o desenvolvimento dos estudantes. O Programa Dinheiro Direto na Escola (PDDE) é um programa do Fundo Nacional de Desenvolvimento da Educação (FNDE) que tem como objetivo prestar assistência financeira para as escolas públicas. O PDDE é um programa de transferência de recursos financeiros que visa melhorar a infraestrutura física e pedagógica das escolas, bem como promover a melhoria da qualidade do ensino. Estudos já foram realizados para avaliar o impacto do PDDE em esferas políticas, de gestão escolar, entre outros, no entanto, poucos investigam a relação entre o PDDE e o desempenho acadêmico dos alunos. Portanto, este estudo tem como objetivo analisar conjuntamente dados do SAEB e do PDDE, buscando identificar características escolares, incluindo o recurso recebido através do PDDE, associadas ao desempenho dos alunos.
+
+
+# Palavras‐chave: PDDE, SAEB, desempenho escolar, avaliação de políticas públicas, educação básica.
+
+ 
+**SUMÁRIO**  
+
+# APRESENTAÇÃO
+Tendo em vista o resumo descrito, a pesquisa propõe analisar a relação entre o Programa Dinheiro Direto na Escola (PDDE) e o desempenho acadêmico dos estudantes do ensino básico no Sistema de Avaliação da Educação Básica (SAEB). O projeto será apresentado para o Departamento de Estatística da Universidade de Brasília como parte dos requisitos necessários para obtenção do grau de Bacharel em Estatística, que tem cronograma próprio, de início em Março de 2024 e fim em Dezembro de 2024 (dois semestres letivos divididos em entregas parciais e finais).
+
+
+# PROBLEMA DE PESQUISA
+Existe relação entre o dinheiro investido nas escolas através do PDDE e o desempenho acadêmico dos estudantes do ensino básico?
+
+# HIPÓTESES DA PESQUISA 
+- Escolas que executam o saldo do PDDE apresentam melhores notas dos alunos;
+
+- Escolas com maior investimento em infraestrutura e recursos didáticos apresentam melhores notas dos alunos.
+
+# OBJETIVOS DA PESQUISA
+- Objetivo Geral:
+
+Analisar os dados do SAEB e do PDDE a fim de identificar características escolares associadas às notas dos alunos através de um modelo multinível.
+
+- Objetivos Específicos:
+
+Integrar os dados do SAEB/INEP e do PDDE/FNDE;
+
+Compreender, aplicar e aprimorar o uso de Modelos Multiníveis para o estudo de relações no desempenho escolar;
+
+Avaliar a associação do uso de recursos do PDDE nas notas dos alunos.
+
+# FUNDAMENTAÇÃO  TÉCNICA E CIENTÍFICA PARA USO DOS DADOS PROTEGIDOS DO INEP  (JUSTIFICATIVA QUE DEMONSTRE A NECESSIDADE DE ACESSAR OS DADOS PROTEGIDOS PARA ATINGIR OS OBJETIVOS DA PESQUISA) 
+
+As escolas presentes nos dados do PDDE/FNDE estão publicamente identificadas com o Código da Escola (INEP), sendo possível fazer diversas análises e integrações. Com o acesso aos dados protegidos, espera-se acessar os códigos reais das escolas nas bases do SAEB e integrar os dados usando esses códigos como chaves, a fim de ter o saldo do PDDE como variável explicativa para o desempenho escolar.
+
+
+# PROCEDIMENTOS METODOLÓGICOS  
+
+
+
+
+# BASES DE DADOS DO INEP A SEREM UTILIZADAS E EVENTUAIS BASES DE DADOS EXTERNAS, SE FOR O CASO (NOME, ANO/EDIÇÃO, VARIÁVEIS PREVISTAS) 
+
+Bases do INEP:
+1. SAEB, 2017, Variáveis: ID_SAEB,ID_ESCOLA,ID_REGIAO,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_5EF_LP,MEDIA_5EF_MT,MEDIA_9EF_LP,MEDIA_9EF_MT,MEDIA_EM_LP,MEDIA_EM_MT
+2. SAEB, 2021, Variáveis: ID_SAEB,ID_ESCOLA,ID_REGIAO,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_5EF_LP,MEDIA_5EF_MT,MEDIA_9EF_LP,MEDIA_9EF_MT,MEDIA_EM_LP,MEDIA_EM_MT
+
+Bases do FNDE:
+1. PDDE, 2017, Variáveis: Código Escola, Saldo, Valor Custeio, Valor Capital, Valor Total
+2. PDDE, 2018, Variáveis: Código Escola, Saldo, Valor Custeio, Valor Capital, Valor Total
+3. PDDE, 2019, Variáveis: Código Escola, Saldo, Valor Custeio, Valor Capital, Valor Total
+4. PDDE, 2020, Variáveis: Código Escola, Saldo, Valor Custeio, Valor Capital, Valor Total
+5. PDDE, 2021, Variáveis: Código Escola, Saldo, Valor Custeio, Valor Capital, Valor Total
+
+# RESULTADOS  ESPERADOS  PARA  EXTRAÇÃO  DA  SALA  SEGURA  (DETALHAR  QUANTAS  E  QUAIS ESTATÍSTICAS DESCRITIVAS, TABULAÇÕES, GRÁFICOS) 
+Ainda não existe clareza quanto ao que será extraído da Sala Segura, mas de início espera-se:
+
+- Entender se os dados das bases do FNDE podem ser seguramente integrados aos dos SAEB;
+
+- Criar, aplicar, analisar e extrair os outputs dos Modelos Multiníveis para o estudo de relações no desempenho escolar.
+
+
+# PREVISÃO DE INÍCIO E DE CONCLUSÃO DA PESQUISA NO SEDAP 
+Espera-se iniciar em maio de 2024 e concluir em dezembro de 2024.
+
+
+# PREVISÃO DE CONCLUSÃO DA PESQUISA NA INSTITUIÇÃO DE VÍNCULO
+
+Com objetivo de seguir o cronograma do Trabalho de Conclusão de Curso do Departamento de Estatística, espera-se concluir a pesquisa na instituição de vínculo até o final do segundo semestre de 2024 (dezembro de 2024).
