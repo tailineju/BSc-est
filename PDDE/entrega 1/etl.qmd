@@ -10,8 +10,8 @@ format: html
 #| message: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, knitr, openxlsx)
-#setwd("C:/Users/User/Documents/GitHub/gradest/PDDE/entrega 1")
-#setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
+setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 1")
+setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
 ```
 
 # Extração

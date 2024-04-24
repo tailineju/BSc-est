@@ -38,9 +38,12 @@ pacman::p_load(tidyverse, knitr, openxlsx, kableExtra)
 
 dados <- read.csv("dados/base_completa.csv")
 dados <- dados %>% 
-        select(CO_ENTIDADE, NO_UF, TP_DEPENDENCIA, TP_SITUACAO_FUNCIONAMENTO, TP_LOCALIZACAO_DIFERENCIADA, fonte) %>%
+        select(NO_UF, NO_MUNICIPIO,CO_ENTIDADE, TP_LOCALIZACAO, TP_DEPENDENCIA, TP_LOCALIZACAO_DIFERENCIADA, TP_SITUACAO_FUNCIONAMENTO, fonte) %>%
         filter(TP_DEPENDENCIA %in% c(2:3)) %>% 
         distinct(CO_ENTIDADE, .keep_all = TRUE)
+
+escolas_participantes <- dados %>% filter(fonte %in% c("pdde_pagos","pdde_naopagos"))
+write.xlsx(escolas_participantes, "escolas_participantes.xlsx", rowNames = FALSE)
 ```
 
 Tabela 1 - Número de escolas públicas segundo a dependência administrativa e a UF (Centro-Oeste)
