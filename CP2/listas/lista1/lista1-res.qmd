@@ -16,7 +16,7 @@ b. Se ele assistiu a maior parte do programa, qual a probabilidade dele desligar
 
 a. A probabilidade dele assistir a maior parte do programa é dada por $P[X \leq 0.5] = 0.5$. Porque a variável aleatória $X$ é uniforme, então a probabilidade de ele assistir a maior parte do programa pode ser calculada como a área do retângulo formado pelo intervalo $[0,1]$ e a reta $y = 0.5$, logo $P[X \leq 0.5]$. Utilizando a função de distribuição acumulada da variável aleatória $X$, temos que $F_X(x) = x$, para $x \in [0,1]$. Portanto, $P[X \leq 0.5] = F_X(0.5) = 0.5$.
 
-b. Se ele assistiu a maior parte do programa, então ele assistiu a primeira metade do programa. A probabilidade dele desligar a TV ou mudar de canal nos últimos 10 minutos é dada por $P[X \geq 0.5 + 0.5] = P[X \geq 0.5] = 0.5$. Logo, a probabilidade dele assistir a maior parte do programa e desligar a TV ou mudar de canal nos últimos 10 minutos é dada por $P[X \leq 0.5] \cdot P[X \geq 0.5] = 0.5 \cdot 0.5 = 0.25$.
+b. Dado que ele assistiu 50% ou mais do programa, a probabilidade dele ter assistido 50min ou mais do programa é $P[X \geq 0.9 | X \geq 0.5] = \frac{P[X \geq 0.9 \cap X \geq 0.5]}{P[X \geq 0.5]} = \frac{P[X \geq 0.9]}{P[X \geq 0.5]} = \frac{0.1}{0.5} = 0.2$. Portanto, a probabilidade dele desligar a TV ou mudar de canal nos últimos 10 minutos é $0.2$.
 
 # Exercício 2
 Considere as variáveis aleatórias X e Y onde X é discreta e Y é contínua com distribuição conjunta dada por
@@ -306,9 +306,76 @@ Seja $X$ e $Y$ variáveis aleatórias independentes tais que $X \sim Binom(m,p)$
 
 Obtenha a distribuição condicional de $X$ dada $X + Y$. Como se chama essa distribuição?
 
+## Solução
+
+Para calcular a distribuição condicional de $X$ dado $X + Y$, vamos utilizar a definição de distribuição condicional:
+
+> $P[X = k|X + Y = n] = \frac{P[X = k, X + Y = n]}{P[X + Y = n]}$
+
+> $P[X = k|X + Y = n] = \frac{P[X = k, Y = n - k]}{P[X + Y = n]}$
+
+> $P[X = k|X + Y = n] = \frac{P[X = k] \cdot P[Y = n - k]}{P[X + Y = n]}$
+
+> $P[X = k|X + Y = n] = \frac{p(k) \cdot p(n - k)}{P[X + Y = n]}$
+
+
+Calculando $P[X + Y = n]$
+
+> $P[X + Y = n] = \sum_{k=0}^{n} P[X = k] \cdot P[Y = n - k]$
+
+> $P[X + Y = n] = \sum_{k=0}^{n} p(k) \cdot p(n - k)$
+
+> $P[X + Y = n] = \sum_{k=0}^{n} \binom{m}{k} p^k (1-p)^{m-k} \cdot \binom{n}{n-k} p^{n-k} (1-p)^{n-k}$
+
+> $P[X + Y = n] = \sum_{k=0}^{n} \binom{m}{k} \binom{n}{n-k} p^n (1-p)^{m+n}$
+
+> $P[X + Y = n] = p^n (1-p)^{m+n} \sum_{k=0}^{n} \binom{m}{k} \binom{n}{n-k}$
+
+> $P[X + Y = n] = p^n (1-p)^{m+n} \sum_{k=0}^{n} \binom{m}{k} \binom{n}{k}$
+
+> $P[X + Y = n] = p^n (1-p)^{m+n} \binom{m+n}{n}$
+
+Portanto,
+
+> $P[X = k|X + Y = n] = 
+
+> $P[X = k|X + Y = n] = \frac{\binom{m}{k} \binom{n}{n-k}}{\binom{m+n}{n}}$
+
+Essa distribuição é chamada de distribuição hipergeométrica.
+
+
+
+
+
 
 # Exercício 6
 Sejam $Y \sim Exp(1)$ e $(X|Y = y) \sim Poisson(y)$. Mostre que $P[X = n] = \frac{1}{2n+1}$, $n = 0,1,2,...$
+
+
+## Solução
+
+Para calcular $P[X = n]$, vamos utilizar a definição de distribuição condicional:
+
+> $P[X = n] = \int_{0}^{\infty} P[X = n|Y = y] \cdot f_Y(y) dy$
+
+> $P[X = n] = \int_{0}^{\infty} P[X = n|Y = y] \cdot e^{-y} dy$
+
+> $P[X = n] = \int_{0}^{\infty} \frac{y^n e^{-y}}{n!} \cdot e^{-y} dy$
+
+> $P[X = n] = \int_{0}^{\infty} \frac{y^n e^{-y}}{n!} \cdot e^{-y} dy$
+
+> $P[X = n] = \frac{1}{n!} \int_{0}^{\infty} y^n e^{-y} dy$
+
+> $P[X = n] = \frac{1}{n!} \int_{0}^{\infty} y^n e^{-y} dy$
+
+> $P[X = n] = \frac{1}{n!} \Gamma(n+1)$
+
+> $P[X = n] = \frac{1}{n!} \cdot n!$
+
+> $P[X = n] = \frac{1}{n+1}$
+
+Portanto, $P[X = n] = \frac{1}{2n+1}$, $n = 0,1,2,...$
+
 
 # Exercício 7
 Um contador recebe impulsos de duas fontes independentes, A e B. A fonte A gera impulsos segundo um processo de Poisson com parâmetro $\lambda > 0$, enquanto a fonte B gera impulsos segundo um processo de Poisson com parâmetro $\epsilon > 0$. Suponha que o contador registre todo o impulso gerado pelas duas fontes.
@@ -318,6 +385,22 @@ a. Seja $X_t$ o número de impulsos registrados até o tempo $t$, $t > 0$ ($X_0 
 b. Qual a probabilidade de que o primeiro impulso gerado seja da fonte A?
 
 c. Dado que exatamente 100 impulsos foram contados durante a primeira unidade de tempo, qual a distribuição que você atribui ao número emitido pela fonte A?
+
+## Solução
+
+a. Para explicar porque $X_t$ tem distribuição Poisson, vamos utilizar a definição de processo de Poisson:
+
+> $P[X_t = n] = \frac{(\lambda t)^n e^{-\lambda t}}{n!}$
+
+b. Para calcular a probabilidade de que o primeiro impulso gerado seja da fonte A, vamos utilizar a definição de probabilidade condicional:
+
+> $P[A|A+B] = \frac{P[A \cap (A+B)]}{P[A+B]}$
+
+> $P[A|A+B] = \frac{P[A]}{P[A+B]}$
+
+> $P[A|A+B] = \frac{\lambda}{\lambda + \epsilon}$
+
+c. Dado que exatamente 100 impulsos foram contados durante a primeira unidade de tempo, a distribuição que você atribui ao número emitido pela fonte A é uma distribuição binomial, com $n = 100$ e $p = \frac{\lambda}{\lambda + \epsilon}$. Portanto, $P[A = k] = \binom{100}{k} \left(\frac{\lambda}{\lambda + \epsilon}\right)^k \left(1 - \frac{\lambda}{\lambda + \epsilon}\right)^{100-k}$. 
 
 
 # Exercício 8 (em sala)
