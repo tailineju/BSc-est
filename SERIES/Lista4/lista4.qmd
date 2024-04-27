@@ -55,21 +55,24 @@ plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
 
 ```{r, fig.width=8, fig.height=6}
 rho <- acf(energia$consumo, lag = 36, plot = FALSE)
-plot(rho, main = "Função de autocorrelação com lag=36", xlab = "Lag", ylab = "ACF")
+plot(rho, main = "Função de autocorrelação com lag=36", 
+    xlab = "Lag", ylab = "ACF")
 ```
 
 4. Função de autocorrelação parcial 
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(energia$consumo, lag = n.size, plot = FALSE)
-plot(phi, main = "Função de autocorrelação parcial", xlab = "Lag", ylab = "PACF", lwd = 3)
+plot(phi, main = "Função de autocorrelação parcial", 
+    xlab = "Lag", ylab = "PACF", lwd = 3)
 ```
 
 5. Função de autocorrelação parcial 
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(energia$consumo, lag = 36, plot = FALSE)
-plot(phi, main = "Função de autocorrelação parcial com lag=36", xlab = "Lag", ylab = "PACF", lwd = 3)
+plot(phi, main = "Função de autocorrelação parcial com lag=36", 
+    xlab = "Lag", ylab = "PACF", lwd = 3)
 ```
 
 6. Diagrama de fase 
@@ -98,14 +101,16 @@ plot(energia$diff, type = "l", lwd = 2,
 ```{r, fig.width=8, fig.height=6}
 x <- na.omit(energia$diff)
 rho <- acf(x, lag = length(x), plot = FALSE)
-plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
+plot(rho, main = "Função de autocorrelação", 
+    xlab = "Lag", ylab = "ACF")
 ```
 
 9. Função de autocorrelação parcial da variação do consumo
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(x, lag = length(x), plot = FALSE)
-plot(phi, main = "Função de autocorrelação parcial", xlab = "Lag", ylab = "PACF")
+plot(phi, main = "Função de autocorrelação parcial", 
+    xlab = "Lag", ylab = "PACF")
 ```
 
 ## Modelos de Previsão
