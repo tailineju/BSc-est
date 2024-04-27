@@ -9,15 +9,14 @@ format: pdf
 # Descrição da atividade 
 Incluido as seguintes informações referentes a março de 2024, Energia = 419 e Dias = 33, utilizando a técnica de previsão com base na função de autocorrelação amostral, obtenha a previsão do consumo a ser faturado em abril de 2024, reproduzindo todos os elementos apresentados na aula 9.
 
-## Elementos da aula 9
-
 # Respostas
 
 ```{r}
 #| message: false
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,readxl, knitr)
+pacman::p_load(tidyverse,readxl, knitr, latex2exp, pracma)
+
 #setwd("/Users/tailine.nonato/Documents/VSCode/SERIES/Lista4")
 ```
 
@@ -28,5 +27,199 @@ pacman::p_load(tidyverse,readxl, knitr)
 energia <- read_excel("ConsumoEnergiaEAgua.xlsx")
 energia <- energia[,c(1,3,4)]
 energia$consumo <- energia$Energia/energia$Dias
-kable(tail(energia), align = "c")
+n.size <- length(energia$consumo)
+kable(tail(energia), align = "c",
+    caption = "Últimos registros da base de dados")
 ```
+
+## Replicação dos itens da aula 9
+
+1. Série temporal de jun/1997 a mar/2024
+
+```{r, fig.width=8, fig.height=6}
+plot(energia$mes, energia$consumo, type = "l", lwd = 2, 
+    main = "Série temporal de jun/1997 a mar/2024", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_t$)'))
+```
+
+2. Função de autocorrelação
+
+```{r, fig.width=8, fig.height=6}
+rho <- acf(energia$consumo, lag = n.size, plot = FALSE)
+plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
+```
+
+3. Função de autocorrelação
+
+```{r, fig.width=8, fig.height=6}
+rho <- acf(energia$consumo, lag = 36, plot = FALSE)
+plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
+```
+
+4. Função de autocorrelação parcial 
+
+```{r, fig.width=8, fig.height=6}
+phi <- pacf(energia$consumo, lag = n.size, plot = FALSE)
+plot(phi, main = "", xlab = "Lag", ylab = "PACF", lwd = 3)
+```
+
+5. Função de autocorrelação parcial 
+
+```{r, fig.width=8, fig.height=6}
+phi <- pacf(energia$consumo, lag = 36, plot = FALSE)
+plot(phi, main = "", xlab = "Lag", ylab = "PACF", lwd = 3)
+```
+
+6. Diagrama de fase 
+
+```{r, fig.width=8, fig.height=6}
+energia$consumo_1 <- c(NA, energia$consumo[1:(n.size-1)])
+plot(energia$consumo_1, energia$consumo, 
+    main = "Diagrama de fase", 
+    xlab = TeX(r'($Y_t$)'), 
+    ylab = TeX(r'($Y_{t+1}$)'))
+abline(0, 1, col = "red")
+```
+
+7. Variação do consumo (KWh)
+
+```{r, fig.width=8, fig.height=6}
+energia$diff <- c(NA, diff(energia$consumo))
+plot(energia$diff, type = "l", lwd = 2, 
+    main = "Variação do consumo (KWh)", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_{t+1} - Y_t$)'))
+```
+
+8. Função de autocorrelação da variação do consumo 
+
+```{r, fig.width=8, fig.height=6}
+x <- na.omit(energia$diff)
+rho <- acf(x, lag = length(x), plot = FALSE)
+plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
+```
+
+9. Função de autocorrelação parcial da variação do consumo
+
+```{r, fig.width=8, fig.height=6}
+phi <- pacf(x, lag = length(x), plot = FALSE)
+plot(phi, main = "", xlab = "Lag", ylab = "PACF")
+```
+
+10. Modelo de Previsão
+
+### Utilizando a função `ar` e `predict`
+
+```{r}
+modelo <- ar(energia$consumo, aic = TRUE)
+consumo <- c(energia$consumo, rep(NA, 1))
+consumo[n.size+1] <- predict(modelo, n.ahead = 1)$pred
+consumo[n.size+1]
+energia_abr_ar <- consumo[n.size+1] * 30
+energia_abr_ar
+```
+
+Assim, utilizando esse modelo, a energia a ser faturada em abril de 2024 prevista é de `r round(energia_abr_ar,2)` KWh. Com consumo diário de `r round(consumo[n.size+1],2)` KWh.
+
+### Reproduzindo aula 9 
+
+```{r}
+x <- na.omit(energia$diff)
+n.size <- length(x)
+n.training <- ceiling(n.size/2)
+observed <- NULL
+predicted <- NULL
+
+for (t in (n.training+1):n.size) {
+    x.training <- x[1:(t-1)]
+    rho <- acf(x.training, lag = (t-1), plot = FALSE)
+    last.lag <- length(rho$acf)
+    Rho <- rho$acf
+    Omega <- toeplitz(Rho[-last.lag])
+    beta <- inv(Omega) %*% Rho[-1]
+    beta.0 <- mean(x.training) * (1 - sum(beta))
+    predicted[t] <- beta.0 + sum(rev(beta) * x.training[-1])
+    observed[t] <- x[t]
+}
+
+```
+
+```{r, fig.width=8, fig.height=6}
+energia$predicted <- c(NA, predicted)
+energia$diff_modelo <- c(NA,diff(energia$predicted))
+
+plot(energia$mes,energia$diff, type = "l", lwd = 2, 
+    main = "Variação do consumo (KWh)", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_{t+1} - Y_t$)'))
+lines(energia$mes,energia$diff_modelo, col = "red", lwd = 2)
+```
+
+```{r, fig.width=8, fig.height=6}
+plot(observed, predicted, main = "Linearidade entre observado e previsto", 
+    xlab = "Observado", ylab = "Previsto")
+cor(observed, predicted, use = "complete.obs")
+
+# mean absolute error
+mean(abs(na.omit(observed) - na.omit(predicted)))
+```
+
+Tendo como base os exemplos em sala, busca-se aprimorar essas métricas com $\hat{Y}$
+
+```{r}
+Y.hat <- NULL
+Y.t <- NULL
+
+for (h in (n.training+1):n.size){
+    Y.t[h+1] <- energia$consumo[h] + energia$diff[h+1]
+    Y.hat[h+1] <- energia$consumo[h] + energia$predicted[h+1] 
+}
+
+# mean absolute error
+mean(abs(na.omit(Y.t) - na.omit(Y.hat)))
+
+# mean absolute percentage error
+mean(abs(na.omit(Y.t - Y.hat)/na.omit(Y.t)))
+```
+
+```{r, fig.width=8, fig.height=6}
+plot(energia$mes, energia$consumo, type = "l", lwd = 2, 
+    main = "Série temporal de fev/1997 a mar/2024 com valores previstos", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_t$)'))
+lines(energia$mes, Y.hat, col = "red", lwd = 2)
+```
+
+
+```{r, fig.width=8, fig.height=6}
+plot(Y.t, Y.hat, main = "Linearidade entre observado e previsto", 
+    xlab = "Observado", ylab = "Previsto")
+abline(0, 1, col = "red")
+cor(Y.t, Y.hat, use = "complete.obs")
+shapiro.test(na.omit(Y.t - Y.hat))
+sd(na.omit(Y.t - Y.hat))
+```
+
+```{r}
+Y.next <- Y.hat[n.size] + 2*sd(na.omit(Y.t - Y.hat))
+Y.next
+
+energia_abr_acf <- Y.next * 30
+energia_abr_acf
+```
+
+Assim, utilizando esse modelo, a energia a ser faturada em abril de 2024 prevista é de `r round(energia_abr_acf,2)` KWh. Com consumo diário de `r round(Y.next,2)` KWh.
+
+## Comparando os modelos
+
+Se colocarmos em uma tabela:
+
+```{r}
+comp_modelos <- data.frame(Modelo = c("ar", "acf"), 
+                     Consumo = c(round(consumo[n.size+1],2), round(Y.next,2)), 
+                     Energia = c(round(energia_abr_ar,2), round(energia_abr_acf,2)))
+kable(comp_modelos, align = "c", 
+        caption = "Previsões de consumo diário e do mês para abril de 2024")
+```
+

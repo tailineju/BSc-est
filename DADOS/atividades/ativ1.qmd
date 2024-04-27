@@ -1,0 +1,25 @@
+---
+title: "Atividade 1"
+subtitle: "ANÁLISE DE DADOS CATEGORIZADOS"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+```{r}
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,knitr, readxl)
+#setwd("/Users/tailine.nonato/Documents/VSCode/DADOS/atividades")
+```
+
+Considerando os dados do estudo sobre consumo de álcool e mal formação congênita, determine a medida de associação adequada e teste a independência entre as variáveis ao nível de significância de 5% usando o conjunto de escores sugeridos e um conjunto de escores de sua escolha.
+
+Não esqueça de enunciar as hipóteses a serem testadas, a estatística utilizada e sua distribuição amostra, além da decisão e conclusão.
+Após preencher a tabela e realizar todos os testes, comente os resultados obtidos em função dos escores utilizados. Quais foram suas descobertas?
+
+```{r}
+obs <- matrix(c(17066,48,14464,38,788,5,126,1,37,1),nrow=5,byrow=TRUE)
+row.names(obs)<- c('0','<1','1-2','3-5','6+')
+colnames(obs)<- c('Ausente','Presente')
+kable(obs,align='c')
+```
+
