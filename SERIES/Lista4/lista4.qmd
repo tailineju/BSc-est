@@ -16,11 +16,11 @@ Incluido as seguintes informações referentes a março de 2024, Energia = 419 e
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse,readxl, knitr, latex2exp, pracma)
-
-#setwd("/Users/tailine.nonato/Documents/VSCode/SERIES/Lista4")
 ```
 
 ## Leitura e manipulação dos dados
+
+Os dados novos foram inseridos de forma mecânica no arquivo original da base de dados.
 
 ```{r}
 #| message: false
@@ -223,3 +223,15 @@ kable(comp_modelos, align = "c",
         caption = "Previsões de consumo diário e do mês para abril de 2024")
 ```
 
+## Conclusão
+
+Adicionando o valor previsto para abril utilizando o modelo com a função ACF, é possível fazer a série temporal novamente:
+
+```{r, fig.width=8, fig.height=6}
+energia$consumo[n.size+1] <- Y.next
+energia$mes[n.size+1] <- "2024-04-30"
+plot(energia$mes, energia$consumo, type = "l", lwd = 2, 
+    main = "Série temporal de jun/1997 ao que é previsto para abr/2024", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_t$)'))
+```
