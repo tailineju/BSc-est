@@ -11,6 +11,7 @@ Incluido as seguintes informações referentes a março de 2024, Energia = 419 e
 
 # Respostas
 
+## Carregando os pacotes necessários
 ```{r}
 #| message: false
 #| warning: false
@@ -54,21 +55,21 @@ plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
 
 ```{r, fig.width=8, fig.height=6}
 rho <- acf(energia$consumo, lag = 36, plot = FALSE)
-plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
+plot(rho, main = "Função de autocorrelação com lag=36", xlab = "Lag", ylab = "ACF")
 ```
 
 4. Função de autocorrelação parcial 
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(energia$consumo, lag = n.size, plot = FALSE)
-plot(phi, main = "", xlab = "Lag", ylab = "PACF", lwd = 3)
+plot(phi, main = "Função de autocorrelação parcial", xlab = "Lag", ylab = "PACF", lwd = 3)
 ```
 
 5. Função de autocorrelação parcial 
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(energia$consumo, lag = 36, plot = FALSE)
-plot(phi, main = "", xlab = "Lag", ylab = "PACF", lwd = 3)
+plot(phi, main = "Função de autocorrelação parcial com lag=36", xlab = "Lag", ylab = "PACF", lwd = 3)
 ```
 
 6. Diagrama de fase 
@@ -104,12 +105,12 @@ plot(rho, main = "Função de autocorrelação", xlab = "Lag", ylab = "ACF")
 
 ```{r, fig.width=8, fig.height=6}
 phi <- pacf(x, lag = length(x), plot = FALSE)
-plot(phi, main = "", xlab = "Lag", ylab = "PACF")
+plot(phi, main = "Função de autocorrelação parcial", xlab = "Lag", ylab = "PACF")
 ```
 
-10. Modelo de Previsão
+## Modelos de Previsão
 
-### Utilizando a função `ar` e `predict`
+### Utilizando a funções `ar` e `predict`
 
 ```{r}
 modelo <- ar(energia$consumo, aic = TRUE)
@@ -147,18 +148,20 @@ for (t in (n.training+1):n.size) {
 
 ```{r, fig.width=8, fig.height=6}
 energia$predicted <- c(NA, predicted)
-energia$diff_modelo <- c(NA,diff(energia$predicted))
 
 plot(energia$mes,energia$diff, type = "l", lwd = 2, 
     main = "Variação do consumo (KWh)", 
     xlab = TeX(r'($t$)'), 
     ylab = TeX(r'($Y_{t+1} - Y_t$)'))
-lines(energia$mes,energia$diff_modelo, col = "red", lwd = 2)
+lines(energia$mes,energia$predicted, col = "red", lwd = 2)
 ```
+
 
 ```{r, fig.width=8, fig.height=6}
 plot(observed, predicted, main = "Linearidade entre observado e previsto", 
     xlab = "Observado", ylab = "Previsto")
+
+# correlation
 cor(observed, predicted, use = "complete.obs")
 
 # mean absolute error
@@ -176,6 +179,9 @@ for (h in (n.training+1):n.size){
     Y.hat[h+1] <- energia$consumo[h] + energia$predicted[h+1] 
 }
 
+# correlation
+cor(Y.t, Y.hat, use = "complete.obs")
+
 # mean absolute error
 mean(abs(na.omit(Y.t) - na.omit(Y.hat)))
 
@@ -191,6 +197,14 @@ plot(energia$mes, energia$consumo, type = "l", lwd = 2,
 lines(energia$mes, Y.hat, col = "red", lwd = 2)
 ```
 
+Fazendo um "zoom" para os dados de teste:
+```{r, fig.width=8, fig.height=6}
+plot(energia$mes[162:322], energia$consumo[162:322], type = "l", lwd = 2, 
+    main = "Série temporal de nov/2010 a mar/2024 com valores previstos", 
+    xlab = TeX(r'($t$)'), 
+    ylab = TeX(r'($Y_t$)'))
+lines(energia$mes[162:322], Y.hat[162:322], col = "red", lwd = 2)
+```
 
 ```{r, fig.width=8, fig.height=6}
 plot(Y.t, Y.hat, main = "Linearidade entre observado e previsto", 
@@ -216,7 +230,7 @@ Assim, utilizando esse modelo, a energia a ser faturada em abril de 2024 previst
 Se colocarmos em uma tabela:
 
 ```{r}
-comp_modelos <- data.frame(Modelo = c("ar", "acf"), 
+comp_modelos <- data.frame(Função = c("ar", "acf"), 
                      Consumo = c(round(consumo[n.size+1],2), round(Y.next,2)), 
                      Energia = c(round(energia_abr_ar,2), round(energia_abr_acf,2)))
 kable(comp_modelos, align = "c", 
