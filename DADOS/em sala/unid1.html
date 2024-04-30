@@ -1560,6 +1560,92 @@ H_{1}: \mbox{$\pi_{ij} \neq \pi_{i.}\pi_{.j}$}
 </section>
 </section>
 </section>
+<section id="de-abril-4" class="level1">
+<h1>30 de abril</h1>
+<p>Dados: Pena de morte</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">53</span>,<span class="dv">430</span>,<span class="dv">15</span>,<span class="dv">176</span>),<span class="at">nrow=</span><span class="dv">2</span>,<span class="at">byrow=</span><span class="cn">TRUE</span>)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">row.names</span>(obs) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'B'</span>,<span class="st">'N'</span>)</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(obs) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Sim'</span>,<span class="st">'Não'</span>)</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(obs, <span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Sim</th>
+<th style="text-align: center;">Não</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: center;">53</td>
+<td style="text-align: center;">430</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N</td>
+<td style="text-align: center;">15</td>
+<td style="text-align: center;">176</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Hipóteses: <span class="math display">\[
+\begin{cases}
+H_{0}: \mbox{Veredito de pena de morte independe da raça do réu} \\
+H_{1}: \mbox{Existe dependência entre veredito de pena de morte e raça do réu}
+\end{cases}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>qui <span class="ot">&lt;-</span> <span class="fu">chisq.test</span>(obs)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(qui<span class="sc">$</span>expected, <span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Sim</th>
+<th style="text-align: center;">Não</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">B</td>
+<td style="text-align: center;">48.72997</td>
+<td style="text-align: center;">434.27</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N</td>
+<td style="text-align: center;">19.27003</td>
+<td style="text-align: center;">171.73</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(qui<span class="sc">$</span>statistic, qui<span class="sc">$</span>p.value)</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(res,<span class="at">align=</span><span class="st">'c'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">qui.statistic</th>
+<th style="text-align: center;">qui.p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">X-squared</td>
+<td style="text-align: center;">1.144741</td>
+<td style="text-align: center;">0.2846528</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
 
 </main>
 <!-- /main column -->

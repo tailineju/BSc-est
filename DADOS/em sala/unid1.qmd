@@ -548,3 +548,28 @@ p-valor > $\alpha$
 
 Logo, não rejeita-se $H_0$ para nenhum nível de significância. 
 
+# 30 de abril
+
+Dados: Pena de morte
+
+```{r}
+obs <- matrix(c(53,430,15,176),nrow=2,byrow=TRUE)
+row.names(obs) <- c('B','N')
+colnames(obs) <- c('Sim','Não')
+kable(obs, align='c')
+```
+
+Hipóteses: 
+$$
+\begin{cases}
+H_{0}: \mbox{Veredito de pena de morte independe da raça do réu} \\
+H_{1}: \mbox{Existe dependência entre veredito de pena de morte e raça do réu}
+\end{cases}
+$$
+
+```{r}
+qui <- chisq.test(obs)
+kable(qui$expected, align='c')
+res <- data.frame(qui$statistic, qui$p.value)
+kable(res,align='c')
+```
