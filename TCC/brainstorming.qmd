@@ -58,13 +58,9 @@ Analisar os dados do SAEB e do PDDE afim de identificar características escolar
 ## Objetivos Específicos
 - Integrar os dados do SAEB/INEP e do PDDE/FNDE;
 
-- Identificar os fatores referentes as condições da escola associados as notas dos alunos;
-
-- Estabelecer os níveis de associação de fatores referentes as condições da escola nas notas dos alunos;
-
 - Avaliar a associação do uso de recursos do PDDE nas notas dos alunos;
 
-- Compreender e aprimorar o uso de Modelos Multiníveis para o estudo de relações no desempenho escolar. 
+- Aplicar, compreender e aprimorar um Modelo Multinível para o estudo de relações no desempenho escolar. 
 
 # Metodologia
 
@@ -85,7 +81,7 @@ Preparando solicitação de acesso aos dados.
 
 # Resumo 
 
-A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, as avaliações são essenciais para garantir a qualidade do ensino e o desenvolvimento dos estudantes. O Programa Dinheiro Direto na Escola (PDDE) é um programa do Fundo Nacional de Desenvolvimento da Educação (FNDE) que tem como objetivo prestar assistência financeira para as escolas públicas. O PDDE é um programa de transferência de recursos financeiros que visa melhorar a infraestrutura física e pedagógica das escolas, bem como promover a melhoria da qualidade do ensino. Estudos já foram realizados para avaliar o impacto do PDDE em esferas políticas, de gestão escolar, entre outros, no entanto, poucos investigam a relação entre o PDDE e o desempenho acadêmico dos alunos. Portanto, este estudo tem como objetivo analisar conjuntamente dados do SAEB e do PDDE, buscando identificar características escolares, incluindo o recurso recebido através do PDDE, associadas ao desempenho dos alunos.
+A avaliação de políticas públicas é uma ferramenta fundamental para a tomada de decisões e para a melhoria da qualidade dos serviços prestados à população. No contexto da educação, as avaliações são essenciais para garantir a qualidade do ensino e o desenvolvimento dos estudantes. O Programa Dinheiro Direto na Escola (PDDE) é um programa do Fundo Nacional de Desenvolvimento da Educação (FNDE) que tem como objetivo prestar assistência financeira para as escolas públicas e visa melhorar a infraestrutura física e pedagógica das escolas, bem como promover a melhoria da qualidade do ensino. Estudos já foram realizados para avaliar o impacto do PDDE em esferas políticas, de gestão escolar, entre outros, no entanto, poucos investigam a relação entre o PDDE e o desempenho acadêmico dos alunos. Portanto, este estudo tem como objetivo analisar conjuntamente dados do SAEB e do PDDE, buscando identificar características escolares associadas ao desempenho dos alunos, incluindo o recurso recebido através do PDDE. Torna-se de suma importância destacar que, apesar de adentrar o contexto de avaliações de políticas públicas, o projeto segue como um estudo de associação.
 
 
 # Palavras‐chave: PDDE, SAEB, desempenho escolar, avaliação de políticas públicas, educação básica.
@@ -156,3 +152,8 @@ Espera-se iniciar em maio de 2024 e concluir em dezembro de 2024.
 # PREVISÃO DE CONCLUSÃO DA PESQUISA NA INSTITUIÇÃO DE VÍNCULO
 
 Com objetivo de seguir o cronograma do Trabalho de Conclusão de Curso do Departamento de Estatística, espera-se concluir a pesquisa na instituição de vínculo até o final do segundo semestre de 2024 (dezembro de 2024).
+
+-----------------------------------------------
+
+# Introdução (Versão 2)
+

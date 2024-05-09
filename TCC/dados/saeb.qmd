@@ -17,8 +17,8 @@ setwd("C:/Users/User/Downloads/TCC_DADOS/saeb")
 ```
 
 ```{r}
-saeb_2017 <- read.csv("microdados_saeb_2017/DADOS/TS_ESCOLA.csv", encoding="latin1")
-saeb_2021 <- read.csv("microdados_saeb_2021/DADOS/TS_ESCOLA.csv", sep = ";",encoding="latin1")
+saeb_2017 <- read.csv("microdados_saeb_2015/DADOS/TS_ESCOLA.csv", encoding="latin1")
+saeb_2021 <- read.csv("microdados_saeb_2017/DADOS/TS_ESCOLA.csv",encoding="latin1")
 ```
 
 # Limpeza dos dados
@@ -26,30 +26,30 @@ saeb_2021 <- read.csv("microdados_saeb_2021/DADOS/TS_ESCOLA.csv", sep = ";",enco
 ```{r}
 # Filtrar apenas escolas do Centro-Oeste
 saeb_2017_co <- saeb_2017 %>% filter(ID_UF %in% c(50, 51, 52, 53))  
-saeb_2021_co <- saeb_2021 %>% filter(ID_REGIAO == 5) 
-
-saeb_2017_co$ID_REGIAO <- 5
+saeb_2021_co <- saeb_2021 %>% filter(ID_UF %in% c(50, 51, 52, 53)) 
 
 # ID_PROVA_BRASIL em 2017 = ID_SAEB em 2021
 saeb_2017_co <- saeb_2017_co %>% rename(ID_SAEB = ID_PROVA_BRASIL)
-
-# MEDIA_3EM_LP e MEDIA_3EM_MT em 2017 = MEDIA_EM_LP e MEDIA_EM_MT em 2021
-saeb_2017_co <- saeb_2017_co %>% rename(MEDIA_EM_LP = MEDIA_3EM_LP, MEDIA_EM_MT = MEDIA_3EM_MT)
 ```
 
 ```{r}
 # Selecionar apenas as colunas de interesse (até nível socioeconômico e depois apenas as médias)
 
-saeb_2017_notas <- saeb_2017_co %>% select(ID_SAEB,ID_ESCOLA,ID_REGIAO,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_5EF_LP,MEDIA_5EF_MT,MEDIA_9EF_LP,MEDIA_9EF_MT,MEDIA_EM_LP,MEDIA_EM_MT)
+saeb_2017_notas <- saeb_2017_co %>% select(ID_SAEB,ID_ESCOLA,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_9EF_LP,MEDIA_9EF_MT)
 
-saeb_2021_notas <- saeb_2021_co %>% select(ID_SAEB,ID_ESCOLA,ID_REGIAO,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_5EF_LP,MEDIA_5EF_MT,MEDIA_9EF_LP,MEDIA_9EF_MT,MEDIA_EM_LP,MEDIA_EM_MT)
+saeb_2021_notas <- saeb_2021_co %>% select(ID_SAEB,ID_ESCOLA,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_9EF_LP,MEDIA_9EF_MT)
 ```	
 
 ```{r}
-# Integração dos datasets de forma que as notas de 2017 e 2021 fiquem em colunas diferentes e cada observação seja uma escola
+# encontrar escolas que estão em ambos os datasets
+escolas2017 <- saeb_2017_notas$ID_ESCOLA
+escolas2021 <- saeb_2021_notas$ID_ESCOLA
 
-saeb <- rbind(saeb_2017_notas, saeb_2021_notas) %>% 
-  pivot_wider(names_from = ID_SAEB, values_from = c(MEDIA_5EF_LP, MEDIA_5EF_MT, MEDIA_9EF_LP, MEDIA_9EF_MT, MEDIA_EM_LP, MEDIA_EM_MT))
+escolas_comuns <- intersect(escolas2017, escolas2021)
+
+# outro método
+
+escolas_comuns <- saeb_2017_notas %>% inner_join(saeb_2021_notas, by = "ID_ESCOLA") %>% select(ID_ESCOLA)
 ```
 
 ```{r}
