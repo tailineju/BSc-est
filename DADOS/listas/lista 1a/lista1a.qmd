@@ -1,0 +1,53 @@
+---
+title: "Lista 1a (UNID. 1)"
+subtitle: "ANÁLISE DE DADOS CATEGORIZADOS"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+# Descrição da Atividade
+
+## Questão 1
+According to recent UN figures, the annual gun homicide rate is 62.4 per one million residents in the United States and 1.3 per one million residents in the UK.
+
+    a. Compare the proportion of residents killed annually by guns using the (i) difference of proportions, (ii) relative risk.
+
+    b. When both proportions are very close to 0, as here, which measure is more useful for describing the strength of association? Why?
+
+## Questão 2
+A newspaper article preceding the 1994 World Cup semifinal match between Italy and Bulgaria stated that “Italy is favored 10–11 to beat Bulgaria, which is rated at 10–3 to reach the final.” Suppose this means that the odds that Italy wins are 11/10 and the odds that Bulgaria wins are 3/10. Find the probability
+that each team wins, and comment. 2.5 Consider the following two studies reported in the New York Times: 
+
+    a. A British study reported (December 3, 1998) that, of smokers who get lung cancer, “women were 1.7 times more vulnerable than men to get small-cell lung cancer.” Is 1.7 an odds ratio, or a relative risk? 
+
+     b. A National Cancer Institute study about tamoxifen and breast cancer reported (April 7, 1998) that the women taking the drug were 45% less likely to experience invasive breast cancer compared with the women taking placebo. Find the relative risk for (i) those taking the drug compared to those taking placebo, (ii) those taking placebo compared to those taking the drug.  
+    
+## Questão 3
+In the United States, the estimated annual probability that a woman over the age of 35 dies of lung cancer equals 0.001304 for current smokers and 0.000121 for nonsmokers [M. Pagano and K. Gauvreau, Principles of Biostatistics, Belmont, CA: Duxbury Press (1993), p. 134].
+
+    a. Calculate and interpret the difference of proportions and the relative risk. Which is more informative for these data? Why?
+    
+    b. Calculate and interpret the odds ratio. Explain why the relative risk and odds ratio take similar values.
+
+## Questão 4
+For adults who sailed on the Titanic on its fateful voyage, the odds ratio between gender (female, male) and survival (yes, no) was 11.4. (For data, see R. Dawson, J. Statist. Educ. 3, no. 3, 1995.)
+
+    a. What is wrong with the interpretation, “The probability of survival for females was 11.4 times that for males”? Give the correct interpretation.
+    
+    b. The odds of survival for females equaled 2.9. For each gender, find the proportion who survived.
+    
+    c. Find the value of R in the interpretation, “The probability of survival for females was R times that for males
+
+## Questão 5
+
+## Questão 6
+A large-sample confidence interval for the log of the relative risk is
+
+$$
+log(p1/p2) ± zα/2! 1 − p1 n1p1 + 1 − p2 n2p2
+$$
+
+Antilogs of the endpoints yield an interval for the true relative risk. Verify the 95% confidence interval of (1.43, 2.30) reported for the relative risk in Section 2.2.3 for the aspirin and heart attack study.
+
+# Respostas
+
