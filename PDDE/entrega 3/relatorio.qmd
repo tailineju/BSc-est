@@ -2,7 +2,7 @@
 title: "Centro Colaborador de Apoio ao Monitoramento e à Gestão de Programas Educacionais do Centro Oeste"
 subtitle: "Monitoramento e Apoio às UEx do PDDE Básico e  PDDE Ações Integradas"
 author: "Tailine J. S. Nonato"
-format: pdf
+format: docx
 ---
 
 # Entrega 3: Análise Crítica

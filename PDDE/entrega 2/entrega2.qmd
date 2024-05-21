@@ -1,12 +1,13 @@
 ---
-title: "Cecampe-CO/PDDE"
-subtitle: "Entrega 2: Análise Crítica"
+title: "Centro Colaborador de Apoio ao Monitoramento e à Gestão de Programas Educacionais do Centro Oeste"
+subtitle: "Monitoramento e Apoio às UEx do PDDE Básico e  PDDE Ações Integradas"
 author: "Tailine J. S. Nonato"
-format: pdf
+format: docx
 ---
 
-# Descrição da Atividade
+# Entrega 2: Análise Crítica
 
+## Objetivo
 No Consulta escola, explorar as abas d os menus Consulta por Escola (abre 1 aba) e relatórios (abre 5 abas) . 
 
 Listar (pode ser uma tabela) o que há disponível em cada uma das abas - variáveis e arquivos possíveis em Excel temos como objetivo: 
