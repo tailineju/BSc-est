@@ -3,6 +3,7 @@ title: "Centro Colaborador de Apoio ao Monitoramento e à Gestão de Programas E
 subtitle: "Monitoramento e Apoio às UEx do PDDE Básico e  PDDE Ações Integradas"
 author: "Tailine J. S. Nonato"
 format: pdf
+
 ---
 
 # Entrega 4: Análise de Saldos e Repasses
@@ -13,8 +14,8 @@ format: pdf
 #| warning: false
 #| echo: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, knitr, kableExtra)
-setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 4")
+pacman::p_load(tidyverse, knitr, readxl, openxlsx)
+#setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 4")
 ```
 
 
@@ -23,23 +24,19 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 4")
 #| warning: false
 #| echo: false
 
-# Lendo o dataset
-dados <- read_csv("pdde_pagos.csv", skip=5) 
+# Lendo o dataset xlsx
+dados <- read_excel("situacao-atendimento-entidade.xlsx")
 
-# Limpeza
-dados2 <- dados %>%
-  mutate(`Valor Custeio` = as.numeric(str_replace_all(`Valor Custeio`, "\\.", "")),
-         `Valor Capital` = as.numeric(str_replace_all(`Valor Capital`, "\\.", "")),
-         `Valor Total` = as.numeric(`Valor Custeio` + `Valor Capital`))
+#dim(dados)
+#names(dados)
 
-# Verificar repasse por destinação
-#kable(unique(dados2$`Destinação`))
 
 # Somando o repasse de cada escola e criando um df onde cada linha é uma escola
-dados3 <- dados2 %>%
-  group_by(`Código Escola`) %>%
-  summarise(`Valor Total` = sum(`Valor Total`), `Valor Custeio` = sum(`Valor Custeio`), `Valor Capital` = sum(`Valor Capital`))
-head(dados3)
+dados3 <- dados %>%
+  group_by(Cod_Escola, Quantidade) %>%
+  summarise(ValorTotal = sum(ValorTotal), ValorCusteio = sum(ValorCusteio), ValorCapital = sum(ValorCapital))
+#head(dados3)
+kable(nrow(dados3), col.names = "Número de escolas")
 ```
 
 ### Tabela 1: Soma, Média e Desvio Padrão
@@ -50,25 +47,25 @@ head(dados3)
 #| echo: false
 
 # Calculando a soma, média e desvio padrão
-soma <- sum(dados3$`Valor Total`)
-media <- mean(dados3$`Valor Total`)
-desvio <- sd(dados3$`Valor Total`)
+soma <- sum(dados3$ValorTotal)
+media <- mean(dados3$ValorTotal)
+desvio <- sd(dados3$ValorTotal)
 
-soma_custeio <- sum(dados3$`Valor Custeio`)
-media_custeio <- mean(dados3$`Valor Custeio`)
-desvio_custeio <- sd(dados3$`Valor Custeio`)
+soma_custeio <- sum(dados3$ValorCusteio)
+media_custeio <- mean(dados3$ValorCusteio)
+desvio_custeio <- sd(dados3$ValorCusteio)
 
-soma_capital <- sum(dados3$`Valor Capital`)
-media_capital <- mean(dados3$`Valor Capital`)
-desvio_capital <- sd(dados3$`Valor Capital`)
+soma_capital <- sum(dados3$ValorCapital)
+media_capital <- mean(dados3$ValorCapital)
+desvio_capital <- sd(dados3$ValorCapital)
 
-soma_custeio_perc <- sum(dados3$`Valor Custeio`)/sum(dados3$`Valor Total`)
-soma_capital_perc <- sum(dados3$`Valor Capital`)/sum(dados3$`Valor Total`)
-media_custeio_perc <- mean(dados3$`Valor Custeio`)/mean(dados3$`Valor Total`)
+soma_custeio_perc <- sum(dados3$ValorCusteio)/sum(dados3$ValorTotal)
+soma_capital_perc <- sum(dados3$ValorCapital)/sum(dados3$ValorTotal)
+media_custeio_perc <- mean(dados3$ValorCusteio)/mean(dados3$ValorTotal)
 
-media_capital_perc <- mean(dados3$`Valor Capital`)/mean(dados3$`Valor Total`)
-desvio_custeio_perc <- sd(dados3$`Valor Custeio`)/sd(dados3$`Valor Total`)
-desvio_capital_perc <- sd(dados3$`Valor Capital`)/sd(dados3$`Valor Total`)
+media_capital_perc <- mean(dados3$ValorCapital)/mean(dados3$ValorTotal)
+desvio_custeio_perc <- sd(dados3$ValorCusteio)/sd(dados3$ValorTotal)
+desvio_capital_perc <- sd(dados3$ValorCapital)/sd(dados3$ValorTotal)
 
 # Custeio percentual to %
 soma_custeio_perc <- paste0(round(soma_custeio_perc*100, 2), "%")
@@ -102,10 +99,7 @@ estatisticas <- data.frame("Soma" = c(soma, soma_custeio, soma_custeio_perc, som
 
 rownames(estatisticas) <- c("Valor Total", "Valor Custeio", "Valor Custeio (%)", "Valor Capital", "Valor Capital (%)")
 
-# Transpor a tabela
-estatisticas <- t(estatisticas)
-
-estatisticas
+kable(estatisticas,align='l')
 ```	
 
 ### Tabela 2: Percentis, Mínimo e Máximo
@@ -116,9 +110,9 @@ estatisticas
 #| echo: false
 
 # Calculando o mínimo
-minimo_total <- min(dados3$`Valor Total`)
-minimo_custeio <- min(dados3$`Valor Custeio`)
-minimo_capital <- min(dados3$`Valor Capital`)
+minimo_total <- min(dados3$ValorTotal)
+minimo_custeio <- min(dados3$ValorCusteio)
+minimo_capital <- min(dados3$ValorCapital)
 
 # Formatando para R$
 minimo_total <- paste0("R$", format(minimo_total, big.mark = ".", decimal.mark = ","))
@@ -126,9 +120,9 @@ minimo_custeio <- paste0("R$", format(minimo_custeio, big.mark = ".", decimal.ma
 minimo_capital <- paste0("R$", format(minimo_capital, big.mark = ".", decimal.mark = ","))
 
 # Calculando os percentis
-percentis_total <- quantile(dados3$`Valor Total`, c(0.1, 0.25, 0.5, 0.75, 0.9))
-percentis_custeio <- quantile(dados3$`Valor Custeio`, c(0.1, 0.25, 0.5, 0.75, 0.9))
-percentis_capital <- quantile(dados3$`Valor Capital`, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_total <- quantile(dados3$ValorTotal, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_custeio <- quantile(dados3$ValorCusteio, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_capital <- quantile(dados3$ValorCapital, c(0.1, 0.25, 0.5, 0.75, 0.9))
 
 # Formatando para R$
 percentis_total <- paste0("R$", format(percentis_total, big.mark = ".", decimal.mark = ","))
@@ -136,9 +130,9 @@ percentis_custeio <- paste0("R$", format(percentis_custeio, big.mark = ".", deci
 percentis_capital <- paste0("R$", format(percentis_capital, big.mark = ".", decimal.mark = ","))
 
 # Calculando o máximo
-maximo_total <- max(dados3$`Valor Total`)
-maximo_custeio <- max(dados3$`Valor Custeio`)
-maximo_capital <- max(dados3$`Valor Capital`)
+maximo_total <- max(dados3$ValorTotal)
+maximo_custeio <- max(dados3$ValorCusteio)
+maximo_capital <- max(dados3$ValorCapital)
 
 # Formatando para R$
 maximo_total <- paste0("R$", format(maximo_total, big.mark = ".", decimal.mark = ","))
@@ -157,11 +151,11 @@ percentis <- data.frame("min" = c(minimo_total, minimo_custeio, minimo_capital),
 rownames(percentis) <- c("Valor Total", "Valor Custeio", "Valor Capital")
 colnames(percentis) <- c("Mínimo", "Percentil 10", "1º Quartil", "Mediana", "3º Quartil", "Percentil 90", "Máximo")
 
-# Transpor a tabela
-percentis <- t(percentis)
+percentis <- as.data.frame(t(percentis))
 percentis
-
 ```
+
+
 
 ### Tabela 3: Frequencia de escolas por faixa de valor total recebido
 
@@ -171,7 +165,7 @@ percentis
 #| echo: false
 
 # Criando a tabela
-dados3$faixa <- cut(dados3$`Valor Total`, breaks = c(0, 500, 1000, 5000, 10000, 20000, 35000, 50000, 80000, Inf), labels = c("Até R$500", "R$501 a R$1000", "R$1001 a R$5000", "R$5001 a R$10000", "R$10001 a R$20000", "R$20001 a R$35000", "R$35001 a R$50000", "R$50001 a R$80000","Mais de R$80000"))
+dados3$faixa <- cut(dados3$ValorTotal, breaks = c(0, 500, 1000, 5000, 10000, 20000, 35000, 50000, 80000, Inf), labels = c("Até R$500", "R$501 a R$1000", "R$1001 a R$5000", "R$5001 a R$10000", "R$10001 a R$20000", "R$20001 a R$35000", "R$35001 a R$50000", "R$50001 a R$80000","Mais de R$80000"))
 
 # Tabela de frequencia
 tabela_freq <- table(dados3$faixa)
@@ -183,11 +177,33 @@ tabela_freq <- tabela_freq %>%
 
 # Adicionando a coluna de percentual
 tabela_freq <- tabela_freq %>%
-  mutate(Percentual = round(Frequência/sum(Frequência)*100, 2))
+  mutate(Percentual = paste0(round(Frequência/sum(Frequência)*100, 2),"%"))
 
-# Adicionando a linha de totais
-tabela_freq <- rbind(tabela_freq, c("Total", sum(tabela_freq$Frequência), sum(tabela_freq$Percentual)))
+# Convert Faixa back to character
+tabela_freq$Faixa <- as.character(tabela_freq$Faixa)
 
-tabela_freq
+# Add the "Total" row
+tabela_freq <- rbind(tabela_freq, c("Total", sum(tabela_freq$Frequência), "100%"))
 
+kable(tabela_freq, align = 'l')
+
+```
+
+
+```{r}	
+#| message: false
+#| warning: false
+#| echo: false
+
+
+# Exportando todas as tabelas para um arquivo .xlsx
+
+wb <- createWorkbook()
+addWorksheet(wb, "Tabela 1")
+writeData(wb, "Tabela 1", estatisticas)
+addWorksheet(wb, "Tabela 2")
+writeData(wb, "Tabela 2", percentis)
+addWorksheet(wb, "Tabela 3")
+writeData(wb, "Tabela 3", tabela_freq)
+saveWorkbook(wb, "e4_tabelas_tailine.xlsx", overwrite = TRUE)
 ```
