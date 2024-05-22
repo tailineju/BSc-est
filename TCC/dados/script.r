@@ -9,6 +9,11 @@
 if(!require("pacman")) install.packages("pacman")
 pacman::p_load(tidyverse)
 
+#library em todos os pacotes utilizados
+library(purrr)
+library(dplyr)
+library()
+
 # -----------------------------
 # PDDE 
 
@@ -18,6 +23,8 @@ files <- list.files(path = "path/pdde", pattern = ".csv", full.names = TRUE)
 # Lendo os arquivos
 data1 <- map_dfr(files, ~read_csv(.x, skip=5) %>%
                 select(Ano, `Código Escola`, everything()), .id = "id_ano")
+
+
 
 # Removendo "." em variáveis de valor numérico
 data2 <- data1 %>%
@@ -66,6 +73,7 @@ saeb <- inner_join(saeb_2017_notas,saeb_2021_notas, by = c("ID_SAEB","ID_ESCOLA"
 write.csv(saeb, "saeb.csv", row.names = FALSE)
 
 
+
 # -----------------------------
 # INTEGRAÇÃO
 
@@ -84,3 +92,23 @@ colnames(pdde)[colnames(pdde) == "Código Escola"] <- "ID_ESCOLA"
 
 # Merge
 dados <- inner_join(pdde, saeb, by = "ID_ESCOLA")
+
+# Define two vectors
+vector1 <- c("a", "b", "c", "d")
+vector2 <- c("c", "d", "e", "f")
+
+# Find common elements
+common_elements <- intersect(vector1, vector2)
+
+# Print common elements
+print(common_elements)
+
+
+# Define a string
+my_string <- "Hello"
+
+# Get the first character
+first_character <- substr(my_string, start = 1, stop = 1)
+
+# Print the first character
+print(first_character)

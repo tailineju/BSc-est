@@ -99,7 +99,7 @@ estatisticas <- data.frame("Soma" = c(soma, soma_custeio, soma_custeio_perc, som
 
 rownames(estatisticas) <- c("Valor Total", "Valor Custeio", "Valor Custeio (%)", "Valor Capital", "Valor Capital (%)")
 
-kable(estatisticas,align='l')
+kable(t(estatisticas),align='l')
 ```	
 
 ### Tabela 2: Percentis, Mínimo e Máximo
