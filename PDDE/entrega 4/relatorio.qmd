@@ -25,22 +25,21 @@ setwd("/Users/tailine.nonato/Documents/gradest/PDDE/entrega 4")
 #| warning: false
 #| echo: false
 
-
 dados <- read_excel("situacao-atendimento-entidade.xlsx")
 
-dados3 <- dados %>%
+dados_esc <- dados %>%
   group_by(Cod_Escola, Quantidade) %>%
   summarise(ValorTotal = sum(ValorTotal), ValorCusteio = sum(ValorCusteio), ValorCapital = sum(ValorCapital))
 
 
-kable(format(nrow(dados3), big.mark = "."),, align='l', col.names = "Número de escolas")%>%
+kable(format(nrow(dados_esc), big.mark = "."), align='l', col.names = "Número de escolas")%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola / FNDE",
+  footnote(general = "Consulta Escola/FNDE",
   general_title = "Fonte:")
 
 ```
 
-### Tabela 1: Soma, Média e Desvio Padrão
+### Tabela 1: Medidas de Tendência Central e Dispersão dos Repasses
 
 ```{r}
 #| message: false
@@ -48,25 +47,25 @@ kable(format(nrow(dados3), big.mark = "."),, align='l', col.names = "Número de 
 #| echo: false
 
 # Calculando a soma, média e desvio padrão
-soma <- round(sum(dados3$ValorTotal),2)
-media <- round(mean(dados3$ValorTotal),2)
-desvio <- round(sd(dados3$ValorTotal),2)
+soma <- round(sum(dados_esc$ValorTotal),2)
+media <- round(mean(dados_esc$ValorTotal),2)
+desvio <- round(sd(dados_esc$ValorTotal),2)
 
-soma_custeio <- round(sum(dados3$ValorCusteio),2)
-media_custeio <- round(mean(dados3$ValorCusteio),2)
-desvio_custeio <- round(sd(dados3$ValorCusteio),2)
+soma_custeio <- round(sum(dados_esc$ValorCusteio),2)
+media_custeio <- round(mean(dados_esc$ValorCusteio),2)
+desvio_custeio <- round(sd(dados_esc$ValorCusteio),2)
 
-soma_capital <- round(sum(dados3$ValorCapital),2)
-media_capital <- round(mean(dados3$ValorCapital),2)
-desvio_capital <- round(sd(dados3$ValorCapital),2)
+soma_capital <- round(sum(dados_esc$ValorCapital),2)
+media_capital <- round(mean(dados_esc$ValorCapital),2)
+desvio_capital <- round(sd(dados_esc$ValorCapital),2)
 
-soma_custeio_perc <- sum(dados3$ValorCusteio)/sum(dados3$ValorTotal)
-soma_capital_perc <- sum(dados3$ValorCapital)/sum(dados3$ValorTotal)
-media_custeio_perc <- mean(dados3$ValorCusteio)/mean(dados3$ValorTotal)
+soma_custeio_perc <- sum(dados_esc$ValorCusteio)/sum(dados_esc$ValorTotal)
+soma_capital_perc <- sum(dados_esc$ValorCapital)/sum(dados_esc$ValorTotal)
+media_custeio_perc <- mean(dados_esc$ValorCusteio)/mean(dados_esc$ValorTotal)
 
-media_capital_perc <- mean(dados3$ValorCapital)/mean(dados3$ValorTotal)
-desvio_custeio_perc <- sd(dados3$ValorCusteio)/sd(dados3$ValorTotal)
-desvio_capital_perc <- sd(dados3$ValorCapital)/sd(dados3$ValorTotal)
+media_capital_perc <- mean(dados_esc$ValorCapital)/mean(dados_esc$ValorTotal)
+desvio_custeio_perc <- sd(dados_esc$ValorCusteio)/sd(dados_esc$ValorTotal)
+desvio_capital_perc <- sd(dados_esc$ValorCapital)/sd(dados_esc$ValorTotal)
 
 estatisticas1 <- data.frame("Soma" = c(soma, soma_custeio, soma_custeio_perc, soma_capital, soma_capital_perc),
                            "Média" = c(media, media_custeio, media_custeio_perc, media_capital, media_capital_perc),
@@ -76,30 +75,20 @@ rownames(estatisticas1) <- c("Valor Total", "Valor Custeio", "Valor Custeio (%)"
 
 # -------------------------------------------
 
-# Custeio percentual to %, decimal mark to comma
-soma_custeio_perc <- paste0(round(soma_custeio_perc*100, 2), "%")
-media_custeio_perc <- paste0(round(media_custeio_perc*100, 2), "%")
-desvio_custeio_perc <- paste0(round(desvio_custeio_perc*100, 2), "%")
-
-# Capital percentual to %
-soma_capital_perc <- paste0(round(soma_capital_perc*100, 2), "%")
-media_capital_perc <- paste0(round(media_capital_perc*100, 2), "%")
-desvio_capital_perc <- paste0(round(desvio_capital_perc*100, 2), "%")
-
 # Valor Total to R$
-soma <- paste0("R$", format(soma, big.mark = ".", decimal.mark = ","))
-media <- paste0("R$", format(media, big.mark = ".", decimal.mark = ","))
-desvio <- paste0("R$", format(desvio, big.mark = ".", decimal.mark = ","))
+soma <- paste0("R$", format(soma, big.mark = ".", decimal.mark = ",",nsmall=2))
+media <- paste0("R$", format(media, big.mark = ".", decimal.mark = ",",nsmall=2))
+desvio <- paste0("R$", format(desvio, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 # Valor Custeio to R$
-soma_custeio <- paste0("R$", format(soma_custeio, big.mark = ".", decimal.mark = ","))
-media_custeio <- paste0("R$", format(media_custeio, big.mark = ".", decimal.mark = ","))
-desvio_custeio <- paste0("R$", format(desvio_custeio, big.mark = ".", decimal.mark = ","))
+soma_custeio <- paste0("R$", format(soma_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
+media_custeio <- paste0("R$", format(media_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
+desvio_custeio <- paste0("R$", format(desvio_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 # Valor Capital to R$
-soma_capital <- paste0("R$", format(soma_capital, big.mark = ".", decimal.mark = ","))
-media_capital <- paste0("R$", format(media_capital, big.mark = ".", decimal.mark = ","))
-desvio_capital <- paste0("R$", format(desvio_capital, big.mark = ".", decimal.mark = ","))
+soma_capital <- paste0("R$", format(soma_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
+media_capital <- paste0("R$", format(media_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
+desvio_capital <- paste0("R$", format(desvio_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 estatisticas <- data.frame("Soma" = c(soma, soma_custeio, soma_capital),
                            "Média" = c(media, media_custeio, media_capital),
@@ -110,34 +99,44 @@ colnames(estatisticas) <- c("Soma", "Média", "Desvio Padrão")
 
 kable(t(estatisticas), align = "l")%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola / FNDE",
+  footnote(general = "Consulta Escola/FNDE",
   general_title = "Fonte:")
 
 ```
 
-### Tabela 2: Alocação de Recursos em Custeio e Capital
+\vspace{2em}
+
+### Tabela 2: Proporção na Alocação de Repasses Custeio e Capital
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 
+# Custeio percentual 
+soma_custeio_perc <- paste0(formatC(soma_custeio_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
+media_custeio_perc <- paste0(formatC(media_custeio_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
+desvio_custeio_perc <- paste0(formatC(desvio_custeio_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
 
-percentagem <- data.frame("Alocação" = c(soma_custeio_perc, soma_capital_perc))
+# Capital percentual to %
+soma_capital_perc <- paste0(formatC(soma_capital_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
+media_capital_perc <- paste0(formatC(media_capital_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
+desvio_capital_perc <- paste0(formatC(desvio_capital_perc*100, format = "f", digits = 2, decimal.mark = ","), "%")
 
-rownames(percentagem) <- c("Valor Custeio (%)", "Valor Capital (%)")
-colnames(percentagem) <- c("Alocação")
+perc_valor <- data.frame("Alocação" = c(soma_custeio_perc, soma_capital_perc))
 
-kable(t(percentagem), align = "l")%>%
+rownames(perc_valor) <- c("Valor Custeio (%)", "Valor Capital (%)")
+colnames(perc_valor) <- c("Alocação")
+
+kable(t(perc_valor), align = "l")%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola / FNDE",
+  footnote(general = "Consulta Escola/FNDE",
   general_title = "Fonte:")
 
 ```	
 
-\vspace{2em}
 
-### Tabela 3: Percentis, Mínimo e Máximo
+### Tabela 3: Medidas Resumo dos Repasses por Categoria
 
 ```{r}
 #| message: false
@@ -145,19 +144,19 @@ kable(t(percentagem), align = "l")%>%
 #| echo: false
 
 # Calculando o mínimo
-minimo_total <- min(dados3$ValorTotal)
-minimo_custeio <- min(dados3$ValorCusteio)
-minimo_capital <- min(dados3$ValorCapital)
+minimo_total <- min(dados_esc$ValorTotal)
+minimo_custeio <- min(dados_esc$ValorCusteio)
+minimo_capital <- min(dados_esc$ValorCapital)
 
 # Calculando os percentis
-percentis_total <- quantile(dados3$ValorTotal, c(0.1, 0.25, 0.5, 0.75, 0.9))
-percentis_custeio <- quantile(dados3$ValorCusteio, c(0.1, 0.25, 0.5, 0.75, 0.9))
-percentis_capital <- quantile(dados3$ValorCapital, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_total <- quantile(dados_esc$ValorTotal, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_custeio <- quantile(dados_esc$ValorCusteio, c(0.1, 0.25, 0.5, 0.75, 0.9))
+percentis_capital <- quantile(dados_esc$ValorCapital, c(0.1, 0.25, 0.5, 0.75, 0.9))
 
 # Calculando o máximo
-maximo_total <- max(dados3$ValorTotal)
-maximo_custeio <- max(dados3$ValorCusteio)
-maximo_capital <- max(dados3$ValorCapital)
+maximo_total <- max(dados_esc$ValorTotal)
+maximo_custeio <- max(dados_esc$ValorCusteio)
+maximo_capital <- max(dados_esc$ValorCapital)
 
 # Criando a tabela para excel
 percentis1 <- data.frame("min" = c(minimo_total, minimo_custeio, minimo_capital),
@@ -175,19 +174,19 @@ colnames(percentis1) <- c("Mínimo", "Percentil 10", "1º Quartil", "Mediana", "
 # ------------------------------------
 
 # Formatando para R$
-percentis_total <- paste0("R$", format(percentis_total, big.mark = ".", decimal.mark = ","))
-percentis_custeio <- paste0("R$", format(percentis_custeio, big.mark = ".", decimal.mark = ","))
-percentis_capital <- paste0("R$", format(percentis_capital, big.mark = ".", decimal.mark = ","))
+percentis_total <- paste0("R$", format(percentis_total, big.mark = ".", decimal.mark = ",",nsmall=2))
+percentis_custeio <- paste0("R$", format(percentis_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
+percentis_capital <- paste0("R$", format(percentis_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 # Formatando para R$
-minimo_total <- paste0("R$", format(minimo_total, big.mark = ".", decimal.mark = ","))
-minimo_custeio <- paste0("R$", format(minimo_custeio, big.mark = ".", decimal.mark = ","))
-minimo_capital <- paste0("R$", format(minimo_capital, big.mark = ".", decimal.mark = ","))
+minimo_total <- paste0("R$", format(minimo_total, big.mark = ".", decimal.mark = ",",nsmall=2))
+minimo_custeio <- paste0("R$", format(minimo_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
+minimo_capital <- paste0("R$", format(minimo_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 # Formatando para R$
-maximo_total <- paste0("R$", format(maximo_total, big.mark = ".", decimal.mark = ","))
-maximo_custeio <- paste0("R$", format(maximo_custeio, big.mark = ".", decimal.mark = ","))
-maximo_capital <- paste0("R$", format(maximo_capital, big.mark = ".", decimal.mark = ","))
+maximo_total <- paste0("R$", format(maximo_total, big.mark = ".", decimal.mark = ",",nsmall=2))
+maximo_custeio <- paste0("R$", format(maximo_custeio, big.mark = ".", decimal.mark = ",",nsmall=2))
+maximo_capital <- paste0("R$", format(maximo_capital, big.mark = ".", decimal.mark = ",",nsmall=2))
 
 # Criando a tabela
 percentis <- data.frame("min" = c(minimo_total, minimo_custeio, minimo_capital),
@@ -204,14 +203,14 @@ colnames(percentis) <- c("Mínimo", "Percentil 10", "1º Quartil", "Mediana", "3
 percentis <- as.data.frame(t(percentis))
 kable(percentis, align='l')%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola / FNDE",
+  footnote(general = "Consulta Escola/FNDE",
   general_title = "Fonte:")
 
 ```
 
 
 
-### Tabela 4: Frequência de escolas por faixa de valor total recebido
+### Tabela 4: Frequência de Escolas por Faixa de Repasse (Valor Total)
 
 ```{r}
 #| message: false
@@ -219,10 +218,10 @@ kable(percentis, align='l')%>%
 #| echo: false
 
 # Criando a tabela
-dados3$faixa <- cut(dados3$ValorTotal, breaks = c(0, 500, 1000, 5000, 10000, 20000, 35000, 50000, 80000, Inf), labels = c("Até R$500", "R$501 a R$1000", "R$1001 a R$5000", "R$5001 a R$10000", "R$10001 a R$20000", "R$20001 a R$35000", "R$35001 a R$50000", "R$50001 a R$80000","Mais de R$80000"))
+dados_esc$faixa <- cut(dados_esc$ValorTotal, breaks = c(0, 500, 1000, 5000, 10000, 20000, 35000, 50000, 80000, Inf), labels = c("Até R$500", "R$501 a R$1000", "R$1001 a R$5000", "R$5001 a R$10000", "R$10001 a R$20000", "R$20001 a R$35000", "R$35001 a R$50000", "R$50001 a R$80000","Mais de R$80000"))
 
 # Tabela de frequencia
-tabela_freq <- table(dados3$faixa)
+tabela_freq <- table(dados_esc$faixa)
 tabela_freq <- data.frame("Faixa" = names(tabela_freq), "Frequência" = as.numeric(tabela_freq))
 
 # Ordenando a tabela
@@ -240,59 +239,13 @@ tabela_freq$Faixa <- as.character(tabela_freq$Faixa)
 tabela_freq <- rbind(tabela_freq, c("Total", sum(tabela_freq$Frequência), "100%"))
 
 # footnote
+
 kable(tabela_freq, align = "l") %>%
-  kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola / FNDE",
-  general_title = "Fonte:")
+  kable_styling(full_width = F, position = "left") %>%
+  row_spec((nrow(tabela_freq)-1), extra_latex_after = "\\hline") %>%
+  row_spec(nrow(tabela_freq), bold = TRUE) %>%
+  footnote(general = "Consulta Escola/FNDE", general_title = "Fonte:")
 
-```
-
-
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
-## Verificação de UEx consórcios
-# cnpj seduc é diferente de cnpj uex E cnpj uex aparece mais de 2 vezes nos dados
-names(dados)
-
-unique(dados$Destinacao)
-
-destinacao <- dados %>%
-  filter(Destinacao == "PDDE Basico - 2 Parcela 2022" | Destinacao == "PDDE Basico - 1 Parcela 2022")
-
-cnpjs <- dados %>%
-  filter(CNPJ_SEDUC != CNPJ_Ex) %>%
-  group_by(CNPJ_Ex) %>%
-  summarise(n = n()) 
-  
-consorcios <- cnpjs %>% filter(n > 2) 
-
-summary(consorcios$n)
-
-# identificar escolas que estão em consórcios
-escolas_consorcios <- dados %>%
-  filter(CNPJ_Ex %in% consorcios$CNPJ_Ex)
-
-#adicionar numero de vezes que o cnpj aparece
-escolas_consorcios <- escolas_consorcios %>%
-  left_join(consorcios, by = "CNPJ_Ex")
-
-unique_codes <- unique(escolas_consorcios$CNPJ_Ex)
-
-# Create a vector of new codes
-new_codes <- seq_along(unique_codes)
-
-# Create a mapping of old codes to new codes
-code_mapping <- setNames(new_codes, unique_codes)
-
-# Replace old codes with new codes in both datasets
-escolas_consorcios$cod<- code_mapping[as.character(escolas_consorcios$CNPJ_Ex)]
-
-#tabela de frequencias
-kable(t(table(consorcios$n/2)))
 ```
 
 ```{r}	
@@ -307,12 +260,10 @@ wb <- createWorkbook()
 addWorksheet(wb, "Tabela 1")
 writeData(wb, "Tabela 1", estatisticas1)
 addWorksheet(wb, "Tabela 2")
-writeData(wb, "Tabela 2", percentagem)
+writeData(wb, "Tabela 2", perc_valor)
 addWorksheet(wb, "Tabela 3")
 writeData(wb, "Tabela 3", percentis1)
 addWorksheet(wb, "Tabela 4")
 writeData(wb, "Tabela 4", tabela_freq)
-addWorksheet(wb, "Escolas Consórcios")
-writeData(wb, "Escolas Consórcios", escolas_consorcios)
-saveWorkbook(wb, "e4_tabelas_tailine_new.xlsx", overwrite = TRUE)
+saveWorkbook(wb, "e4_tabelas_tailine_repasses.xlsx", overwrite = TRUE)
 ```
