@@ -1,0 +1,197 @@
+---
+title: "Centro Colaborador de Apoio ao Monitoramento e à Gestão de Programas Educacionais do Centro Oeste"
+subtitle: "Monitoramento e Apoio às UEx do PDDE Básico e  PDDE Ações Integradas"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse, knitr, readxl, openxlsx, kableExtra)
+#setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 4")
+#setwd("/Users/tailine.nonato/Documents/gradest/PDDE/entrega 4")
+```
+
+Comparando as informações disponíveis no Consulta Escola com as divulgadas na Apresentação do PDDE 2024 (FNDE), existem algumas inconsistências. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+dados <- read_excel("situacao-atendimento-entidade.xlsx")
+
+#unique(dados$Destinacao)
+#unique(dados$Rede)
+
+#filter out "PDDE Basico - 2 Parcela 2022" and "PDDE Basico - 1 Parcela 2022"
+dados <- dados %>%
+  filter(Destinacao != "PDDE Basico - 2 Parcela 2022" & Destinacao != "PDDE Basico - 1 Parcela 2022")
+
+# "PDDE Basico - 1 parcela" = "PDDE Basico - P1"  
+# "PDDE Basico - 2 parcela" = "PDDE Basico - P2"
+
+dados$Destinacao <- dados$Destinacao %>%
+  str_replace_all("PDDE Basico - 1 parcela", "Primeira Parcela") %>%
+  str_replace_all("PDDE Basico - 2 parcela", "Segunda Parcela") %>%
+  str_replace_all("PDDE Basico - 2 Parcela", "Segunda Parcela") %>%
+  str_replace_all("PDDE Basico - P1", "Primeira Parcela") %>%
+  str_replace_all("PDDE Basico - P2", "Segunda Parcela")
+
+
+#replace 'ADMINISTRACAO PUBLICA ESTADUAL' with 'Estadual' and 'ADMINISTRACAO PUBLICA MUNICIPAL' with 'Municipal'
+dados$Rede <- dados$Rede %>%
+  str_replace_all("ADMINISTRACAO PUBLICA ESTADUAL", "Estadual") %>%
+  str_replace_all("ADMINISTRACAO PUBLICA MUNICIPAL", "Municipal")
+
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# table where (1) columns are each destination and total, (2) rows are each network and total, and (3) values are the sum of ValorTotal 
+
+dados_esc <- dados %>%
+  group_by(Cod_Escola, Quantidade, Rede, Destinacao) %>%
+  summarise(ValorTotal = sum(ValorTotal), ValorCusteio = sum(ValorCusteio), ValorCapital = sum(ValorCapital))
+
+table_dest_network <- dados_esc %>%
+    group_by(Destinacao, Rede) %>%
+    summarise(Total = sum(ValorTotal))
+
+table_dest_network <- table_dest_network %>%
+    pivot_wider(names_from = Destinacao, values_from = Total, values_fill = 0)
+
+table_dest_network <- table_dest_network %>%
+    mutate(Total = rowSums(across(-Rede)))
+
+table_dest_network <- table_dest_network %>%
+  add_row(Rede = "Total", !!!summarise(.data = ., across(-Rede, sum, na.rm = TRUE)))
+
+#formatting to currency 
+table_dest_network2 <- table_dest_network %>%
+  mutate(across(-Rede, ~prettyNum(., big.mark = ".", decimal.mark = ",", scientific = FALSE,nsmall=2)))
+
+# turn into R$
+table_dest_network2 <- table_dest_network2 %>%
+  mutate(across(-Rede, ~paste0("R$ ", .)))
+
+kable(table_dest_network2, align='l')%>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE",
+  general_title = "Fonte:")
+
+#input: tabela da apresentação do PDDE 2024
+table_pdde <- tribble(
+  ~Rede, ~"Primeira Parcela", ~"Segunda Parcela", ~Total,
+  "Estadual", 146503905, 146247530, 292751435,
+  "Municipal", 338406605, 338329105, 676735710,
+  "Privadas", 3718985, 3698880, 7417865,
+  "Total", 488629495, 488275515, 976905010
+)
+
+table_pdde2 <- table_pdde %>%
+  mutate(across(-Rede, ~prettyNum(., big.mark = ".", decimal.mark = ",", scientific = FALSE,nsmall=2)))
+
+table_pdde2 <- table_pdde2 %>%
+    mutate(across(-Rede, ~paste0("R$ ", .)))
+
+kable(table_pdde2, align='l')%>%
+    kable_styling(full_width = F, position = "left")%>%
+    footnote(general = "Apresentação PDDE 2024",
+    general_title = "Fonte:")
+
+#diferenças entre os totais gerais (pdde 2024 - consulta escola)
+# Extract the last value from each table
+last_value_table_pdde <- as.numeric(table_pdde[nrow(table_pdde), ncol(table_pdde)])
+last_value_table_dest_network <- as.numeric(table_dest_network[nrow(table_dest_network), ncol(table_dest_network)])
+
+# Subtract the last values
+result <- last_value_table_pdde - last_value_table_dest_network
+
+result <- format(result, big.mark = ".", decimal.mark = ",", scientific = FALSE, nsmall=2)
+
+result <- paste0("R$ ", result)
+
+kable(result, align='l', col.names= "Diferença de valores totais")%>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Apresentação PDDE 2024 - Consulta Escola",
+  general_title = "Fonte:")
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# exporting to an excel file
+write.xlsx(table_dest_network, "repasses_totais_rede_parcelas.xlsx", row.names = FALSE)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+cnpjs <- dados %>%
+  filter(CNPJ_SEDUC != CNPJ_Ex) %>%
+  group_by(CNPJ_Ex) %>%
+  summarise(n = n()) 
+  
+consorcios <- cnpjs %>% filter(n > 2) 
+
+kable(as.data.frame(t(summary(consorcios$n)))[,2:3], align='l') %>%
+  kable_styling(full_width = F, position = "left") %>%
+  footnote(general = "Consulta Escola/FNDE",
+  general_title = "Fonte:")
+
+# identificar escolas que estão em consórcios
+escolas_consorcios <- dados %>%
+  filter(CNPJ_Ex %in% consorcios$CNPJ_Ex)
+
+#adicionar numero de vezes que o cnpj aparece
+escolas_consorcios <- escolas_consorcios %>%
+  left_join(consorcios, by = "CNPJ_Ex")
+
+
+# Transformando os códigos para facilitar a visualização
+unique_codes <- unique(escolas_consorcios$CNPJ_Ex)
+new_codes <- seq_along(unique_codes)
+code_mapping <- setNames(new_codes, unique_codes)
+escolas_consorcios$cod<- code_mapping[as.character(escolas_consorcios$CNPJ_Ex)]
+
+# Quantidade de consórcios
+kable(format(nrow(consorcios), big.mark = "."), align='l')%>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE",
+  general_title = "Fonte:")
+
+# Quantidade de consórcios em que há escolas que receberam somente a primeira parcela
+
+## Crie um subconjunto de dados para as escolas que receberam a primeira parcela
+escolas_primeira_parcela <- escolas_consorcios %>%
+    filter(Destinacao == "Primeira Parcela") %>%
+    group_by(cod) %>%
+    summarise(n = n()) %>%
+    filter(n > 0)
+
+## Crie um subconjunto de dados para as escolas que receberam a segunda parcela
+escolas_segunda_parcela <- escolas_consorcios %>%
+    filter(Destinacao == "Segunda Parcela") %>%
+    group_by(cod) %>%
+    summarise(n = n()) %>%
+    filter(n > 0)
+
+## Encontre as escolas que receberam a primeira parcela, mas não a segunda
+escolas_somente_primeira_parcela <- anti_join(escolas_primeira_parcela, escolas_segunda_parcela, by = "cod")
+
+kable(escolas_somente_primeira_parcela, align='l')%>%
+    kable_styling(full_width = F, position = "left")%>%
+    footnote(general = "Consulta Escola/FNDE",
+    general_title = "Fonte:")
+```
