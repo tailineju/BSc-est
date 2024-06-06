@@ -15,7 +15,7 @@ pacman::p_load(tidyverse, knitr, readxl, openxlsx, kableExtra)
 #setwd("/Users/tailine.nonato/Documents/gradest/PDDE/entrega 4")
 ```
 
-Comparando as informações disponíveis no Consulta Escola com as divulgadas na Apresentação do PDDE 2024 (FNDE), existem algumas inconsistências. 
+# Análise dos Repasses do PDDE Básico 2023 no Brasil
 
 ```{r}
 #| message: false
@@ -48,6 +48,8 @@ dados$Rede <- dados$Rede %>%
   str_replace_all("ADMINISTRACAO PUBLICA MUNICIPAL", "Municipal")
 
 ```
+
+## Tabela 1: Repasses por Rede e Parcela de Recursos do PDDE Básico 2023
 
 ```{r}
 #| message: false
@@ -83,8 +85,16 @@ table_dest_network2 <- table_dest_network2 %>%
 
 kable(table_dest_network2, align='l')%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Consulta Escola/FNDE",
+  footnote(general = "Consulta Escola/FNDE (ref: Brasil, 2023)",
   general_title = "Fonte:")
+```
+
+## Tabela 2: Replicação - Apresentação do PDDE 2024
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
 
 #input: tabela da apresentação do PDDE 2024
 table_pdde <- tribble(
@@ -103,8 +113,19 @@ table_pdde2 <- table_pdde2 %>%
 
 kable(table_pdde2, align='l')%>%
     kable_styling(full_width = F, position = "left")%>%
-    footnote(general = "Apresentação PDDE 2024",
+    footnote(general = "Apresentação PDDE 2024 (ref: Brasil, 2023)",
     general_title = "Fonte:")
+```
+
+Comparando as informações disponíveis no Consulta Escola com as divulgadas na Apresentação do PDDE 2024 (FNDE), existem algumas inconsistências:
+
+## Tabela 3: Diferença entre o valor total apresentado pelo FNDE e o total calculado a partir dos dados do Consulta Escola
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
 
 #diferenças entre os totais gerais (pdde 2024 - consulta escola)
 # Extract the last value from each table
@@ -120,7 +141,7 @@ result <- paste0("R$ ", result)
 
 kable(result, align='l', col.names= "Diferença de valores totais")%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Apresentação PDDE 2024 - Consulta Escola",
+  footnote(general = "Apresentação PDDE 2024, Consulta Escola (ref: Brasil, 2023)",
   general_title = "Fonte:")
 ```
 
@@ -132,6 +153,8 @@ kable(result, align='l', col.names= "Diferença de valores totais")%>%
 # exporting to an excel file
 write.xlsx(table_dest_network, "repasses_totais_rede_parcelas.xlsx", row.names = FALSE)
 ```
+
+# Análise dos Consórcios de Escolas do Brasil em 2023 
 
 ```{r}
 #| message: false
