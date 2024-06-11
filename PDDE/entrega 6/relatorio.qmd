@@ -12,7 +12,7 @@ format: pdf
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, knitr, readxl, openxlsx, kableExtra)
 #setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 4")
-#setwd("/Users/tailine.nonato/Documents/gradest/PDDE/entrega 4")
+setwd("/Users/tailine.nonato/Documents/gradest/PDDE/entrega 6")
 ```
 
 # Análise dos Repasses do PDDE Básico 2023 no Brasil
@@ -22,17 +22,14 @@ pacman::p_load(tidyverse, knitr, readxl, openxlsx, kableExtra)
 #| warning: false
 #| echo: false
 
-dados <- read_excel("situacao-atendimento-entidade.xlsx")
+df <- read_excel("situacao-atendimento-entidade.xlsx")
 
 #unique(dados$Destinacao)
 #unique(dados$Rede)
 
 #filter out "PDDE Basico - 2 Parcela 2022" and "PDDE Basico - 1 Parcela 2022"
-dados <- dados %>%
+dados <- df %>%
   filter(Destinacao != "PDDE Basico - 2 Parcela 2022" & Destinacao != "PDDE Basico - 1 Parcela 2022")
-
-# "PDDE Basico - 1 parcela" = "PDDE Basico - P1"  
-# "PDDE Basico - 2 parcela" = "PDDE Basico - P2"
 
 dados$Destinacao <- dados$Destinacao %>%
   str_replace_all("PDDE Basico - 1 parcela", "Primeira Parcela") %>%
@@ -41,7 +38,6 @@ dados$Destinacao <- dados$Destinacao %>%
   str_replace_all("PDDE Basico - P1", "Primeira Parcela") %>%
   str_replace_all("PDDE Basico - P2", "Segunda Parcela")
 
-
 #replace 'ADMINISTRACAO PUBLICA ESTADUAL' with 'Estadual' and 'ADMINISTRACAO PUBLICA MUNICIPAL' with 'Municipal'
 dados$Rede <- dados$Rede %>%
   str_replace_all("ADMINISTRACAO PUBLICA ESTADUAL", "Estadual") %>%
@@ -49,7 +45,7 @@ dados$Rede <- dados$Rede %>%
 
 ```
 
-## Tabela 1: Repasses por Rede e Parcela de Recursos do PDDE Básico 2023
+## Tabela 1: Repasses por Rede e Parcela (Brasil, 2023)
 
 ```{r}
 #| message: false
@@ -89,7 +85,22 @@ kable(table_dest_network2, align='l')%>%
   general_title = "Fonte:")
 ```
 
-## Tabela 2: Replicação - Apresentação do PDDE 2024
+## Figura 1: Boxplot do Valor Total recebido por Rede (Brasil, 2023)
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+dados_esc %>%
+  ggplot(aes(x = Rede, y = ValorTotal)) +
+  geom_boxplot() +
+  labs(x = "Rede",
+       y = "Valor Total") +
+  theme_minimal()
+```
+
+## Tabela 2: Replicação - Apresentação do PDDE 2024 (Brasil, 2023)
 ```{r}
 #| message: false
 #| warning: false
@@ -119,7 +130,9 @@ kable(table_pdde2, align='l')%>%
 
 Comparando as informações disponíveis no Consulta Escola com as divulgadas na Apresentação do PDDE 2024 (FNDE), existem algumas inconsistências:
 
-## Tabela 3: Diferença entre o valor total apresentado pelo FNDE e o total calculado a partir dos dados do Consulta Escola
+\vspace{5cm}
+
+## Tabela 3: Diferença entre o valor total apresentado pelo FNDE e o total calculado a partir dos dados do Consulta Escola (Brasil, 2023)
 
 ```{r}
 #| message: false
@@ -141,7 +154,7 @@ result <- paste0("R$ ", result)
 
 kable(result, align='l', col.names= "Diferença de valores totais")%>%
   kable_styling(full_width = F, position = "left")%>%
-  footnote(general = "Apresentação PDDE 2024, Consulta Escola (ref: Brasil, 2023)",
+  footnote(general = "Apresentação PDDE 2024, Consulta Escola",
   general_title = "Fonte:")
 ```
 
@@ -156,65 +169,122 @@ write.xlsx(table_dest_network, "repasses_totais_rede_parcelas.xlsx", row.names =
 
 # Análise dos Consórcios de Escolas do Brasil em 2023 
 
+## Tabela 4: Quantidade de Consórcios de Escolas (Brasil, 2023)
+
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 
-cnpjs <- dados %>%
+cnpjs <- df %>%
   filter(CNPJ_SEDUC != CNPJ_Ex) %>%
   group_by(CNPJ_Ex) %>%
-  summarise(n = n()) 
+  summarise(Num_Registros = n()) 
   
-consorcios <- cnpjs %>% filter(n > 2) 
-
-kable(as.data.frame(t(summary(consorcios$n)))[,2:3], align='l') %>%
-  kable_styling(full_width = F, position = "left") %>%
-  footnote(general = "Consulta Escola/FNDE",
-  general_title = "Fonte:")
+consorcios <- cnpjs %>% filter(Num_Registros > 2) 
 
 # identificar escolas que estão em consórcios
-escolas_consorcios <- dados %>%
+escolas_consorcios <- df %>%
   filter(CNPJ_Ex %in% consorcios$CNPJ_Ex)
 
 #adicionar numero de vezes que o cnpj aparece
 escolas_consorcios <- escolas_consorcios %>%
   left_join(consorcios, by = "CNPJ_Ex")
 
-
 # Transformando os códigos para facilitar a visualização
 unique_codes <- unique(escolas_consorcios$CNPJ_Ex)
 new_codes <- seq_along(unique_codes)
 code_mapping <- setNames(new_codes, unique_codes)
-escolas_consorcios$cod<- code_mapping[as.character(escolas_consorcios$CNPJ_Ex)]
+escolas_consorcios$Cod_Consorcio<- code_mapping[as.character(escolas_consorcios$CNPJ_Ex)]
 
-# Quantidade de consórcios
-kable(format(nrow(consorcios), big.mark = "."), align='l')%>%
+# i)Quantidade de consórcios
+kable(format(nrow(consorcios), big.mark = "."), align='l', col.names="Quantidade de Consórcios")%>%
   kable_styling(full_width = F, position = "left")%>%
   footnote(general = "Consulta Escola/FNDE",
   general_title = "Fonte:")
 
-# Quantidade de consórcios em que há escolas que receberam somente a primeira parcela
+```
+
+## Tabela 5: Medidas Resumo da Quantidade de Registros por Consórcio (Brasil, 2023)
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+resumo <- as.data.frame(t(summary(escolas_consorcios$Num_Registros)))
+resumo <- resumo[,-1]
+colnames(resumo) <- c("Medida", "Valor")
+resumo$Valor <- format(round(as.numeric(resumo$Valor),0), big.mark = ".", decimal.mark = ",", scientific = FALSE)
+# i.i) Medidas Resumo
+kable(resumo, align='l') %>%
+  kable_styling(full_width = F, position = "left") %>%
+  footnote(general = "Consulta Escola/FNDE (ref: Brasil, 2023)",
+  general_title = "Fonte:")
+
+```
+
+## Tabela 6: Consórcios em que há escolas que eceberam somente a primeira parcela (Brasil, 2023)
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# ii) Quantidade de consórcios em que há escolas que receberam somente a primeira parcela
 
 ## Crie um subconjunto de dados para as escolas que receberam a primeira parcela
 escolas_primeira_parcela <- escolas_consorcios %>%
-    filter(Destinacao == "Primeira Parcela") %>%
-    group_by(cod) %>%
-    summarise(n = n()) %>%
-    filter(n > 0)
+    filter(Destinacao == "PDDE Basico - 1 parcela" | Destinacao == "PDDE Basico - P1") %>%
+    group_by(Cod_Consorcio) %>%
+    summarise(Num_Registros = n())
 
 ## Crie um subconjunto de dados para as escolas que receberam a segunda parcela
 escolas_segunda_parcela <- escolas_consorcios %>%
-    filter(Destinacao == "Segunda Parcela") %>%
-    group_by(cod) %>%
-    summarise(n = n()) %>%
-    filter(n > 0)
+    filter(Destinacao == "PDDE Basico - 2 parcela" | Destinacao == "PDDE Basico - 2 Parcela" | Destinacao == "PDDE Basico - P2")%>%
+    group_by(Cod_Consorcio) %>%
+    summarise(Num_Registros = n())
 
 ## Encontre as escolas que receberam a primeira parcela, mas não a segunda
-escolas_somente_primeira_parcela <- anti_join(escolas_primeira_parcela, escolas_segunda_parcela, by = "cod")
+escolas_somente_primeira_parcela <- anti_join(escolas_primeira_parcela, escolas_segunda_parcela, by = "Cod_Consorcio")
 
 kable(escolas_somente_primeira_parcela, align='l')%>%
     kable_styling(full_width = F, position = "left")%>%
     footnote(general = "Consulta Escola/FNDE",
     general_title = "Fonte:")
+```
+
+## Tabela 7: Quantidade de consórcios em que há escolas que receberam a primeira parcela e a segunda parcela (Brasil, 2023)
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# iii) Quantidade de consórcios em que há escolas que receberam a primeira parcela e a segunda parcela
+
+## Encontre as escolas que receberam a primeira parcela e a segunda
+escolas_primeira_segunda_parcela <- inner_join(escolas_primeira_parcela, escolas_segunda_parcela, by = "Cod_Consorcio")
+
+kable(nrow(escolas_primeira_segunda_parcela), align='l', col.names="Quantidade de Consórcios")%>%
+    kable_styling(full_width = F, position = "left")%>%
+    footnote(general = "Consulta Escola/FNDE (ref: Brasil, 2023)",
+    general_title = "Fonte:")
+```
+
+## Figura 2: Boxplot do Valor Total recebido por Consórcio
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# melt valor total e valor custeio em um única variavel
+
+
+tabela_consorcios%>%
+  ggplot(aes(y = ValorTotal)) +
+  geom_boxplot() +
+  labs(x = "Consórcio",
+       y = "Valor Total") +
+  theme_minimal()
 ```
