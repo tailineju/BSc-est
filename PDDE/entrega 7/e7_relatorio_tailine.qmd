@@ -8,62 +8,342 @@ format: pdf
 ```{r}
 #| echo: false
 #| message: false
+#| warning: false
+
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse, knitr, openxlsx)
+pacman::p_load(tidyverse, knitr, openxlsx, kableExtra)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
-#setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
 ```
 
-# Extração
-
-## Censo Escolar 2023
 ```{r}	
-censo23 <- read.csv("microdados_ed_basica_2023.csv", encoding = "latin1")
-kable(head(censo23))
-```
+#| echo: false
+#| warning: false
+#| message: false
 
-## PDDE 2024
-Descrição da manipulação:
+#censo23 <- read.csv("microdados_ed_basica_2023.csv", sep = ";", encoding = "latin1")
 
-- Importação dos dados no Consulta Escola
+pdde_pagos <- read_csv2("pdde_pagos.csv", skip = 5)
+pdde_naopagos <- read_csv2("pdde_naopagos.csv", skip = 5)
 
-- Conversão de xls para csv utilizando CloudConvert
-
-- Importação dos dados no R
-
-```{r}
-pdde24 <- read_csv2("situacao-atendimento-entidade.csv")
-```
-
-
-# Transformação
-
-Censo Escolar 2022 na região Centro-Oeste:
-```{r}
-#censo22_co <- censo22 %>%
-#    filter(NO_REGIAO == "Centro-Oeste")
-
-#write.csv(censo22_co, "dados/censo22_co.csv", row.names = FALSE)
-censo22_co <- read.csv("dados/censo22_co.csv")
-```
-
-PDDE 2023 com pagos e não-pagos:
-```{r}	
 pdde_pagos$fonte <- "pdde_pagos"
 pdde_naopagos$fonte <- "pdde_naopagos"
 pdde <- rbind(pdde_pagos, pdde_naopagos)
+
+#censo23_co <- censo23 %>%
+#    filter(NO_REGIAO == "Centro-Oeste")
+
+#write.csv(censo23_co, "censo23_co.csv", row.names = FALSE)
+censo23_co <- read.csv("censo23_co.csv")
+
+censo23_co$CO_ENTIDADE <- as.character(censo23_co$CO_ENTIDADE)
+pdde$`Código Escola` <- as.character(pdde$`Código Escola`)
+
+dados <- censo23_co %>% left_join(pdde, by = c("CO_ENTIDADE" = "Código Escola"))
+
+write.csv(dados, "base_completa_2024.csv")
+
+dados <- read.csv("base_completa_2024.csv")
+dados <- dados %>% 
+        select(NO_UF, NO_MUNICIPIO,CO_ENTIDADE, TP_LOCALIZACAO, TP_DEPENDENCIA, TP_LOCALIZACAO_DIFERENCIADA, TP_SITUACAO_FUNCIONAMENTO, fonte) %>%
+        filter(TP_DEPENDENCIA %in% c(2:3)) %>% 
+        distinct(CO_ENTIDADE, .keep_all = TRUE)
+
+escolas_participantes <- dados %>% filter(fonte %in% c("pdde_pagos","pdde_naopagos"))
+#write.xlsx(escolas_participantes, "escolas_participantes.xlsx", rowNames = FALSE)
 ```
 
-Cruzamento de informações Censo e PDDE utilizando o código da escola como chave:
-```{r}
-censo22_co$CO_ENTIDADE <- as.character(censo22_co$CO_ENTIDADE)
-pdde$Código.Escola <- as.character(pdde$Código.Escola)
+## Tabela 1 - Número de escolas públicas segundo a dependência administrativa e a UF  (Centro-Oeste, 2023)
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab1 <- dados %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(`2`, `3`), as.numeric) %>% 
+        select(NO_UF, `2`, `3`) %>% 
+        rename(`Estadual` = `2`, `Municipal` = `3`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                Estadual = sum(.$Estadual, na.rm = TRUE), 
+                Municipal = sum(.$Municipal, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
 
-dados <- censo22_co %>% left_join(pdde, by = c("CO_ENTIDADE" = "Código.Escola"))
+tab1 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 2 - Número de escolas públicas segundo a situação de funcionamento e a UF  (Centro-Oeste, 2023)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab2 <- dados %>% 
+        group_by(NO_UF, TP_SITUACAO_FUNCIONAMENTO) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_SITUACAO_FUNCIONAMENTO, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Em atividade", "Paralisada", "Extinta (ano do Censo)", "Extinta em Anos Anteriores")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab2 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
 ```
 
-# Loading/Exportação
+## Tabela 3.1 - Número de escolas públicas segundo a localização e a UF  (Centro-Oeste, 2023)
+
+\begingroup
+\setlength{\LTleft}{0pt minus 700pt}
+\setlength{\LTright}{0pt minus 700pt}
+\addtolength{\tabcolsep}{-3pt}
 
 ```{r}
-write.csv(dados, "dados/base_completa.csv")
+#| warning: false
+#| message: false
+#| echo: false
+
+dados <- dados %>% 
+  mutate(TP_LOCALIZACAO_DIFERENCIADA = ifelse(is.na(TP_LOCALIZACAO_DIFERENCIADA), "4", TP_LOCALIZACAO_DIFERENCIADA))
+
+tab3 <- dados %>% 
+        group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>%
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[012348]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[012348]$")), 
+                  ~c("ND","Assentamento", 
+                  "Terra Indígena", "Quilombos",
+                  "NA", "Tradicionais")[match(., c("0","1", "2", "3", "4", "8"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab3 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+\endgroup
+
+Obs.: Após análise conjunta, observou-se que que as 621 escolas com NA na Tabela 3.1 são as escolas que constam como Paralisadas ou Extintas na Tabela 2.
+
+## Tabela 3.2 - Número de escolas públicas em localização diferenciada segundo a localização e a UF (Centro-Oeste, 2023)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab31 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA %in% c(1:3,8)) %>% 
+        group_by(NO_UF, TP_LOCALIZACAO_DIFERENCIADA) %>%
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_LOCALIZACAO_DIFERENCIADA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1238]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1238]$")), 
+                  ~c("Assentamento", "Terra Indígena", "Quilombos", "Tradicionais")[match(., c("1", "2", "3", "8"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab31 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 4 - Número de escolas participantes do PDDE: Escolas PAGAS  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+
+tab4 <- dados %>% 
+        filter(fonte == "pdde_pagos") %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab4 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 5 - Número de escolas participantes do PDDE - Escolas NÃO PAGAS  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+
+tab5 <- dados %>% 
+        filter(fonte == "pdde_naopagos") %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+
+tab5 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 6 - Número de escolas participantes do PDDE 2024 (Pagas e Não Pagas) (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab6 <- dados %>% 
+        filter(fonte %in% c("pdde_pagos","pdde_naopagos")) %>%
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+
+tab6 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 7 - Número de escolas não participantes do PDDE  (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab7 <- dados %>% 
+        filter(!fonte %in% c("pdde_pagos","pdde_naopagos")) %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+
+tab7 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 8 - Número de escolas não participantes do PDDE que estão em atividade  (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab8 <- dados %>% 
+        filter(!fonte %in% c("pdde_pagos","pdde_naopagos"), TP_SITUACAO_FUNCIONAMENTO == 1) %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+
+tab8 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 9 - Número de escolas não participantes do PDDE que estão em atividade e em estão em localização diferenciada  (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab9 <- dados %>% 
+        filter(!fonte %in% c("pdde_pagos","pdde_naopagos"), 
+                TP_SITUACAO_FUNCIONAMENTO == 1,
+                TP_LOCALIZACAO_DIFERENCIADA %in% c(1:3)) %>% 
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(matches("^[1234]$")), as.numeric) %>% 
+        rename_at(vars(matches("^[1234]$")), 
+                  ~c("Federal", "Estadual", "Municipal", "Privada")[match(., c("1", "2", "3", "4"))]) %>%
+        mutate(Total = rowSums(select(., -NO_UF), na.rm = TRUE)) %>%
+        add_row(NO_UF = "Total", !!!colSums(select(., -NO_UF), na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab9 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Consulta Escola/FNDE; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+## Exportando as tabelas para um arquivo Excel
+wb <- createWorkbook()
+addWorksheet(wb, "tab1")
+writeData(wb, "tab1", tab1)
+addWorksheet(wb, "tab2")
+writeData(wb, "tab2", tab2)
+addWorksheet(wb, "tab3")
+writeData(wb, "tab3", tab3)
+addWorksheet(wb, "tab31")
+writeData(wb, "tab31", tab31)
+addWorksheet(wb, "tab4")
+writeData(wb, "tab4", tab4)
+addWorksheet(wb, "tab5")
+writeData(wb, "tab5", tab5)
+addWorksheet(wb, "tab6")
+writeData(wb, "tab6", tab6)
+addWorksheet(wb, "tab7")
+writeData(wb, "tab7", tab7)
+addWorksheet(wb, "tab8")
+writeData(wb, "tab8", tab8)
+addWorksheet(wb, "tab9")
+writeData(wb, "tab9", tab9)
+saveWorkbook(wb, "relatorio2.xlsx", overwrite = TRUE)
 ```
