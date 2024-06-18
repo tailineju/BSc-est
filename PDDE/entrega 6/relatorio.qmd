@@ -85,21 +85,6 @@ kable(table_dest_network2, align='l')%>%
   general_title = "Fonte:")
 ```
 
-## Figura 1: Boxplot do Valor Total recebido por Rede (Brasil, 2023)
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
-dados_esc %>%
-  ggplot(aes(x = Rede, y = ValorTotal)) +
-  geom_boxplot() +
-  labs(x = "Rede",
-       y = "Valor Total") +
-  theme_minimal()
-```
-
 ## Tabela 2: Replicação - Apresentação do PDDE 2024 (Brasil, 2023)
 ```{r}
 #| message: false
@@ -178,18 +163,21 @@ write.xlsx(table_dest_network, "repasses_totais_rede_parcelas.xlsx", row.names =
 
 cnpjs <- df %>%
   filter(CNPJ_SEDUC != CNPJ_Ex) %>%
-  group_by(CNPJ_Ex) %>%
-  summarise(Num_Registros = n()) 
+  group_by(CNPJ_Ex, Cod_Escola) %>%
+  summarise(Num_Registros_Esc = n()) 
   
-consorcios <- cnpjs %>% filter(Num_Registros > 2) 
+consorcios <- unique(cnpjs) %>%
+  group_by(CNPJ_Ex) %>%
+  summarise(Num_Registros_Con = n())
+
+consorcios <- consorcios %>% filter(Num_Registros_Con > 1)
+
+summary(consorcios$Num_Registros_Con)
 
 # identificar escolas que estão em consórcios
 escolas_consorcios <- df %>%
   filter(CNPJ_Ex %in% consorcios$CNPJ_Ex)
-
-#adicionar numero de vezes que o cnpj aparece
-escolas_consorcios <- escolas_consorcios %>%
-  left_join(consorcios, by = "CNPJ_Ex")
+  group_by(Cod_Escola)
 
 # Transformando os códigos para facilitar a visualização
 unique_codes <- unique(escolas_consorcios$CNPJ_Ex)
@@ -222,6 +210,9 @@ kable(resumo, align='l') %>%
   general_title = "Fonte:")
 
 ```
+
+## Tabela 6: 
+
 
 ## Tabela 6: Consórcios em que há escolas que eceberam somente a primeira parcela (Brasil, 2023)
 
@@ -269,22 +260,4 @@ kable(nrow(escolas_primeira_segunda_parcela), align='l', col.names="Quantidade d
     kable_styling(full_width = F, position = "left")%>%
     footnote(general = "Consulta Escola/FNDE (ref: Brasil, 2023)",
     general_title = "Fonte:")
-```
-
-## Figura 2: Boxplot do Valor Total recebido por Consórcio
-
-```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
-# melt valor total e valor custeio em um única variavel
-
-
-tabela_consorcios%>%
-  ggplot(aes(y = ValorTotal)) +
-  geom_boxplot() +
-  labs(x = "Consórcio",
-       y = "Valor Total") +
-  theme_minimal()
 ```
