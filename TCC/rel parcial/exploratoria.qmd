@@ -1,0 +1,8 @@
+---
+title: "Análise Exploratória SAEB 2019"
+author: "Tailine J. S. Nonato"
+date: "2024-06-24"
+format: pdf
+---
+
+

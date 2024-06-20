@@ -1,0 +1,528 @@
+---
+title: "Centro Colaborador de Apoio ao Monitoramento e à Gestão de Programas Educacionais do Centro Oeste"
+subtitle: "Monitoramento e Apoio às UEx do PDDE Básico e  PDDE Ações Integradas"
+author: "Tailine J. S. Nonato"
+format: pdf
+---
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra)
+setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
+
+dados <- vroom("base_completa_2024.csv")
+dados <- dados %>% filter(TP_DEPENDENCIA %in% c(2:3))
+```
+
+## Tabela 1 - Checagem no número de alunos entre o Censo Escolar e o PDDE (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+#first of all - check if Quantidade_ALunos and QT_MAT_BAS are the same for schools
+
+dados$`Quantidade de Alunos` <- ifelse(dados$QT_MAT_BAS == dados$Quantidade_Alunos, "Igual", "Diferente")
+
+        #filter schools that are part of PDDE
+tab1 <- dados %>% 
+        filter(Fonte %in% c("pdde_pagos","pdde_naopagos")) %>%
+        group_by(`Quantidade de Alunos`) %>% 
+        summarise(Freq.Absoluta = n(), .groups = 'drop') %>% 
+        mutate(Freq.Relativa = scales::percent(Freq.Absoluta/sum(Freq.Absoluta))) %>% 
+        select(`Quantidade de Alunos`, Freq.Absoluta, Freq.Relativa) %>% 
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab1 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+# Áreas de Assentamento
+
+## Tabela 2 - Número de escolas públicas em Áreas de Assentamento segundo a dependência administrativa e a UF  (Centro-Oeste, 2024)
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab2 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(`2`, `3`), as.numeric) %>% 
+        select(NO_UF, `2`, `3`) %>% 
+        rename(`Estadual` = `2`, `Municipal` = `3`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                Estadual = sum(.$Estadual, na.rm = TRUE), 
+                Municipal = sum(.$Municipal, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab2 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 3 - Número de escolas públicas em Áreas de Assentamento segundo a existência de UEx e a UF  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+
+dados$UEx <- ifelse(dados$CNPJ_Executora == dados$`CNPJ_SEDUC`, "Sem UEx", "Com UEx")
+dados$UEx <- factor(dados$UEx, levels = c("Sem UEx", "Com UEx"))
+tab3 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
+        group_by(NO_UF, UEx) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(UEx, n, fill = 0) %>%
+        mutate_at(vars(`Com UEx`, `Sem UEx`), as.numeric) %>%
+        select(NO_UF, `Com UEx`, `Sem UEx`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Com UEx` = sum(.$`Com UEx`, na.rm = TRUE), 
+                `Sem UEx` = sum(.$`Sem UEx`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab3 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 4 - Número de escolas públicas em Áreas de Assentamento segundo o número de alunos e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+dados$alunos <- ifelse(as.numeric(dados$Quantidade_Alunos) < 50, "Menos de 50", "50 ou mais")
+dados$alunos <- factor(dados$alunos, levels = c( "Menos de 50","50 ou mais"))
+
+tab4 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
+        group_by(NO_UF, alunos) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(alunos, n, fill = 0) %>%
+        mutate_at(vars(`Menos de 50`,`50 ou mais`), as.numeric) %>%
+        select(NO_UF, `Menos de 50`,`50 ou mais`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `50 ou mais` = sum(.$`50 ou mais`, na.rm = TRUE), 
+                `Menos de 50` = sum(.$`Menos de 50`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab4 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 5 - Número de escolas públicas em Áreas de Assentamento segundo o pagamento de parcelas do PDDE e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab5 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
+        group_by(NO_UF, Fonte) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(Fonte, n, fill = 0) %>%
+        mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
+        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        rename(`Não Pagos 2024` = `pdde_naopagos`,
+               `Pagos 2024` = `pdde_pagos`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Não Pagos 2024` = sum(.$`Não Pagos 2024`, na.rm = TRUE), 
+                `Pagos 2024` = sum(.$`Pagos 2024`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE)) %>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+tab5 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+# Terras Indígenas
+
+## Tabela 6 - Número de escolas públicas em Terras Indígenas segundo a dependência administrativa e a UF  (Centro-Oeste, 2024)
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab6 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 2) %>%
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(`2`, `3`), as.numeric) %>% 
+        select(NO_UF, `2`, `3`) %>% 
+        rename(`Estadual` = `2`, `Municipal` = `3`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                Estadual = sum(.$Estadual, na.rm = TRUE), 
+                Municipal = sum(.$Municipal, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab6 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 7 - Número de escolas públicas em Terras Indígenas segundo a existência de UEx e a UF  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab7 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 2) %>%
+        group_by(NO_UF, UEx) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(UEx, n, fill = 0) %>%
+        mutate_at(vars(`Com UEx`, `Sem UEx`), as.numeric) %>%
+        select(NO_UF, `Com UEx`, `Sem UEx`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Com UEx` = sum(.$`Com UEx`, na.rm = TRUE), 
+                `Sem UEx` = sum(.$`Sem UEx`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab7 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 8 - Número de escolas públicas em Terras Indígenas segundo o número de alunos e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab8 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 2) %>%
+        group_by(NO_UF, alunos) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(alunos, n, fill = 0) %>%
+        mutate_at(vars(`Menos de 50`,`50 ou mais`), as.numeric) %>%
+        select(NO_UF, `Menos de 50`,`50 ou mais`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `50 ou mais` = sum(.$`50 ou mais`, na.rm = TRUE), 
+                `Menos de 50` = sum(.$`Menos de 50`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab8 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 9 - Número de escolas públicas em Terras Indígenas segundo o pagamento de parcelas do PDDE e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab9 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 2) %>%
+        group_by(NO_UF, Fonte) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(Fonte, n, fill = 0) %>%
+        mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
+        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        rename(`Não Pagos 2024` = `pdde_naopagos`,
+               `Pagos 2024` = `pdde_pagos`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Não Pagos 2024` = sum(.$`Não Pagos 2024`, na.rm = TRUE), 
+                `Pagos 2024` = sum(.$`Pagos 2024`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE)) %>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+tab9 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+# Remanescentes de Quilombos
+
+## Tabela 10 - Número de escolas públicas em Áreas Remanescentes de Quilombos segundo a dependência administrativa e a UF  (Centro-Oeste, 2024)
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab10 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(`2`, `3`), as.numeric) %>% 
+        select(NO_UF, `2`, `3`) %>% 
+        rename(`Estadual` = `2`, `Municipal` = `3`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                Estadual = sum(.$Estadual, na.rm = TRUE), 
+                Municipal = sum(.$Municipal, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab10 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 11 - Número de escolas públicas em Áreas Remanescentes de Quilombos segundo a existência de UEx e a UF  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+
+tab11 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
+        group_by(NO_UF, UEx) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(UEx, n, fill = 0) %>%
+        mutate_at(vars(`Com UEx`, `Sem UEx`), as.numeric) %>%
+        select(NO_UF, `Com UEx`, `Sem UEx`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Com UEx` = sum(.$`Com UEx`, na.rm = TRUE), 
+                `Sem UEx` = sum(.$`Sem UEx`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab11 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 12 - Número de escolas públicas em Áreas Remanescentes de Quilombos segundo o número de alunos e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab12 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
+        group_by(NO_UF, alunos) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(alunos, n, fill = 0) %>%
+        mutate_at(vars(`Menos de 50`,`50 ou mais`), as.numeric) %>%
+        select(NO_UF, `Menos de 50`,`50 ou mais`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `50 ou mais` = sum(.$`50 ou mais`, na.rm = TRUE), 
+                `Menos de 50` = sum(.$`Menos de 50`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab12 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 13 - Número de escolas públicas em Áreas Remanescentes de Quilombos segundo o pagamento de parcelas do PDDE e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab13 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
+        group_by(NO_UF, Fonte) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(Fonte, n, fill = 0) %>%
+        mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
+        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        rename(`Não Pagos 2024` = `pdde_naopagos`,
+               `Pagos 2024` = `pdde_pagos`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Não Pagos 2024` = sum(.$`Não Pagos 2024`, na.rm = TRUE), 
+                `Pagos 2024` = sum(.$`Pagos 2024`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE)) %>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+tab13 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+# Comunidades e povos tradicionais
+
+
+## Tabela 14 - Número de escolas públicas em Áreas de Comunidades Tradicionais segundo a dependência administrativa e a UF  (Centro-Oeste, 2024)
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab14 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
+        group_by(NO_UF, TP_DEPENDENCIA) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
+        mutate_at(vars(`3`), as.numeric) %>% 
+        select(NO_UF, `3`) %>% 
+        rename(`Municipal` = `3`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total",
+                Municipal = sum(.$Municipal, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab14 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 15 - Número de escolas públicas em Áreas de Comunidades Tradicionais segundo a existência de UEx e a UF  (Centro-Oeste, 2024)
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+tab15 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
+        group_by(NO_UF, UEx) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(UEx, n, fill = 0) %>%
+        mutate_at(vars(`Com UEx`), as.numeric) %>%
+        select(NO_UF, `Com UEx`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Com UEx` = sum(.$`Com UEx`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab15 %>%
+  kable(align = "l") %>%
+  kable_styling(full_width = F, position = "left")%>%
+  footnote(general = "Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 16 - Número de escolas públicas em Áreas de Comunidades Tradicionais segundo o número de alunos e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab16 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
+        group_by(NO_UF, alunos) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(alunos, n, fill = 0) %>%
+        mutate_at(vars(`Menos de 50`,`50 ou mais`), as.numeric) %>%
+        select(NO_UF, `Menos de 50`,`50 ou mais`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `50 ou mais` = sum(.$`50 ou mais`, na.rm = TRUE), 
+                `Menos de 50` = sum(.$`Menos de 50`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE))%>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
+tab16 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```	
+
+## Tabela 17 - Número de escolas públicas em Áreas de Comunidades Tradicionais segundo o pagamento de parcelas do PDDE e a UF (Centro-Oeste, 2024)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+tab17 <- dados %>% 
+        filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
+        group_by(NO_UF, Fonte) %>%
+        summarise(n = n(), .groups = 'drop') %>%
+        spread(Fonte, n, fill = 0) %>%
+        mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
+        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        rename(`Não Pagos 2024` = `pdde_naopagos`,
+               `Pagos 2024` = `pdde_pagos`) %>%
+        mutate(Total = rowSums(select(., -NO_UF))) %>%
+        add_row(NO_UF = "Total", 
+                `Não Pagos 2024` = sum(.$`Não Pagos 2024`, na.rm = TRUE), 
+                `Pagos 2024` = sum(.$`Pagos 2024`, na.rm = TRUE), 
+                Total = sum(.$Total, na.rm = TRUE)) %>%
+        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+tab17 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+```{r}	
+#| echo: false
+#| warning: false
+#| message: false
+
+# write >one< excel file where each sheet is one of the locations (H1) and in each sheet tables (H2) will be placed bellow eachother. e.g. H1 Terras Indígenas - Sheets; H2 Tabela 6, Tabela 7, Tabela 8, Tabela 9 - Rows
+
+wb <- createWorkbook()
+
+
+addWorksheet(wb, "assentamento")
+writeData(wb, "assentamento", tab2, startRow = 1)
+writeData(wb, "assentamento", tab3, startRow = nrow(tab2) + 3)
+writeData(wb, "assentamento", tab4, startRow = nrow(tab2) + nrow(tab3) + 5)
+writeData(wb, "assentamento", tab5, startRow = nrow(tab2) + nrow(tab3) + nrow(tab4) + 7)
+
+addWorksheet(wb, "indigenas")
+writeData(wb, "indigenas", tab6, startRow = 1)
+writeData(wb, "indigenas", tab7, startRow = nrow(tab6) + 3)
+writeData(wb, "indigenas", tab8, startRow = nrow(tab6) + nrow(tab7) + 5)
+writeData(wb, "indigenas", tab9, startRow = nrow(tab6) + nrow(tab7) + nrow(tab8) + 7)
+
+
+addWorksheet(wb, "quilombos")
+writeData(wb, "quilombos", tab10, startRow = 1)
+writeData(wb, "quilombos", tab11, startRow = nrow(tab10) + 3)
+writeData(wb, "quilombos", tab12, startRow = nrow(tab10) + nrow(tab11) + 5)
+writeData(wb, "quilombos", tab13, startRow = nrow(tab10) + nrow(tab11) + nrow(tab12) + 7)
+
+
+addWorksheet(wb, "tradicionais")
+writeData(wb, "tradicionais", tab14, startRow = 1)
+writeData(wb, "tradicionais", tab15, startRow = nrow(tab14) + 3)
+writeData(wb, "tradicionais", tab16, startRow = nrow(tab14) + nrow(tab15) + 5)
+writeData(wb, "tradicionais", tab17, startRow = nrow(tab14) + nrow(tab15) + nrow(tab16) + 7)
+
+
+# Save the workbook
+saveWorkbook(wb, "e8_planilha_tailine.xlsx", overwrite = TRUE)
+
+```
