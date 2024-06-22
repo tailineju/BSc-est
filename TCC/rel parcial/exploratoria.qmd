@@ -10,16 +10,8 @@ format: pdf
 ## Carregamento de pacotes e dados
 ```{r}
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lme4)
+pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lme4, gridExtra)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
-
-df_aluno <- read.csv("TS_ALUNO_9EF_2019_co.csv")
-df_escola <- read.csv("TS_ESCOLA_2019_co.csv")
-
-df <- left_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
-df <- df %>% mutate(ID_ESCOLA = as.factor(ID_ESCOLA))
-var_df <- names(df)
-dim(df)
 ```
 
 ## Filtragem dos dados para região Centro-Oeste
@@ -27,8 +19,9 @@ dim(df)
 ```{r}
 #| eval: FALSE
 
-df_aluno <- read.csv("TS_ALUNO_9EF_2019.csv", sep = ";")
-df_escola <- read.csv("TS_ESCOLA_2019.csv", sep = ";")
+df_aluno <- read.csv("TS_ALUNO_9EF_2019.csv", sep = ";", encoding = "latin1")
+df_escola <- read.csv("TS_ESCOLA_2019.csv", sep = ";", encoding = "latin1")
+unique(df_escola$NIVEL_SOCIO_ECONOMICO)
 
 var_al <- names(df_aluno)
 var_es <- names(df_escola)
@@ -38,29 +31,155 @@ df_escola <- df_escola %>% filter(ID_REGIAO == 5)
 
 write.csv(df_aluno, file = "TS_ALUNO_9EF_2019_co.csv")
 write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
+
+df_aluno <- read.csv("TS_ALUNO_9EF_2019_co.csv", encoding="latin1")
+df_escola <- read.csv("TS_ESCOLA_2019_co.csv", encoding="latin1")
+
+df <- left_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
+df <- df %>% mutate(ID_ESCOLA = as.factor(ID_ESCOLA))
+
+write.csv(df,"dados_tcc.csv")
 ```
+
+## Leitura dos dados
+```{r}	
+df <- read.csv("dados_tcc.csv", encoding = "latin1")
+
+var_df <- names(df)
+dim(df)
+
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível I", 1)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível II", 2)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível III", 3)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível IV", 4)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível V", 5)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível VI", 6)
+df$NIVEL_SOCIO_ECONOMICO <- str_replace(df$NIVEL_SOCIO_ECONOMICO, "Nível VII", 7)
+```	
 
 ## Análise descritiva dos dados
 
 ### Quantidade de Escolas
 ```{r}	
-df_aluno %>%
-  pull(ID_ESCOLA) %>%
-  n_distinct
+df %>% 
+    summarise(n = n_distinct(ID_ESCOLA))
 ```
 
 ### Quantidade de Alunos por Escola
 ```{r}
-df_aluno %>%
+df %>%
     group_by(ID_ESCOLA) %>%
     summarise(n = n()) %>%
     ggplot(aes(x = n)) +
-    geom_histogram(bins = 30) +
-    labs(title = "Distribuição de Alunos por Escola",
-         x = "Número de Alunos",
-         y = "Número de Escolas") +
+    geom_histogram(binwidth = 10, color = "black") +
+    labs(title = "Distribuição de alunos por escola",
+         x = "Quantidade de alunos",
+         y = "Frequência") +
+    theme_minimal()
+```	
+
+### Nível Socioecononômico (NSe) das Escolas
+```{r}
+#unique(df$NIVEL_SOCIO_ECONOMICO)
+df %>%
+    mutate(NIVEL_SOCIO_ECONOMICO = factor(NIVEL_SOCIO_ECONOMICO, levels = c("Nível I", "Nível II", "Nível III", "Nível IV", "Nível V", "Nível VI", "Nível VII"))) %>%
+    filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
+    ggplot(aes(x = NIVEL_SOCIO_ECONOMICO)) +
+    geom_bar() +
+    labs(title = "Distribuição de escolas por NSe",
+         x = "Nível Socioeconomonico",
+         y = "Frequência") +
     theme_minimal()
 ```
 
-### Nível Socioecononômico
+### Área das Escolas
+```{r}
+unique(df$ID_AREA)
+df %>%
+    mutate(ID_AREA = ifelse(ID_AREA==1,"Capital","Interior")) %>%
+    ggplot(aes(x = ID_AREA)) +
+    geom_bar() +
+    labs(title = "Distribuição de escolas por área",
+         x = "Área",
+         y = "Frequência") +
+    theme_minimal()
+```
+
+### Administração das Escolas (Pública)
+```{r}
+unique(df$IN_PUBLICA)
+df %>%
+    mutate(IN_PUBLICA = ifelse(IN_PUBLICA==1,"Pública","Não pública")) %>%
+    mutate(IN_PUBLICA = factor(IN_PUBLICA, levels = c("Pública", "Não pública"))) %>%
+    ggplot(aes(x = IN_PUBLICA)) +
+    geom_bar() +
+    labs(title = "Distribuição de escolas por administração",
+         x = "Administração",
+         y = "Frequência") +
+    theme_minimal()
+```
+
+### Distribuição da proficiência em Língua Portuguesa e Matemática
+```{r}
+#| warning: false
+#lingua portuguesa (ggplot histogram)
+df %>%
+    ggplot(aes(x = PROFICIENCIA_LP_SAEB)) +
+    geom_histogram(binwidth = 10, color = "black") +
+    labs(title = "Distribuição de notas de LP",
+         x = "Nota",
+         y = "Frequência") +
+    theme_minimal()
+#matemática (ggplot histogram)
+df %>%
+    ggplot(aes(x = PROFICIENCIA_MT_SAEB)) +
+    geom_histogram(binwidth = 10, color = "black") +
+    labs(title = "Distribuição de notas de MT",
+         x = "Nota",
+         y = "Frequência") +
+    theme_minimal()
+
+```
+
+### Teste de normalidade
+```{r}
+set.seed(123)  # for reproducibility
+sample_LP <- sample(df$PROFICIENCIA_LP_SAEB, 5000)
+shapiro.test(sample_LP)
+
+set.seed(123)  # for reproducibility
+sample_MT <- sample(df$PROFICIENCIA_MT_SAEB, 5000)
+shapiro.test(sample_MT)
+```
+
+### Correlação entre as variáveis
+```{r}
+#cor_df <- df %>% cor()
+```
+
+# Modelagem Multinível
+
+## Modelo nulo
+```{r}
+#| warning: false
+#modelo nulo
+modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df)
+summary(modelo_nulo)
+```
+
+## Modelo com variáveis preditoras
+```{r}
+#| warning: false
+#modelo com variáveis preditoras
+modelo <- lmer(PROFICIENCIA_LP_SAEB ~ NIVEL_SOCIO_ECONOMICO + ID_AREA + IN_PUBLICA + (1|ID_ESCOLA), data = df)
+summary(modelo)
+```
+
+## Análise de resíduos
+```{r}
+#resíduos
+residuos <- residuals(modelo)
+qqnorm(residuos)
+qqline(residuos)
+```
 

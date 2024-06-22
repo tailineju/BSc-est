@@ -14,8 +14,8 @@ if (!require(pacman)) install.packages("pacman")
 pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
-dados <- vroom("base_completa_2024.csv")
-dados <- dados %>% filter(TP_DEPENDENCIA %in% c(2:3))
+dados <- read.csv("base_completa_2024.csv")
+dados <- dados %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
 ```
 
 ## Tabela 1 - Checagem no número de alunos entre o Censo Escolar e o PDDE (Centro-Oeste, 2024)
@@ -30,7 +30,7 @@ dados$`Quantidade de Alunos` <- ifelse(dados$QT_MAT_BAS == dados$Quantidade_Alun
 
         #filter schools that are part of PDDE
 tab1 <- dados %>% 
-        filter(Fonte %in% c("pdde_pagos","pdde_naopagos")) %>%
+        filter(Fonte %in% c("pdde_pagos","pdde_naopagos"), TP_SITUACAO_FUNCIONAMENTO == 1) %>%
         group_by(`Quantidade de Alunos`) %>% 
         summarise(Freq.Absoluta = n(), .groups = 'drop') %>% 
         mutate(Freq.Relativa = scales::percent(Freq.Absoluta/sum(Freq.Absoluta))) %>% 
@@ -78,7 +78,7 @@ tab2 %>%
 #| warning: false
 #| message: false
 
-dados$UEx <- ifelse(dados$CNPJ_Executora == dados$`CNPJ_SEDUC`, "Sem UEx", "Com UEx")
+dados$UEx <- ifelse(dados$`CNPJ Executora` == dados$`CNPJ Município/SEDUC`, "Sem UEx", "Com UEx")
 dados$UEx <- factor(dados$UEx, levels = c("Sem UEx", "Com UEx"))
 tab3 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
@@ -524,5 +524,22 @@ writeData(wb, "tradicionais", tab17, startRow = nrow(tab14) + nrow(tab15) + nrow
 
 # Save the workbook
 saveWorkbook(wb, "e8_planilha_tailine.xlsx", overwrite = TRUE)
+
+```
+
+# Análise da Destinação dos Repasses (Centro-Oeste, 2024)
+
+## Tabela 18 - Número de escolas públicas segundo a destinação dos repasses do PDDE (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+
+
+tab18 %>%
+        kable(align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
 
 ```

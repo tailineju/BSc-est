@@ -38,7 +38,9 @@ censo23_co <- read.csv("censo23_co.csv")
 censo23_co$CO_ENTIDADE <- as.character(censo23_co$CO_ENTIDADE)
 pdde$`Código Escola` <- as.character(pdde$`Código Escola`)
 
-dados <- censo23_co %>% left_join(pdde, by = c("CO_ENTIDADE" = "Código Escola"))
+dados <- censo23_co %>% inner_join(pdde, by = c("CO_ENTIDADE" = "Código Escola"))
+
+unique(dados$Destinação)
 
 write.csv(dados, "base_completa_2024.csv")
 
