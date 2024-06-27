@@ -12,6 +12,7 @@ format: pdf
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lme4, gridExtra, clipr)
+options(OutDec = ",")
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 ```
 
@@ -22,9 +23,13 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 #| warning: false
 #| eval: FALSE
 
-df_aluno <- read.csv("TS_ALUNO_9EF_2019.csv", sep = ";", encoding = "latin1")
-df_escola <- read.csv("TS_ESCOLA_2019.csv", sep = ";", encoding = "latin1")
+df_aluno <- vroom("TS_ALUNO_9EF_2019.csv", locale = locale(encoding = "Latin1"), delim = ";")
+df_escola <- vroom("TS_ESCOLA_2019.csv", locale = locale(encoding = "Latin1"), delim = ";")
+
 unique(df_escola$NIVEL_SOCIO_ECONOMICO)
+
+dim(df_aluno)
+dim(df_escola)
 
 var_al <- names(df_aluno)
 var_es <- names(df_escola)
@@ -35,13 +40,14 @@ df_escola <- df_escola %>% filter(ID_REGIAO == 5)
 write.csv(df_aluno, file = "TS_ALUNO_9EF_2019_co.csv")
 write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
 
-df_aluno <- read.csv("TS_ALUNO_9EF_2019_co.csv", encoding="latin1")
-df_escola <- read.csv("TS_ESCOLA_2019_co.csv", encoding="latin1")
+df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
+df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
-df <- left_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
+df <- inner_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
 df <- df %>% mutate(ID_ESCOLA = as.factor(ID_ESCOLA))
 
-write.csv(df,"dados_tcc.csv")
+dim(df)
+write.csv(df,"dados_tcc2.csv")
 ```
 
 ## Leitura dos dados
@@ -49,11 +55,12 @@ write.csv(df,"dados_tcc.csv")
 
 #| warning: false
 
-df <- vroom("dados_tcc.csv", locale = locale(encoding = "Latin1"), delim = ",")
+df <- vroom("dados_tcc2.csv", locale = locale(encoding = "UTF-8"), delim = ",")
 
 var_df <- names(df)
 dim(df)
 
+unique(df$NIVEL_SOCIO_ECONOMICO)
 df <- df %>%
   mutate(NIVEL_SOCIO_ECONOMICO = case_when(
     NIVEL_SOCIO_ECONOMICO == "Nível VII" ~ "7",
@@ -74,7 +81,7 @@ df <- df %>%
 ```{r}	
 
 #| warning: false
-df %>% 
+df_escola %>% 
     summarise(n = n_distinct(ID_ESCOLA))
 ```
 
@@ -86,64 +93,72 @@ df %>%
     group_by(ID_ESCOLA) %>%
     summarise(n = n()) %>%
     ggplot(aes(x = n)) +
-    geom_histogram(binwidth = 10, fill = "deepskyblue4", color="white") +
+    geom_histogram(binwidth = 10, fill = "white", color="black") +
     labs(x = "Quantidade de alunos",
          y = "Frequência") +
     theme_minimal()
 ggsave("img/dist_alunos_escola.pdf", width = 15, height = 10, dpi = 300)
+
+# quadro resumo
+df %>%
+    group_by(ID_ESCOLA) %>%
+    summarise(n = n()) %>%
+    summarise(
+      Média = mean(n),
+      `Desvio Padrão` = sd(n),
+      Mínimo = min(n),
+      `Primeiro Quartil` = quantile(n, 0.25),
+      Mediana = median(n),
+      `Terceiro Quartil` = quantile(n, 0.75),
+      Máximo = max(n)
+    ) %>% pivot_longer(everything(), names_to = "Estatística", values_to = "Número de Alunos por Escola") %>% 
+    kable(booktabs = TRUE, caption = "Summary Statistics for Number of Students per School", format="latex")
 ```	
 
 ### Nível Socioecononômico (NSe) das Escolas
 ```{r}
 
 #| warning: false
-df %>%
+
+
+nse_freq <- df_escola %>%
     mutate(NIVEL_SOCIO_ECONOMICO = as.factor(NIVEL_SOCIO_ECONOMICO)) %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     count(NIVEL_SOCIO_ECONOMICO) %>%
-    mutate(prop = n / sum(n)) %>%
-    ggplot(aes(x = NIVEL_SOCIO_ECONOMICO, y = prop)) +
-    geom_bar(stat = "identity",  fill = "deepskyblue4", color="white", width=0.8) +
-    scale_y_continuous(labels = scales::percent_format()) +
-    labs(x = "Nível Socioeconômico",
-         y = "Frequência Relativa") +
-    theme_minimal()
-ggsave("img/dist_nse_escola.pdf", width = 15, height = 10, dpi = 300)
+    mutate(prop = round(n / sum(n) * 100,2)) %>%
+    select(NIVEL_SOCIO_ECONOMICO, prop)  # Select only the desired columns
+
+kable(nse_freq, caption = "Frequência do Nível Socioeconômico das Escolas", booktabs = TRUE, 
+      col.names = c("Nível Socioeconômico", "Proporção (%)"), align = "c", format = "latex") %>%
+  kable_styling()
 ```
 
 ### Área das Escolas
 ```{r}
 
 #| warning: false
-df %>%
+area_freq <- df %>%
     mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
     count(ID_AREA) %>%
-    mutate(prop = n / sum(n)) %>%
-    ggplot(aes(x = ID_AREA, y = prop)) +
-    geom_bar(stat = "identity",  fill = "deepskyblue4", color="white", width=0.5) +
-    scale_y_continuous(labels = scales::percent_format()) +
-    labs(x = "Área",
-         y = "Frequência Relativa") +
-    theme_minimal()
-ggsave("img/dist_area_escola.pdf", width = 15, height = 10, dpi = 300)
+    mutate(prop = round(n / sum(n) * 100,2)) %>%
+    select(ID_AREA, prop)
+
+kable(area_freq, caption = "Frequência da Área das Escolas", booktabs = TRUE, 
+      col.names = c("Área", "Proporção (%)"), align = "c", format = "latex") 
 ```
 
-### Administração das Escolas (Pública)
+### Localização das Escolas
 ```{r}
 
 #| warning: false
-df %>%
-    mutate(IN_PUBLICA = ifelse(IN_PUBLICA == 1, "Pública", "Não pública")) %>%
-    mutate(IN_PUBLICA = factor(IN_PUBLICA, levels = c("Pública", "Não pública"))) %>%
-    count(IN_PUBLICA) %>%
-    mutate(prop = n / sum(n)) %>%
-    ggplot(aes(x = IN_PUBLICA, y = prop)) +
-    geom_bar(stat = "identity",  fill = "deepskyblue4", color="white", width=0.5) +
-    scale_y_continuous(labels = scales::percent_format()) +
-    labs(x = "Administração",
-         y = "Frequência Relativa") +
-    theme_minimal()
-ggsave("img/dist_admin_escola.pdf", width = 15, height = 10, dpi = 300)
+loc_freq <- df %>%
+    mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
+    mutate(ID_LOCALIZACAO = factor(ID_LOCALIZACAO)) %>%
+    count(ID_LOCALIZACAO) %>%
+    mutate(prop = round(n / sum(n) * 100,2)) #%>%
+    #select(ID_LOCALIZACAO, prop)
+
+kable(loc_freq, caption = "Frequência da Administração das Escolas", booktabs = TRUE, align = "c", format = "latex")
 ```
 
 ### Distribuição da proficiência em Língua Portuguesa e Matemática
@@ -153,7 +168,7 @@ ggsave("img/dist_admin_escola.pdf", width = 15, height = 10, dpi = 300)
 #lingua portuguesa (ggplot histogram)
 df %>%
     ggplot(aes(x = PROFICIENCIA_LP_SAEB)) +
-    geom_histogram(binwidth = 10,  fill = "deepskyblue4", color="white") +
+    geom_histogram(binwidth = 10,  fill = "white", color="black") +
     labs(x = "Nota",
          y = "Frequência") +
     theme_minimal() 
@@ -161,7 +176,7 @@ ggsave("img/dist_lp.pdf", width = 15, height = 10, dpi = 300)
 #matemática (ggplot histogram)
 df %>%
     ggplot(aes(x = PROFICIENCIA_MT_SAEB)) +
-    geom_histogram(binwidth = 10,  fill = "deepskyblue4", color="white") +
+    geom_histogram(binwidth = 10,  fill = "white", color="black") +
     labs(x = "Nota",
          y = "Frequência") +
     theme_minimal()
@@ -219,7 +234,7 @@ write_clip(print(kable(combined_stats, format = "latex", booktabs = TRUE, captio
 df %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Nível Socioeconômico da Escola",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -228,7 +243,7 @@ ggsave("img/boxplot_lp_nse.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Nível Socioeconômico da Escola",
          y = "Matemática") +
     theme_minimal()
@@ -241,7 +256,7 @@ ggsave("img/boxplot_mt_nse.pdf", width = 15, height = 10, dpi = 300)
 
 df %>%
     ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Área da Escola",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -249,7 +264,7 @@ ggsave("img/boxplot_lp_area.pdf", width = 15, height = 10, dpi = 300)
 
 df %>%
     ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Área da Escola",
          y = "Matemática") +
     theme_minimal()
@@ -261,23 +276,30 @@ ggsave("img/boxplot_mt_area.pdf", width = 15, height = 10, dpi = 300)
 #| warning: false
 
 df %>%
-    ggplot(aes(x = as.factor(IN_PUBLICA), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
-    labs(x = "Administração da Escola",
+    ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_LP_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Localização da Escola",
          y = "Língua Portuguesa") +
     theme_minimal()
-ggsave("img/boxplot_lp_admin.pdf", width = 15, height = 10, dpi = 300)
+ggsave("img/boxplot_lp_loc.pdf", width = 15, height = 10, dpi = 300)
 
 df %>%
-    ggplot(aes(x = as.factor(IN_PUBLICA), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
-    labs(x = "Administração da Escola",
+    ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Localização da Escola",
          y = "Matemática") +
     theme_minimal()
-ggsave("img/boxplot_mt_admin.pdf", width = 15, height = 10, dpi = 300)
+ggsave("img/boxplot_mt_loc.pdf", width = 15, height = 10, dpi = 300)
 ```
 
 ### Por TX_RESP_Q002
+Branca.
+Preta.
+Parda.
+Amarela.
+Indígena.
+Não quero declarar.
+
 ```{r}
 #| warning: false
 
@@ -285,8 +307,18 @@ unique(df$TX_RESP_Q002)
 
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
+    mutate(TX_RESP_Q002 = case_when(
+      TX_RESP_Q002 == "A" ~ "Branca",
+      TX_RESP_Q002 == "B" ~ "Preta",
+      TX_RESP_Q002 == "C" ~ "Parda",
+      TX_RESP_Q002 == "D" ~ "Amarela",
+      TX_RESP_Q002 == "E" ~ "Indígena",
+      TX_RESP_Q002 == "F" ~ "Não quero declarar",
+      TRUE ~ TX_RESP_Q002
+    )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q002), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
+    scale_x_discrete(labels = c("Branca", "Preta", "Parda", "Amarela", "Indígena", "Não quero declarar")) +
     labs(x = "Cor/raça autodeclarada",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -294,8 +326,18 @@ ggsave("img/boxplot_lp_raca.pdf", width = 15, height = 10, dpi = 300)
 
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
+    mutate(TX_RESP_Q002 = case_when(
+      TX_RESP_Q002 == "A" ~ "Branca",
+      TX_RESP_Q002 == "B" ~ "Preta",
+      TX_RESP_Q002 == "C" ~ "Parda",
+      TX_RESP_Q002 == "D" ~ "Amarela",
+      TX_RESP_Q002 == "E" ~ "Indígena",
+      TX_RESP_Q002 == "F" ~ "Não quero declarar",
+      TRUE ~ TX_RESP_Q002
+    )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q002), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
+    scale_x_discrete(labels = c("Branca", "Preta", "Parda", "Amarela", "Indígena", "Não quero declarar")) +
     labs(x = "Cor/raça autodeclarada",
          y = "Matemática") +
     theme_minimal()
@@ -311,7 +353,7 @@ unique(df$TX_RESP_Q004)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q004), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Escolaridade da mãe",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -320,7 +362,7 @@ ggsave("img/boxplot_lp_mae.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q004), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Escolaridade da mae",
          y = "Matemática") +
     theme_minimal()
@@ -334,7 +376,7 @@ ggsave("img/boxplot_mt_mae.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q005 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q005), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Escolaridade do pai",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -343,7 +385,7 @@ ggsave("img/boxplot_lp_pai.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q005 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q005), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Escolaridade do pai",
          y = "Matemática") +
     theme_minimal()
@@ -357,17 +399,17 @@ ggsave("img/boxplot_mt_pai.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q011), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
-    labs(x = "Trabalho do pai",
+    geom_boxplot(fill = "white") +
+    labs(x = "Tempo para chegar a escola",
          y = "Língua Portuguesa") +
     theme_minimal()
-#ggave("img/boxplot_lp_tempo.pdf", width = 15, height = 10, dpi = 300)
+ggsave("img/boxplot_lp_tempo.pdf", width = 15, height = 10, dpi = 300)
 
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q011), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
-    labs(x = "Trabalho do pai",
+    geom_boxplot(fill = "white") +
+    labs(x = "Tempo para chegar a escola",
          y = "Matemática") +
     theme_minimal()
 ggsave("img/boxplot_mt_tempo.pdf", width = 15, height = 10, dpi = 300)
@@ -381,7 +423,7 @@ ggsave("img/boxplot_mt_tempo.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q015), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Reprovações",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -390,7 +432,7 @@ ggsave("img/boxplot_lp_reprovacao.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q015), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Reprovações",
          y = "Matemática") +
     theme_minimal()
@@ -404,7 +446,7 @@ ggsave("img/boxplot_mt_reprovacao.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q016), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Abandono escolar",
          y = "Língua Portuguesa") +
     theme_minimal()
@@ -413,7 +455,7 @@ ggsave("img/boxplot_lp_abandono.pdf", width = 15, height = 10, dpi = 300)
 df %>%
     filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q016), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     labs(x = "Abandono escolar",
          y = "Matemática") +
     theme_minimal()
@@ -442,7 +484,7 @@ df %>%
       TRUE ~ TX_RESP_Q017A
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017A), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo de lazer",
          y = "Língua Portuguesa") +
@@ -459,7 +501,7 @@ df %>%
       TRUE ~ TX_RESP_Q017A
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017A), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Lazer",
          y = "Matemática") +
@@ -483,7 +525,7 @@ df %>%
       TRUE ~ TX_RESP_Q017B
     )) %>% 
     ggplot(aes(x = as.factor(TX_RESP_Q017B), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo fazendo cursos",
          y = "Língua Portuguesa") +
@@ -500,7 +542,7 @@ df %>%
       TRUE ~ TX_RESP_Q017B
     )) %>% 
     ggplot(aes(x = as.factor(TX_RESP_Q017B), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo fazendo cursos",
          y = "Matemática") +
@@ -522,7 +564,7 @@ df %>%
       TRUE ~ TX_RESP_Q017C
     )) %>% 
     ggplot(aes(x = as.factor(TX_RESP_Q017C), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo fazendo trabalhos domésticos",
          y = "Língua Portuguesa") +
@@ -539,7 +581,7 @@ df %>%
       TRUE ~ TX_RESP_Q017C
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017C), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo fazendo trabalhos domésticos",
          y = "Matemática") +
@@ -562,7 +604,7 @@ df %>%
       TRUE ~ TX_RESP_Q017D
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017D), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo de estudo",
          y = "Língua Portuguesa") +
@@ -579,7 +621,7 @@ df %>%
       TRUE ~ TX_RESP_Q017D
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017D), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas"))+
     labs(x = "Tempo de estudo",
          y = "Matemática") +
@@ -601,7 +643,7 @@ df %>%
       TRUE ~ TX_RESP_Q017E
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017E), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo de trabalho fora de casa",
          y = "Língua Portuguesa") +
@@ -618,7 +660,7 @@ df %>%
       TRUE ~ TX_RESP_Q017E
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q017E), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Não uso meu tempo para isso", "Menos de 1 hora", "Entre 1 e 2 horas", "Mais de 2 horas")) +
     labs(x = "Tempo de trabalho fora de casa",
          y = "Matemática") +
@@ -650,7 +692,7 @@ df %>%
       TRUE ~ TX_RESP_Q018A
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018A), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de notícias",
          y = "Língua Portuguesa") +
@@ -666,7 +708,7 @@ df %>%
       TRUE ~ TX_RESP_Q018A
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018A), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de notícias",
          y = "Matemática") +
@@ -687,7 +729,7 @@ df %>%
       TRUE ~ TX_RESP_Q018B
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018B), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de livros",
          y = "Língua Portuguesa") +
@@ -703,7 +745,7 @@ df %>%
       TRUE ~ TX_RESP_Q018B
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018B), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de livros",
          y = "Matemática") +
@@ -724,7 +766,7 @@ df %>%
       TRUE ~ TX_RESP_Q018C
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018C), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de quadrinhos",
          y = "Língua Portuguesa") +
@@ -740,7 +782,7 @@ df %>%
       TRUE ~ TX_RESP_Q018C
     )) %>%
     ggplot(aes(x = as.factor(TX_RESP_Q018C), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "deepskyblue4") +
+    geom_boxplot(fill = "white") +
     scale_x_discrete(labels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre")) +
     labs(x = "Leitura de quadrinhos",
          y = "Matemática") +
@@ -785,7 +827,7 @@ summary(modelo_nulo)
 
 #| warning: false
 #modelo com variáveis preditoras
-modelo <- lmer(PROFICIENCIA_LP_SAEB ~ NIVEL_SOCIO_ECONOMICO + ID_AREA + IN_PUBLICA + (1|ID_ESCOLA), data = df)
+modelo <- lmer(PROFICIENCIA_LP_SAEB ~ NIVEL_SOCIO_ECONOMICO + ID_AREA + ID_LOCALIZACAO + (1|ID_ESCOLA), data = df)
 summary(modelo)
 ```
 
