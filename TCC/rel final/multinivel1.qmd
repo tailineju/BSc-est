@@ -1,0 +1,84 @@
+---
+title: "Análise Multinível SAEB 2019"
+author: "Tailine J. S. Nonato"
+date: "2024-06-29"
+format: pdf
+---
+
+# Modelagem Multinível
+
+## Carregamento de pacotes e dados
+```{r}
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lme4, gridExtra, clipr)
+options(OutDec = ",")
+setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
+```
+
+## Leitura dos dados
+```{r}	
+#| warning: false
+#| eval: false
+#| message: false
+
+
+df <- vroom("dados_tcc2.csv", locale = locale(encoding = "UTF-8"), delim = ",")
+
+var_df <- names(df)
+dim(df)
+
+df <- df %>% 
+  filter(IN_PREENCHIMENTO_LP == 1, IN_PREENCHIMENTO_MT == 1)
+
+set.seed(123)
+df_sampled <- df %>% sample_n(5000)
+
+theme_tcc <- function() {
+  theme_classic() +
+    theme(
+      axis.line = element_line(colour = "black"),
+      panel.border = element_rect(colour = "black", fill=NA),
+      panel.background = element_blank(),
+      plot.background = element_blank(),
+      axis.ticks = element_line(colour = "black"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text = element_text(colour = "black"),
+      axis.title = element_text(colour = "black")
+    )
+}
+```	
+
+## Modelo nulo
+```{r}
+#| warning: false
+#| eval: false
+#| message: false
+
+#modelo nulo
+modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df)
+summary(modelo_nulo)
+```
+
+## Modelo com variáveis preditoras
+```{r}
+#| warning: false
+#| eval: false
+#| message: false
+
+#modelo com variáveis preditoras
+modelo <- lmer(PROFICIENCIA_LP_SAEB ~ NIVEL_SOCIO_ECONOMICO + ID_AREA + ID_LOCALIZACAO + (1|ID_ESCOLA), data = df)
+summary(modelo)
+```
+
+## Análise de resíduos
+```{r}
+#| warning: false
+#| eval: false
+#| message: false
+
+residuos <- residuals(modelo)
+qqnorm(residuos)
+qqline(residuos)
+```

@@ -15,6 +15,21 @@ pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
 dados <- read.csv("base_completa_2024.csv")
+dados_pagos <- dados %>% filter(fonte == "pdde_pagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
+dados_nao_pagos <- dados %>% filter(fonte == "pdde_naopagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
+
+#escolas que estão em pagos e nao pagos
+dados_dup <- dados_pagos %>% 
+        inner_join(dados_nao_pagos, by = "CO_ENTIDADE") %>% 
+        distinct(CO_ENTIDADE, .keep_all = TRUE)
+
+#escolas que estão em "pagos" e não estao em "nao_pagos"
+escolas_somente_pagos <- dados_pagos %>% 
+        anti_join(dados_nao_pagos, by = "CO_ENTIDADE")
+
+escolas_somente_nao_pagos <- dados_nao_pagos %>% 
+        anti_join(dados_pagos, by = "CO_ENTIDADE")
+
 dados <- dados %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
 ```
 
@@ -26,15 +41,28 @@ dados <- dados %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
 
 #first of all - check if Quantidade_ALunos and QT_MAT_BAS are the same for schools
 
-dados$`Quantidade de Alunos` <- ifelse(dados$QT_MAT_BAS == dados$Quantidade_Alunos, "Igual", "Diferente")
+dados$alunos1 <- ifelse(dados$QT_MAT_BAS == dados$Quantidade.Alunos, "Igual", "Diferente")
+
+dados$alunos2 <- dados$QT_MAT_BAS - dados$Quantidade.Alunos
+
+tab0 <- dados %>%
+        filter(alunos2!=0)%>%
+        group_by(CO_ENTIDADE,alunos2,QT_MAT_BAS,Quantidade.Alunos) %>%
+        summarize(n=n()) %>%
+        arrange(desc(alunos2))
+summary(as.numeric(dados$alunos2))
+
+#33 acima de 10 alunos
+#1838 abaixo de 10 alunos
+
 
         #filter schools that are part of PDDE
 tab1 <- dados %>% 
-        filter(Fonte %in% c("pdde_pagos","pdde_naopagos"), TP_SITUACAO_FUNCIONAMENTO == 1) %>%
-        group_by(`Quantidade de Alunos`) %>% 
+        filter(fonte %in% c("pdde_pagos","pdde_naopagos"), TP_SITUACAO_FUNCIONAMENTO == 1) %>%
+        group_by(alunos1) %>% 
         summarise(Freq.Absoluta = n(), .groups = 'drop') %>% 
         mutate(Freq.Relativa = scales::percent(Freq.Absoluta/sum(Freq.Absoluta))) %>% 
-        select(`Quantidade de Alunos`, Freq.Absoluta, Freq.Relativa) %>% 
+        select(alunos1, Freq.Absoluta, Freq.Relativa) %>% 
         mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
 
 tab1 %>%
@@ -78,8 +106,15 @@ tab2 %>%
 #| warning: false
 #| message: false
 
-dados$UEx <- ifelse(dados$`CNPJ Executora` == dados$`CNPJ Município/SEDUC`, "Sem UEx", "Com UEx")
+dados$Executora <- as.numeric(substr(dados$CNPJ.Executora, start=2,stop=100))
+
+dados$UEx <- ifelse(dados$`CNPJ.Executora` == dados$`CNPJ.Município.SEDUC`, "Sem UEx", "Com UEx")
 dados$UEx <- factor(dados$UEx, levels = c("Sem UEx", "Com UEx"))
+
+teste<-dados %>% filter(dados$UEx == "Com UEx")
+teste$aaa<- substr(teste$CNPJ.Executora, start=2,stop=10)
+teste<-teste %>% arrange(desc(aaa))
+
 tab3 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
         group_by(NO_UF, UEx) %>%
@@ -107,7 +142,7 @@ tab3 %>%
 #| warning: false
 #| message: false
 
-dados$alunos <- ifelse(as.numeric(dados$Quantidade_Alunos) < 50, "Menos de 50", "50 ou mais")
+dados$alunos <- ifelse(as.numeric(dados$Quantidade.Alunos) < 50, "Menos de 50", "50 ou mais")
 dados$alunos <- factor(dados$alunos, levels = c( "Menos de 50","50 ou mais"))
 
 tab4 <- dados %>% 
@@ -139,9 +174,9 @@ tab4 %>%
 
 tab5 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
-        group_by(NO_UF, Fonte) %>%
+        group_by(NO_UF, fonte) %>%
         summarise(n = n(), .groups = 'drop') %>%
-        spread(Fonte, n, fill = 0) %>%
+        spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
         select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
         rename(`Não Pagos 2024` = `pdde_naopagos`,
@@ -248,9 +283,9 @@ tab8 %>%
 
 tab9 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 2) %>%
-        group_by(NO_UF, Fonte) %>%
+        group_by(NO_UF, fonte) %>%
         summarise(n = n(), .groups = 'drop') %>%
-        spread(Fonte, n, fill = 0) %>%
+        spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
         select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
         rename(`Não Pagos 2024` = `pdde_naopagos`,
@@ -358,9 +393,9 @@ tab12 %>%
 
 tab13 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
-        group_by(NO_UF, Fonte) %>%
+        group_by(NO_UF, fonte) %>%
         summarise(n = n(), .groups = 'drop') %>%
-        spread(Fonte, n, fill = 0) %>%
+        spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
         select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
         rename(`Não Pagos 2024` = `pdde_naopagos`,
@@ -466,9 +501,9 @@ tab16 %>%
 
 tab17 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
-        group_by(NO_UF, Fonte) %>%
+        group_by(NO_UF, fonte) %>%
         summarise(n = n(), .groups = 'drop') %>%
-        spread(Fonte, n, fill = 0) %>%
+        spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
         select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
         rename(`Não Pagos 2024` = `pdde_naopagos`,
@@ -529,17 +564,73 @@ saveWorkbook(wb, "e8_planilha_tailine.xlsx", overwrite = TRUE)
 
 # Análise da Destinação dos Repasses (Centro-Oeste, 2024)
 
-## Tabela 18 - Número de escolas públicas segundo a destinação dos repasses do PDDE (Centro-Oeste, 2024)
+## Tabela 18 - Número de escolas que constam somente como "pagas" segundo a destinação dos repasses do PDDE (Centro-Oeste, 2024)
 ```{r}
 #| echo: false
 #| warning: false
 #| message: false
 
+tab18 <- escolas_somente_pagos %>%
+        group_by(Destinação) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        mutate(n = format(n, big.mark = ".", decimal.mark = ","))
 
-
-tab18 %>%
-        kable(align = "l") %>%
+kable(tab18, align = "l") %>%
         kable_styling(full_width = F, position = "left")%>%
         footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
 
+## Tabela 19 - Número de escolas que constam somente como "não pagas" segundo a destinação dos repasses do PDDE (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+tab19 <- escolas_somente_nao_pagos %>%
+        group_by(Destinação) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        mutate(n = format(n, big.mark = ".", decimal.mark = ","))
+
+kable(tab19, align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 20 - Número de escolas que constam como "pagas" e "não pagas" segundo a destinação dos repasses do PDDE (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+tab20 <- dados_dup %>%
+        group_by(Destinação.x, Destinação.y) %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        mutate(n = format(n, big.mark = ".", decimal.mark = ","))%>%
+        rename("Pagos" = Destinação.x, "Não Pagos" = Destinação.y)
+#add totals
+
+
+kable(tab20, align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+## Tabela 21 - Número total de escolas no Consulta Escola (Centro-Oeste, 2024)
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+tab21 <- dados %>% 
+        summarise(n = n(), .groups = 'drop') %>% 
+        mutate(n = format(n, big.mark = ".", decimal.mark = ","))%>%
+        rename("Número de escolas" = n)
+kable(tab21, align = "l") %>%
+        kable_styling(full_width = F, position = "left")%>%
+        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+```
+
+
+# UEx
+```{r}
+tab22 <- dados %>% 
+        group_by(NO_UF, alunos, UEx) %>%
+        summarise(n = n(), .groups = 'drop')
 ```
