@@ -1,0 +1,147 @@
+---
+title: "LISTA 5"
+subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
+author: "Tailine J. S. Nonato"
+date: "06/30/2024"
+format: pdf
+---
+
+# Descrição da Atividade
+Considere a série do consumo mensal de energia elétrica (`ConsumoEnergiaEAgua_New.xlsx`). Denotando $X_t$ como o valor do consumo registrado no mês $t$ e $D_t$ como o número de dias de leitura, faça o que se pede a seguir.
+	
+## Etapa 1
+
+Calcule o consumo médio diário $Y_t=\frac{X_t}{D_t}$ , e explique o porquê dessa transformação.
+
+## Etapa 2
+
+Apresente o gráfico da evolução temporal de ${Y_t}$, e apresente sua descrição, contemplado elementos como o tamanho da série e periodicidade dos dados.
+
+## Etapa 3
+
+Apresente os gráficos da função de autocorrelação (FAC) e da função de autocorrelação parcial (FACP) de ${Y_t}$, considerando um número apropriado de defasagens (lag), incluindo a banda de 95% de confiança sob a hipótese nula de não haver autocorrelação serial. Em um parágrafo, descreva as formas da FAC e da FAPC, explicando o que se pode diagnosticar/sugerir com base nelas.
+
+## Etapa 4
+
+Aplique o teste aumentado de estacionariedade de Dickey-Fuller do pacote `aTSA` do R. Para a parte sazonal, faça a avaliação por meio de um modelo de regressão com funções harmônicas.
+
+## Etapa 5
+
+Calcule a variação do consumo $Z_t=Y_t-Y_{t-1}$, e explique o papel/significado dessa transformação para a análise desses dados.
+
+## Etapa 6
+
+Faça o gráfico da evolução temporal de ${Z_t}$, e descreva em um parágrafo o aspecto dessa figura, comparando-a com a forma observada no item 2.
+
+## Etapa 7
+
+Repita os passos 3 e 4, comparando os novos resultados com os anteriores.
+
+# Respostas
+## Carregando os pacotes necessários
+```{r}
+#| message: false
+#| warning: false
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(tidyverse,readxl, knitr, aTSA)
+options(OutDec = ",")
+setwd("C:/Users/User/Documents/GitHub/gradest-1/SERIES/Lista5")
+```
+
+## Leitura e manipulação dos dados
+
+```{r}
+#| message: false
+#| warning: false
+energia <- read_excel("ConsumoEnergiaEAgua_New.xlsx")
+energia <- energia[,c(1,3,4)]
+energia <- na.omit(energia)
+kable(tail(energia), align = "c",
+    caption = "Últimos registros da base de dados")
+```
+
+## Etapa 1
+
+```{r}
+#| message: false
+#| warning: false
+
+energia$consumo <- energia$Energia/energia$Dias
+kable(mean(energia$consumo), align = "c",
+    caption = "Consumo médio diário")
+```
+
+Essa transformação é necessária para que possamos comparar o consumo de energia de diferentes meses, uma vez que o número de dias de leitura varia de um mês para o outro.
+
+## Etapa 2
+
+```{r}
+#| message: false
+#| warning: false
+
+plot(energia$mes, energia$consumo, type = "l", 
+    main = "Consumo médio diário de energia elétrica",
+    xlab = "Data",
+    ylab = "Consumo médio diário")
+```
+
+O gráfico apresenta o consumo médio diário de energia elétrica ao longo do tempo. A série é composta por 60 observações, com periodicidade mensal.
+
+## Etapa 3
+
+```{r}
+#| message: false
+#| warning: false
+
+acf(energia$consumo, lag.max = 12, main = "Função de autocorrelação")
+pacf(energia$consumo, lag.max = 12, main = "Função de autocorrelação parcial")
+```
+
+## Etapa 4
+
+```{r}
+#| message: false
+#| warning: false
+
+adf.test(energia$consumo)
+```
+
+## Etapa 5
+
+```{r}
+#| message: false
+#| warning: false
+
+energia$variacao <- c(NA, diff(energia$consumo))
+kable(mean(energia$variacao, na.rm=TRUE), align = "c",
+    caption = "Variação do consumo")
+```
+
+Essa transformação é necessária para que possamos analisar a variação do consumo de energia de um mês para o outro. E assim, identificar possíveis padrões de comportamento. 
+
+## Etapa 6
+
+```{r}
+#| message: false
+#| warning: false
+
+plot(energia$mes, energia$variacao, type = "l", 
+    main = "Variação do consumo médio diário de energia elétrica",
+    xlab = "Data",
+    ylab = "Variação do consumo médio diário")
+```
+
+O gráfico apresenta a variação do consumo médio diário de energia elétrica ao longo do tempo. A série é composta por 60 observações, com periodicidade mensal.
+
+## Etapa 7
+
+```{r}
+#| message: false
+#| warning: false
+
+variacao <- na.omit(energia$variacao)
+
+acf(variacao, lag.max = 12, main = "Função de autocorrelação")
+pacf(variacao, lag.max = 12, main = "Função de autocorrelação parcial")
+adf.test(variacao)
+```
