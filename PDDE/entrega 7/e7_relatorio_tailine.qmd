@@ -22,8 +22,9 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
 #censo23 <- read.csv("microdados_ed_basica_2023.csv", sep = ";", encoding = "latin1")
 
-pdde_pagos <- read_csv2("pdde_pagos.csv", skip = 5)
-pdde_naopagos <- read_csv2("pdde_naopagos.csv", skip = 5)
+pdde_pagos <- read.csv2("pdde_pagos.csv", skip = 5)
+pdde_naopagos <- read.csv2("pdde_naopagos.csv", skip = 5)
+pdde_naopagos <- pdde_naopagos %>% select(-X,-X.1,-X.2)
 
 pdde_pagos$fonte <- "pdde_pagos"
 pdde_naopagos$fonte <- "pdde_naopagos"
@@ -36,9 +37,9 @@ pdde <- rbind(pdde_pagos, pdde_naopagos)
 censo23_co <- read.csv("censo23_co.csv")
 
 censo23_co$CO_ENTIDADE <- as.character(censo23_co$CO_ENTIDADE)
-pdde$`Código Escola` <- as.character(pdde$`Código Escola`)
+pdde$`Código.Escola` <- as.character(pdde$`Código.Escola`)
 
-dados <- censo23_co %>% inner_join(pdde, by = c("CO_ENTIDADE" = "Código Escola"))
+dados <- censo23_co %>% inner_join(pdde, by = c("CO_ENTIDADE" = "Código.Escola"))
 
 unique(dados$Destinação)
 

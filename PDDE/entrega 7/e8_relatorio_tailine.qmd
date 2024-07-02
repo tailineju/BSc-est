@@ -34,6 +34,8 @@ dados <- rbind(dados_pagos, escolas_somente_nao_pagos)
 ```
 
 # Visão Geral 
+Os dados foram extraídos do Consulta Escola em 02 de julho de 2024.
+
 ## Tabela 1 - Checagem no número de alunos entre o Censo Escolar e o PDDE (Centro-Oeste, 2024)
 ```{r}
 #| echo: false
@@ -203,6 +205,7 @@ tab9 <- dados %>%
                 `Pagos` = sum(.$`Pagos`, na.rm = TRUE), 
                 Total = sum(.$Total, na.rm = TRUE)) %>%
         mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+
 tab10 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 3) %>%
         group_by(NO_UF, TP_DEPENDENCIA) %>% 
@@ -264,18 +267,21 @@ tab13 <- dados %>%
         mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
 
 tab14 <- dados %>% 
-        filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
-        group_by(NO_UF, TP_DEPENDENCIA) %>% 
-        summarise(n = n(), .groups = 'drop') %>% 
-        spread(TP_DEPENDENCIA, n, fill = 0) %>% 
-        mutate_at(vars(`3`), as.numeric) %>% 
-        select(NO_UF, `3`) %>% 
-        rename(`Municipal` = `3`) %>%
-        mutate(Total = rowSums(select(., -NO_UF))) %>%
-        add_row(NO_UF = "Total",
-                Municipal = sum(.$Municipal, na.rm = TRUE), 
-                Total = sum(.$Total, na.rm = TRUE))%>%
-        mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
+  filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
+  group_by(NO_UF, TP_DEPENDENCIA) %>%
+  mutate(TP_DEPENDENCIA = as.character(TP_DEPENDENCIA)) %>%
+  summarise(n = n(), .groups = 'drop') %>%
+  ungroup() %>%
+  complete(NO_UF, TP_DEPENDENCIA = c("2", "3"), fill = list(n = 0)) %>%
+  mutate(TP_DEPENDENCIA = as.numeric(TP_DEPENDENCIA)) %>%
+  pivot_wider(names_from = TP_DEPENDENCIA, values_from = n, values_fill = list(n = 0)) %>%
+  rename(`Estadual` = `2`, `Municipal` = `3`) %>%
+  mutate(Total = rowSums(select(., -NO_UF))) %>%
+  add_row(NO_UF = "Total", 
+          Estadual = sum(.$Estadual, na.rm = TRUE), 
+          Municipal = sum(.$Municipal, na.rm = TRUE), 
+          Total = sum(.$Total, na.rm = TRUE)) %>%
+  mutate(across(where(is.numeric), ~format(., decimal.mark = ",", big.mark = ".")))
 
 tab15 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 8) %>%
@@ -412,6 +418,7 @@ kable(tradicionais, align = "l") %>%
 tab18 <- escolas_somente_pagos %>%
         group_by(Destinação) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
+        #add_row(Destinação = "Total", n = sum(.$n, na.rm = TRUE)) %>%
         mutate(n = format(n, big.mark = ".", decimal.mark = ","))
 
 kable(tab18, align = "l") %>%
@@ -427,6 +434,7 @@ kable(tab18, align = "l") %>%
 tab19 <- escolas_somente_nao_pagos %>%
         group_by(Destinação) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
+        add_row(Destinação = "Total", n = sum(.$n, na.rm = TRUE)) %>%
         mutate(n = format(n, big.mark = ".", decimal.mark = ","))
 
 kable(tab19, align = "l") %>%
@@ -442,6 +450,7 @@ kable(tab19, align = "l") %>%
 tab20 <- dados_dup %>%
         group_by(Destinação.x, Destinação.y) %>% 
         summarise(n = n(), .groups = 'drop') %>% 
+        add_row(Destinação.x = "Total",Destinação.y="", n = sum(.$n, na.rm = TRUE)) %>%
         mutate(n = format(n, big.mark = ".", decimal.mark = ","))%>%
         rename("Pagos" = Destinação.x, "Não Pagos" = Destinação.y)
 #add totals
@@ -453,6 +462,7 @@ kable(tab20, align = "l") %>%
 ```
 
 ## Tabela 9 - Número total de escolas no Consulta Escola (Centro-Oeste, 2024)
+* Soma dos totais das tabelas 6, 7 e 8.
 ```{r}
 #| echo: false
 #| warning: false
@@ -476,7 +486,13 @@ kable(tab21, align = "l") %>%
 #| message: false
 tab22 <- dados %>% 
         group_by(NO_UF, alunos, UEx) %>%
-        summarise(n = n(), .groups = 'drop')
+        summarise(n = n(), .groups = 'drop') %>%
+        add_row(NO_UF = "Total", 
+                alunos = "", 
+                UEx = "", 
+                n = sum(.$n, na.rm = TRUE)) %>%
+        mutate(n = format(n, big.mark = ".", decimal.mark = ","))%>%
+        rename("UF" = NO_UF, "Número de alunos" = alunos, "UEx" = UEx, "Número de escolas" = n)
 kable(tab22, align = "l") %>%
         kable_styling(full_width = F, position = "left")%>%
         footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
@@ -503,6 +519,10 @@ writeData(wb, "quilombos", quilombos)
 
 addWorksheet(wb, "tradicionais")
 writeData(wb, "tradicionais", tradicionais)
+
+
+addWorksheet(wb, "UEx e N de alunos")
+writeData(wb, "UEx e N de alunos", tab22)
 
 
 # Save the workbook
