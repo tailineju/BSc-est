@@ -1,0 +1,80 @@
+---
+title: "Projeto"
+subtitle: "Inferência Bayesiana"
+author: "Tailine J. S. Nonato"
+date: "2024-06-30"
+format: pdf
+---
+
+# Conteúdo
+
+Resolução das questões 5 e 6 da Lista 5
+
+## Questão 5
+
+Para $i = 1,...,n$, considere observações independentes $s_i|\lambda_i \sim \text{Poisson}(\lambda_i t_i)$, onde os tempos de observação $t_i$ são fixos. Suponha que $\lambda_i|\beta \sim \text{iid Gama}(\alpha_0,\beta)$ e que $\beta \sim \text{Gama}(a,b)$.
+
+(i) Calcule a distribuição condicional de $\lambda= (\lambda_1,...,\lambda_n) |D,\beta$.
+
+(ii) Considere a implementação de amostragem por importância amostral: (a) no modelo reduzido $p(s_1,...,s_n;\beta) = p(s_1,...,s_n |\beta) p(\beta)$, obtido após integrar $\lambda= (\lambda_1,...,\lambda_n)$ com distribuição de proposta $p^*(\beta)$ e pesos de importância $w_i \propto \frac{p(\beta_i |D)}{p^*(\beta_i)}$. (b) no modelo completo $p(s_1,...,s_n;\lambda_1,...,\lambda_n;\beta) = p(s_1,...,s_n |\lambda_1,...,\lambda_n) p(\lambda_1,...,\lambda_n |\beta) p(\beta)$, com distribuição de proposta $p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta)$.
+
+Mostre que no caso (b) os pesos de importância são idênticos ao caso (a) e use esse resultado para aproximar $E(\lambda_i |D)$ e $\text{Var}(\lambda_i |D)$ por importância amostral para os dados sobre falhas em linhas de bombeamento disponíveis nas notas de aula (ou em Gaver e O’Muircheartaigh,1987, Technometrics, Vol. 29, pags. 1-15) usando $\alpha_0 = 0.166$, $a = 0.1$ e $b = 0.01$.
+
+### Resolução
+
+(i) A distribuição condicional de $\lambda= (\lambda_1,...,\lambda_n) |D,\beta$ é dada por 
+
+$$
+p(\lambda|D,\beta) = \frac{p(D|\lambda,\beta)p(\lambda|\beta)}{p(D|\beta)}.
+$$
+
+(ii) A distribuição de proposta $p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta)$ é dada por
+
+$$
+p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta) = p^*(\beta) \prod_{i=1}^n p(\lambda_i |D,\beta).
+$$
+
+Os pesos de importância são dados por
+
+$$
+w_i \propto \frac{p(\lambda_i |D,\beta)}{p^*(\lambda_i |D,\beta)} = \frac{p(\lambda_i |D,\beta)}{p^*(\lambda_i |D,\beta)} = \frac{p(\lambda_i |D,\beta)}{p(\lambda_i |D,\beta)} = 1.
+$$
+
+Portanto, os pesos de importância são idênticos ao caso (a).
+
+## Questão 6
+
+Obtenha as aproximações do Exercício 5 usando o amostrador de Gibbs.
+
+### Resolução
+
+O amostrador de Gibbs é um método de Monte Carlo Markov Chain (MCMC) que permite amostrar de distribuições condicionais completas. Para obter as aproximações do Exercício 5, podemos usar o amostrador de Gibbs para amostrar de $p(\lambda_i |D,\beta)$ e $p(\beta |D)$.
+
+```{r}
+# Implementação do amostrador de Gibbs
+
+# Definição dos parâmetros
+alpha0 <- 0.166
+a <- 0.1
+b <- 0.01
+n <- 1000
+
+# Inicialização dos parâmetros
+lambda <- rep(0, n)
+beta <- 0
+
+# Amostragem de lambda_i
+for (i in 1:n) {
+  lambda[i] <- rgamma(1, alpha0, beta)
+}
+
+# Amostragem de beta
+beta <- rgamma(1, a, b)
+
+# Cálculo das aproximações
+E_lambda <- mean(lambda)
+Var_lambda <- var(lambda)
+```
+
+As aproximações obtidas são $E(\lambda_i |D) = `r E_lambda`$ e $\text{Var}(\lambda_i |D) = `r Var_lambda`$.
+
