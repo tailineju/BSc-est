@@ -16,63 +16,69 @@ format: pdf
 
 **(i) Calcule a sua probabilidade de obter cara num lançamento dessa moeda.**
 
+- Entende-se que:
 
+$C = \{cara\}$
 
-Seja $F$ o evento da moeda ser falsa e $C$ o evento de obter cara. Tem-se que:
+$H = \{honesta\}$
 
+$F = \{falsa\}$
 
-Pela regra da probabilidade total, tem-se:
+- Assim, a priori é dada por:
 
-$$
-P(C) = P(C|F)P(F) + P(C|F^c)P(F^c) = 1 \cdot 0.5 + 0.5 \cdot 0.5 = 0.75.
-$$
+$P(F) = P(H) = 0.5$
+
+- A probabilidade de obter cara num lançamento é dada por:
+
+$P(C) = P(C|F)P(F) + P(C|H)P(H)$
+
+$P(C) = 1 \cdot 0.5 + 0.5 \cdot 0.5$
+
+$P(C) = 0.75$
 
 
 **(ii) Se o professor lançar a moeda e o resultado for cara, qual é agora a probabilidade dela ser falsa?**
 
+- A probabilidade de ser falsa dado que o resultado foi cara é dada por:
 
+$P(F|C) = \frac{P(C|F)P(F)}{P(C)}$
 
-Pela regra de Bayes, tem-se:
+$P(F|C) = \frac{1 \cdot 0.5}{0.75}$
 
-$$
-P(F|C) = \frac{P(C|F)P(F)}{P(C)} = \frac{1 \cdot 0.5}{0.75} = \frac{2}{3}.
-$$
+$P(F|C) = \frac{0.5}{0.75}$
+
+$P(F|C) = \frac{2}{3}$
+
 
 **(iii) Se o professor lançar a moeda n vezes e obter n caras, qual é a probabilidade dela ser falsa? Estude o comportamento desta probabilidade para n grande.**
 
+- A probabilidade de ser falsa dado que o resultado foi cara n vezes é dada por:
 
+$P(F|nC) = \frac{P(nC|F)P(F)}{P(nC)}$
 
-Seja $C_n$ o evento de obter cara em n lançamentos. Pela regra de Bayes, tem-se:
+$P(F|nC) = \frac{P(C|F)^nP(F)}{P(C)^n}$
 
-$$
-P(F|C_n) = \frac{P(C_n|F)P(F)}{P(C_n)} = \frac{1^n \cdot 0.5}{0.75^n} = \left(\frac{2}{3}\right)^n.
-$$
+$P(F|nC) = \frac{1^n \cdot 0.5}{0.75^n}$
 
-Assim, a probabilidade de a moeda ser falsa decresce exponencialmente com o número de lançamentos.
+$P(F|nC) = \left(\frac{2}{3}\right) ^n$
 
 **(iv) Se o professor lançar a moeda uma vez e obter cara, qual é a probabilidade do próximo lançamento ser cara?**
 
+- A probabilidade do próximo lançamento ser cara dado que o resultado foi cara é dada por:
 
+$P(C|C) = \frac{P(C|F)P(F)}{P(C)}$
 
-Seja $C_1$ o evento de obter cara no primeiro lançamento e $C_2$ o evento de obter cara no segundo lançamento. Pela regra da probabilidade total, tem-se:
+$P(C|C) = \frac{1 \cdot 0.5}{0.75}$
 
-$$
-P(C_2) = P(C_2|F)P(F) + P(C_2|F^c)P(F^c) = 1 \cdot 0.5 + 0.5 \cdot 0.5 = 0.75.
-$$
+$P(C|C) = \frac{0.5}{0.75}$
 
-Pela regra de Bayes, tem-se:
+$P(C|C) = \frac{2}{3}$
 
-$$
-P(C_2|C_1) = \frac{P(C_1|C_2)P(C_2)}{P(C_1)} = \frac{P(C_1|C_2)P(C_2)}{P(C_1|C_2)P(C_2) + P(C_1|C_2^c)P(C_2^c)} = \frac{1 \cdot 0.75}{1 \cdot 0.75 + 0.5 \cdot 0.25} = \frac{3}{4}.
-$$
-
-Portanto, a probabilidade do próximo lançamento ser cara é de 3/4.
 
 **(v) Explique porque é falso neste contexto a afirmação "os dois lançamentos da moeda são independentes", e explique qual seria a afirmação correta.**
 
+- A probabilidade do segundo lançamento ser cara depende do resultado do primeiro lançamento. A afirmação correta seria "os dois lançamentos da moeda são condicionalmente independentes", ou seja, a probabilidade do segundo lançamento ser cara dado que o primeiro foi cara é igual à probabilidade do segundo lançamento ser cara dado que o primeiro foi coroa.
 
-
-Os lançamentos da moeda não são independentes, pois o resultado de um lançamento afeta o resultado do próximo lançamento. A afirmação correta seria "os lançamentos da moeda são condicionalmente independentes dado o estado da moeda". Ou seja, se soubermos se a moeda é falsa ou honesta, os lançamentos da moeda são independentes.
 
 ## Questão 2
 
@@ -144,8 +150,6 @@ $p(y_{n+1}|y_1, ..., y_n) = \frac{s+1}{n+2} \int \theta^{s+y_{n+1}}(1-\theta)^{n
 
 $p(y_{n+1}|y_1, ..., y_n) = \frac{s+1}{n+2} \frac{\Gamma(s+y_{n+1}+1)\Gamma(n-s+1-y_{n+1}+1)}{\Gamma(n+2)}$
 
-
-
 ## Questão 4
 
 No exercício 2, calcule 
@@ -160,8 +164,6 @@ $L(\theta, \hat{\theta}) = (\theta - \hat{\theta})^2$
 
 $E[L(\theta, \hat{\theta})|x] = E[(\theta - \hat{\theta})^2|x]$
 
-$E[L(\theta, \hat{\theta})|x] = E[(\theta - \hat{\theta})^2|x]$
-
 $E[L(\theta, \hat{\theta})|x] = E[\theta^2 - 2\theta\hat{\theta} + \hat{\theta}^2|x]$
 
 $E[L(\theta, \hat{\theta})|x] = E[\theta^2|x] - 2E[\theta\hat{\theta}|x] + E[\hat{\theta}^2|x]$
@@ -172,7 +174,18 @@ $E[L(\theta, \hat{\theta})|x] = Var(\theta|x) + E[\theta|x]^2 - 2\hat{\theta}E[\
 
 $E[L(\theta, \hat{\theta})|x] = \frac{(s+1)(n-s+1)}{(n+2)^2(n+3)} + \left(\frac{s+1}{n+2}\right)^2 - 2\hat{\theta}\frac{s+1}{n+2} + \hat{\theta}^2$
 
-$E[L(\theta, \hat{\theta})|x] = \frac{(s+1)(n-s+1)}{(n+2)^2(n+3)} + \left(\frac{s+1}{n+2}\right)^2 - 2\frac{s}{n}\frac{s+1}{n+2} + \left(\frac{s}{n}\right)^2$
+- Isolando $\hat{\theta}$, tem-se:
+
+$\hat{\theta} = \frac{n}{n+2} \hat{\theta} + \frac{2}{n+2} \frac{1}{2}$
+
+$\hat{\theta} = \frac{n}{n+2} \hat{\theta} + \frac{1}{n+2}$
+
+$\hat{\theta} = \frac{n}{n+2} \frac{s}{n} + \frac{1}{n+2}$
+
+$\hat{\theta} = \frac{s}{n+2} + \frac{1}{n+2}$
+
+$\hat{\theta} = \frac{s+1}{n+2}$
+
 
 **(ii) o limite da estimativa bayesiana para Perda Zero-Um quando $\epsilon \rightarrow \theta$.**
 
@@ -188,6 +201,15 @@ $E[L(\theta, \hat{\theta})|x] = P(\theta \neq \hat{\theta}|x)$
 
 $E[L(\theta, \hat{\theta})|x] = 1 - P(\theta = \hat{\theta}|x)$
 
+- Sabe-se que:
+
+$P(\theta = \hat{\theta}|x) = P(\theta = \hat{\theta}|x) = 0$
+
+- Logo, o limite da estimativa bayesiana para perda zero-um é dado por:
+
+$\lim_{\epsilon \rightarrow \theta} E[L(\theta, \hat{\theta})|x] = 1$
+
+
 **No caso especial que $n = 12, s = \sum_{i=1}^{12} y_i = 9$, calcule** 
     
 **(iii) a estimativa bayesiana sob Perda Absoluta** 
@@ -200,6 +222,23 @@ $L(\theta, \hat{\theta}) = |\theta - \hat{\theta}|$
 
 $E[L(\theta, \hat{\theta})|x] = E[|\theta - \hat{\theta}|^2|x]$
 
+- Sabe-se que:
+
+$E[L(\theta, \hat{\theta})|x] = E[(\theta - \hat{\theta})^2|x]$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{(s+1)(n-s+1)}{(n+2)^2(n+3)} + \left(\frac{s+1}{n+2}\right)^2 - 2\hat{\theta}\frac{s+1}{n+2} + \hat{\theta}^2$
+
+- Com $s = 9$ e $n = 12$, tem-se:
+
+$\hat{\theta} = \frac{s+1}{n+2}$
+
+```{r}
+s<-9
+n<-12
+theta<- (s+1)/(n+2)
+theta
+```
+
     
 **(iv) um intervalo HPD com nível 99%**
 
@@ -210,6 +249,17 @@ $HPD = [\theta_{(1-\alpha)/2}, \theta_{(1+\alpha)/2}]$
 - Assim, o intervalo HPD com nível 99% é dado por:
 
 $HPD = [\theta_{0.005}, \theta_{0.995}]$
+
+- Com $s = 9$ e $n = 12$, tem-se:
+
+$\theta|x \sim Beta(9+1, 12-9+1)$
+
+- Logo, o intervalo HPD com nível 99% é dado por:
+
+```{r}
+qbeta(0.005, 10, 4)
+qbeta(0.995, 10, 4)
+```
 
 ## Questão 8
 **Suponha que $(x_1, x_2, x_3)$ dado $p_1, p_2, p_3$ segue uma distribuição Multinomial com parâmetros $n$ e $(p_1, p_2, p_3)$, onde $p_i \geq 0$ e $p_1 + p_2 + p_3 = 1$, e que, a priori, $(p_1, p_2, p_3)$ segue uma distribuição de Dirichlet com parâmetros $(\alpha_1, \alpha_2, \alpha_3)$.** 
@@ -497,3 +547,640 @@ $\beta_{1,0} = \frac{odds(\theta_1|x)}{odds(\theta_1)} = 14.15/0.071 = 199.3$ em
 $\beta_{0,1} = \frac{odds(\theta_0|x)}{odds(\theta_0)} = 0.071/14.15 = 0.005$ em favor de $H_0$.
 
 - Conclui-se assim que a evidência a favor de $H_1$ é 199.3 vezes mais forte que a evidência a favor de $H_0$. Logo, a escolha da distribuição a priori gera resultados diferentes, de forma que a distribuição Beta(0.5, 0.5) fornece uma evidência mais forte a favor de $H_1$ e é mais adequada para o problema.
+
+# Lista 3.1 
+
+## Questão 1
+**1. Seja $x_1,x_2,...,x_n$ uma amostra da distribuição de Poisson com média $\theta$, e considere a priori que $\theta$ tem uma distribuição Gama com parâmetros $\alpha$ e $\beta$ (ou seja, com média $\frac{\alpha}{\beta}$ e variância $\frac{\alpha}{\beta^2}$).** 
+
+**(i) Ache a distribuição a posteriori de $\theta$ e sua média e variância.** 
+
+- Entende-se que:
+
+$x_i \sim Poisson(\theta)$
+
+$\theta \sim Gama(\alpha, \beta)$
+
+- Assim, a priori é dada por:
+
+$P(\theta) = \frac{\beta^{\alpha}}{\Gamma(\alpha)} \theta^{\alpha-1} e^{-\beta\theta}$
+
+- A posteriori pode ser obtida por:
+
+$\theta|x \propto P(x|\theta)P(\theta)$
+
+$\theta|x \propto \theta^{\sum{x_i}} e^{-n\theta} \theta^{\alpha-1} e^{-\beta\theta}$
+
+$\theta|x \propto \theta^{\sum{x_i}+\alpha-1} e^{-(n+\beta)\theta}$
+
+- Assim, a posteriori é dada por:
+
+$\theta|x \sim Gama(\sum{x_i}+\alpha, n+\beta)$
+
+- Logo, a média e a variância da posteriori são dadas por:
+
+$E(\theta|x) = \frac{\sum{x_i}+\alpha}{n+\beta}$
+
+$Var(\theta|x) = \frac{\sum{x_i}+\alpha}{(n+\beta)^2}$
+
+**(ii) Mostre que é possível expressar a esperança a posteriori de $\theta$ da forma $w\bar{x} + (1 - w)\frac{\alpha}{\beta}$, e interprete este resultado.** 
+
+- A esperança a priori de $\theta$ é dada por:
+
+$E(\theta) = \frac{\alpha}{\beta}$
+
+- Assim, a esperança a posteriori de $\theta$ pode ser expressa como:
+
+$E(\theta|x) = \frac{\sum{x_i}+\alpha}{n+\beta} = \frac{n}{n+\beta} \frac{\sum{x_i}}{n} + \frac{\beta}{n+\beta} \frac{\alpha}{\beta}$
+
+$E(\theta|x) = \frac{n}{n+\beta} \bar{x} + \frac{\beta}{n+\beta} \frac{\alpha}{\beta}$
+
+- Sendo $w = \frac{n}{n+\beta}$, tem-se:
+
+$E(\theta|x) = w\bar{x} + (1 - w)\frac{\alpha}{\beta}$
+
+- Assim, a interpretação deste resultado é que a esperança a posteriori de $\theta$ é uma combinação linear entre a média amostral $\bar{x}$ e a média a priori $\frac{\alpha}{\beta}$, onde o peso $w$ é dado pela razão entre o tamanho amostral $n$ e a soma do tamanho amostral com o parâmetro $\beta$.
+
+**(iii) O que acontece na parte (ii) quando $\beta$ é grande com $\frac{\alpha}{\beta}$ fixo? Interprete!** 
+
+- Quando $\beta$ é grande, o peso $w$ tende a 1, de forma que a esperança a posteriori de $\theta$ se aproxima da média amostral $\bar{x}$, ou seja, a informação a priori é desconsiderada e a estimativa é baseada apenas na informação amostral. Assim, a interpretação é que a medida que o parâmetro $\beta$ aumenta, a influência da informação a priori diminui e a estimativa se aproxima da média amostral.
+
+**(iv) Mostre que existe um número $c$ tal que a variância a posteriori é maior do que a variância a priori sempre que $\bar{x} > c$, ache $c$ e interprete este resultado.**
+
+- A variância a priori de $\theta$ é dada por:
+
+$Var(\theta) = \frac{\alpha}{\beta^2}$
+
+- Assim, a variância a posteriori de $\theta$ é dada por:
+
+$Var(\theta|x) = \frac{\sum{x_i}+\alpha}{(n+\beta)^2}$
+
+- Para que a variância a posteriori seja maior que a variância a priori, é necessário que:
+
+$\frac{\sum{x_i}+\alpha}{(n+\beta)^2} > \frac{\alpha}{\beta^2}$
+
+$\frac{\sum{x_i}+\alpha}{n+\beta} > \frac{\alpha}{\beta}$
+
+$\frac{\sum{x_i}}{n} + \frac{\alpha}{n+\beta} > \frac{\alpha}{\beta}$
+
+$\frac{\sum{x_i}}{n} > \frac{\alpha}{\beta} - \frac{\alpha}{n+\beta}$
+
+$\frac{\sum{x_i}}{n} > \frac{\alpha}{\beta} - \frac{\alpha}{n+\beta}$
+
+$\frac{\sum{x_i}}{n} > \frac{\alpha(n+\beta) - \alpha\beta}{\beta(n+\beta)}$
+
+$\frac{\sum{x_i}}{n} > \frac{\alpha n}{\beta(n+\beta)}$
+
+$\frac{\sum{x_i}}{n} > \frac{\alpha}{\beta} \cdot \frac{n}{n+\beta}$
+
+- Assim, o número $c$ é dado por:
+
+$c = \frac{\alpha}{\beta}$
+
+- A interpretação deste resultado é que a variância a posteriori de $\theta$ é maior que a variância a priori sempre que a média amostral $\bar{x}$ for maior que a razão entre os parâmetros $\alpha$ e $\beta$, ou seja, a variância a posteriori é maior que a variância a priori quando a média amostral é maior que a média a priori.
+
+## Questão 3
+
+**Seja $x_1,x_2,...,x_n$ uma amostra da distribuição de Poisson com média $\theta$, e considerea priori que $\theta$ tem uma distribuição Gama com parâmetros $\alpha = 1$ e $\beta = 1$. Ache:**
+
+**(a) a estimativa bayesiana de $\theta$ no caso de perda quadrática**
+
+- A perda quadrática é dada por:
+
+$L(\theta, \hat{\theta}) = (\theta - \hat{\theta})^2$
+
+- Assim, a estimativa bayesiana de $\theta$ sob perda quadrática é dada por:
+
+$E[L(\theta, \hat{\theta})|x] = E[(\theta - \hat{\theta})^2|x]$
+
+$E[L(\theta, \hat{\theta})|x] = E[\theta^2 - 2\theta\hat{\theta} + \hat{\theta}^2|x]$
+
+$E[L(\theta, \hat{\theta})|x] = E[\theta^2|x] - 2E[\theta\hat{\theta}|x] + E[\hat{\theta}^2|x]$
+
+$E[L(\theta, \hat{\theta})|x] = Var(\theta|x) + E[\theta|x]^2 - 2\hat{\theta}E[\theta|x] + \hat{\theta}^2$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{1}{1} + \left(\frac{1}{2}\right)^2 - 2\hat{\theta} \cdot \frac{1}{2} + \hat{\theta}^2$
+
+$E[L(\theta, \hat{\theta})|x] = 1 + \frac{1}{4} - \hat{\theta} + \hat{\theta}^2$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{5}{4} - \hat{\theta} + \hat{\theta}^2$
+
+- Assim, a estimativa bayesiana de $\theta$ sob perda quadrática é dada por:
+
+$\hat{\theta} = \frac{1}{2}$
+
+**(b) o limite do estimativa bayesiana sob perda zero-um quando $\epsilon \rightarrow 0$.**
+
+- A perda zero-um é dada por:
+
+$L(\theta, \hat{\theta}) = I(\theta \neq \hat{\theta})$
+
+- Assim, o limite da estimativa bayesiana sob perda zero-um é dado por:
+
+$E[L(\theta, \hat{\theta})|x] = E[I(\theta \neq \hat{\theta})|x]$
+
+$E[L(\theta, \hat{\theta})|x] = P(\theta \neq \hat{\theta}|x)$
+
+$E[L(\theta, \hat{\theta})|x] = 1 - P(\theta = \hat{\theta}|x)$
+
+- Sendo $\hat{\theta} = \frac{1}{2}$, tem-se:
+
+$P(\theta = \hat{\theta}|x) = P(\theta = \frac{1}{2}|x)$
+
+$P(\theta = \hat{\theta}|x) = \frac{1}{1} \cdot \frac{1}{2} e^{-\frac{1}{2}}$
+
+$P(\theta = \hat{\theta}|x) = \frac{1}{2} e^{-\frac{1}{2}}$
+
+- Assim, o limite da estimativa bayesiana sob perda zero-um quando $\epsilon \rightarrow 0$ é dado por:
+
+$E[L(\theta, \hat{\theta})|x] = 1 - \frac{1}{2} e^{-\frac{1}{2}}$
+
+**Para o caso $n = 10$ e $\bar{x} = 1.55$, ache:**
+
+**(c) a estimativa bayesiana sob perda absoluta**
+
+- A perda absoluta é dada por:
+
+$L(\theta, \hat{\theta}) = |\theta - \hat{\theta}|$
+
+- Assim, a estimativa bayesiana de $\theta$ sob perda absoluta é dada por:
+
+$E[L(\theta, \hat{\theta})|x] = E[|\theta - \hat{\theta}|^2|x]$
+
+- Com $\hat{\theta} = \frac{1}{2}$, $n=10$ e $\bar{x} = 1.55$, tem-se:
+
+$E[L(\theta, \hat{\theta})|x] = E[|\theta - \frac{1}{2}|^2|x]$
+
+$E[L(\theta, \hat{\theta})|x] = E[\theta^2 - \theta + \frac{1}{4}|x]$
+
+$E[L(\theta, \hat{\theta})|x] = E[\theta^2|x] - E[\theta|x] + \frac{1}{4}$
+
+$E[L(\theta, \hat{\theta})|x] = Var(\theta|x) + E[\theta|x]^2 - E[\theta|x] + \frac{1}{4}$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{1}{1} + \left(\frac{1}{2}\right)^2 - \frac{1}{2} + \frac{1}{4}$
+
+$E[L(\theta, \hat{\theta})|x] = 1 + \frac{1}{4} - \frac{1}{2} + \frac{1}{4}$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{5}{4} - \frac{1}{2} + \frac{1}{4}$
+
+$E[L(\theta, \hat{\theta})|x] = \frac{3}{4}$
+
+
+**(d) o intervalo HPD para $\theta$ com nível 95%**
+
+- Como $\theta \sim Gama(1, 1)$, com $n=10$, tem-se:
+
+ O intervalo HPD para $\theta$ com nível 95% é dado por:
+
+```{r}
+qgamma(0.025,1,1)
+qgamma(0.975,1,1)
+```
+
+
+## Questão 5
+
+**Seja $x_1,x_2,...,x_n$ uma amostra da distribuição Normal com média $\mu$ e variância $\phi^{-1}$ conhecida, e considere a distribuição a priori $\mu \sim N(\mu_0, \tau^{-1})$.** 
+
+**(i) Ache a distribuição a posteriori de $\mu$.**
+
+- Entende-se que:
+
+$x_i \sim Normal(\mu, \phi^{-1})$
+
+$\mu \sim Normal(\mu_0, \tau^{-1})$
+
+- Assim, a priori é dada por:
+
+$P(\mu) = \frac{1}{\sqrt{2\pi\tau}} e^{-\frac{1}{2\tau}(\mu - \mu_0)^2}$
+
+- A posteriori pode ser obtida por:
+
+$\mu|x \propto P(x|\mu)P(\mu)$
+
+$\mu|x \propto \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi\phi^{-1}}} e^{-\frac{1}{2\phi^{-1}}(x_i - \mu)^2} \cdot \frac{1}{\sqrt{2\pi\tau}} e^{-\frac{1}{2\tau}(\mu - \mu_0)^2}$
+
+$\mu|x \propto e^{-\frac{1}{2\phi^{-1}}\sum_{i=1}^{n}(x_i - \mu)^2} \cdot e^{-\frac{1}{2\tau}(\mu - \mu_0)^2}$
+
+$\mu|x \propto e^{-\frac{1}{2\phi^{-1}}\sum_{i=1}^{n}(x_i^2 - 2x_i\mu + \mu^2)} \cdot e^{-\frac{1}{2\tau}(\mu^2 - 2\mu\mu_0 + \mu_0^2)}$
+
+$\mu|x \propto e^{-\frac{1}{2\phi^{-1}}\sum_{i=1}^{n}(x_i^2 - 2x_i\mu + \mu^2) -\frac{1}{2\tau}(\mu^2 - 2\mu\mu_0 + \mu_0^2)}$
+
+- Logo,
+
+$\mu|x \sim Normal(\frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}, \frac{1}{n/\phi + 1/\tau})$
+
+**(ii) Mostre que é possível expressar a esperança a posteriori de $\mu$ da forma $w\bar{x} + (1 - w)\mu_0$, e interprete este resultado**. 
+
+- A esperança a priori de $\mu$ é dada por:
+
+$E(\mu) = \mu_0$
+
+- Assim, a esperança a posteriori de $\mu$ pode ser expressa como:
+
+$E(\mu|x) = \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}$
+
+$E(\mu|x) = \frac{n\mu_0 + \sum{x_i}}{n + \phi/\tau}$
+
+$E(\mu|x) = \frac{n}{n + \phi/\tau} \bar{x} + \frac{\phi/\tau}{n + \phi/\tau} \mu_0$
+
+- Sendo $w = \frac{n}{n + \phi/\tau}$, tem-se:
+
+$E(\mu|x) = w\bar{x} + (1 - w)\mu_0$
+
+
+**(iii) Se $\bar{x}_m$ é a média de $m$ observações futuras $x_{n+1},...,x_{n+m}$, condicionalmente independentes de $x_1,...,x_n$, ache a distribuição preditiva $p(\bar{x}_m|x_1,...,x_n)$.** 
+
+- Entende-se que:
+
+$\bar{x}_m = \frac{\sum_{i=n+1}^{n+m} x_i}{m}$
+
+- Assim, a distribuição preditiva é dada por:
+
+$p(\bar{x}_m|x) = \int p(\bar{x}_m|\mu) p(\mu|x) d\mu$
+
+$p(\bar{x}_m|x) = \int Normal(\bar{x}_m|\mu, \phi^{-1}/m) Normal(\mu|\frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}, \frac{1}{n/\phi + 1/\tau}) d\mu$
+
+$p(\bar{x}_m|x) = \int \frac{1}{\sqrt{2\pi\phi^{-1}/m}} e^{-\frac{1}{2\phi^{-1}/m}(\bar{x}_m - \mu)^2} \cdot \frac{1}{\sqrt{2\pi\frac{1}{n/\phi + 1/\tau}}} e^{-\frac{1}{2\frac{1}{n/\phi + 1/\tau}}(\mu - \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau})^2} d\mu$
+
+$p(\bar{x}_m|x) = \int \frac{1}{\sqrt{2\pi\phi^{-1}/m}} e^{-\frac{1}{2\phi^{-1}/m}(\bar{x}_m - \mu)^2} \cdot \frac{1}{\sqrt{2\pi\frac{1}{n/\phi + 1/\tau}}} e^{-\frac{1}{2\frac{1}{n/\phi + 1/\tau}}(\mu - \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau})^2} d\mu$
+
+- Assim,
+
+$p(\bar{x}_m|x) \sim Normal(\bar{x}_m|\frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}, \frac{1}{n/\phi + 1/\tau} + \phi^{-1}/m)$
+
+**(iv) Discuta o que acontece com os resultados anteriores quando a distribuição a priori $p(\mu) \propto 1$ (ou seja, o caso limite quando $\tau \rightarrow 0)$.**
+
+- Quando a distribuição a priori é uniforme, a informação a priori é desconsiderada e a estimativa é baseada apenas na informação amostral. Assim, a média a posteriori de $\mu$ é dada pela média amostral $\bar{x}$, a variância a posteriori de $\mu$ é dada pela variância amostral $\phi^{-1}/n$ e a distribuição preditiva é dada por:
+
+$p(\bar{x}_m|x) \sim Normal(\bar{x}_m|\bar{x}, \phi^{-1}/n + \phi^{-1}/m)$
+
+- Assim, a interpretação é que a medida que o parâmetro $\tau$ tende a zero, a influência da informação a priori diminui e a estimativa se aproxima da média amostral, a variância a posteriori de $\mu$ diminui e a distribuição preditiva é dada pela média amostral e pela variância amostral.
+
+## Questão 6
+
+**Seja $x_1, x_2, ..., x_n$ uma amostra da distribuição Normal com média $\mu$ e variância $\phi^{-1}$ conhecida, e considere a distribuição a priori $\mu \sim N(\mu_0, \tau^{-1})$.**
+
+**(a): Ache o estimador bayesiano de $\mu$ no caso de**
+
+**(i) perda quadrática $(L(\hat{\mu},\mu) = (\hat{\mu} - \mu)^2)$,**
+
+- Para encontrar $\hat{\mu}$ sob perda quadrática, é necessário minimizar a perda esperada:
+
+$E[L(\hat{\mu},\mu)|x] = E[(\hat{\mu} - \mu)^2|x]$
+
+$E[L(\hat{\mu},\mu)|x] = E[\hat{\mu}^2 - 2\hat{\mu}\mu + \mu^2|x]$
+
+$E[L(\hat{\mu},\mu)|x] = E[\hat{\mu}^2|x] - 2E[\hat{\mu}\mu|x] + E[\mu^2|x]$
+
+$E[L(\hat{\mu},\mu)|x] = Var(\hat{\mu}|x) + E[\hat{\mu}|x]^2 - 2\mu E[\hat{\mu}|x] + \mu^2$
+
+$E[L(\hat{\mu},\mu)|x] = \frac{1}{n/\phi + 1/\tau} + E[\hat{\mu}|x]^2 - 2\mu E[\hat{\mu}|x] + \mu^2$
+
+- Assim, a estimativa bayesiana de $\mu$ sob perda quadrática é dada por:
+
+$\hat{\mu} = E[\mu|x] = \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}$
+
+**(ii) perda absoluta $(L(\hat{\mu},\mu) = |\hat{\mu}-\mu|)$**
+
+- Para encontrar $\hat{\mu}$ sob perda absoluta, o processo é similar:
+
+$E[L(\hat{\mu},\mu)|x] = E[|\hat{\mu} - \mu|x]$
+
+- Logo,
+
+$\hat{\mu} = E[\mu|x] = \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}$
+
+**(iii) perda zero-um $(L(\hat{\mu},\mu) = I(|\hat{\mu}-\mu| \geq \epsilon))$.**
+
+- Para encontrar $\hat{\mu}$ sob perda zero-um, o processo também é similar:
+
+$E[L(\hat{\mu},\mu)|x] = E[I(|\hat{\mu} - \mu| \geq \epsilon)|x]$
+
+- Assim,
+
+$\hat{\mu} = E[\mu|x] = \frac{\sum{x_i}/\phi + \mu_0/\tau}{n/\phi + 1/\tau}$
+
+**(b): Ache o intervalo HPD para $\mu$ com nível $100(1 - \alpha)\%$**
+
+- O intervalo HPD para $\mu$ com nível $100(1 - \alpha)\%$ é dado por:
+
+```{r}
+qnorm(0.025, 1.5, 1/sqrt(10))
+qnorm(0.975, 1.5, 1/sqrt(10))
+```
+
+# Lista 3.2
+
+## Questão 1
+
+**Considere o modelo $X \sim \text{Uniforme}(\theta, \theta + 1)$ ($-\infty < \theta < \infty$).**
+
+**(a) Mostre que $\theta$ é um parâmetro de locação.**
+
+- Para mostrar que $\theta$ é um parâmetro de locação, é necessário verificar se a distribuição é invariante por translação, ou seja, se $X - \theta$ tem a mesma distribuição que $X$.
+
+$P(X - \theta) = \int_{\theta}^{\theta+1} \frac{1}{1} dx = 1$
+
+- Logo, a distribuição de $X - \theta$ é constante, de forma que $X - \theta$ tem a mesma distribuição que $X$ e $\theta$ é um parâmetro de locação.
+
+**(b) Dada a priori não informativa usual para o modelo de locação, $p(\theta) \propto 1$ e uma amostra aleatória $X_1,...,X_n$ do modelo acima, discuta a propriedade da distribuição a posteriori.**
+
+- A priori não informativa usual para o modelo de locação é dada por:
+
+$p(\theta) \propto 1$
+
+- Assim, a distribuição a posteriori de $\theta$ é dada por:
+
+$\theta|x \propto P(x|\theta)P(\theta)$
+
+$\theta|x \propto \prod_{i=1}^{n} \frac{1}{1} \cdot 1$
+
+$\theta|x \propto 1$
+
+- Assim, a distribuição a posteriori de $\theta$ é constante, de forma que a informação a priori não influencia a estimativa de $\theta$.
+
+**(c) Na situação da parte (b), ache:**
+
+**(i) os estimadores bayesianos sob Perda Quadrática e sob Perda Absoluta;**
+
+- O estimador bayesiano de $\theta$ sob perda quadrática é dado por:
+
+$\hat{\theta} = E[\theta|x] = \int \theta p(\theta|x) d\theta$
+
+- O estimador bayesiano de $\theta$ sob perda absoluta é dado por:
+
+$\hat{\theta} = \text{mediana}(\theta|x)$
+
+
+**(ii) O intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$**
+
+- O intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$ é dado por:
+
+`qunif(alpha/2, min(x), max(x))`
+
+`qunif(1-alpha/2, min(x), max(x))`
+
+**(iii) A probabilidade a posteriori do evento $\theta > \theta_0$.**
+
+- A probabilidade a posteriori do evento $\theta > \theta_0$ é dada por:
+
+$P(\theta > \theta_0|x) = \int_{\theta_0}^{\infty} p(\theta|x) d\theta$
+
+$P(\theta > \theta_0|x) = \int_{\theta_0}^{\infty} 1 d\theta$
+
+$P(\theta > \theta_0|x) = 1 - \theta_0$
+
+## Questão 2  
+
+**Considere o modelo $X \sim \text{Uniforme}(0,\theta)$ ($0 < \theta < \infty$).**
+
+**(a) Mostre que $\sigma = \theta^{-1}$ é um parâmetro de escala.**
+
+- Para mostrar que $\sigma = \theta^{-1}$ é um parâmetro de escala, é necessário verificar se a distribuição é invariante por escala, ou seja, se $X/\theta$ tem a mesma distribuição que $X$.
+
+$P(X/\theta) = \int_{0}^{\theta} \frac{1}{\theta} dx = 1$
+
+- Logo, a distribuição de $X/\theta$ é constante, de forma que $X/\theta$ tem a mesma distribuição que $X$ e $\sigma = \theta^{-1}$ é um parâmetro de escala.
+
+**(b) Dada a priori não informativa usual para o modelo de escala, $p(\sigma) \propto \sigma^{-1}$ e uma amostra aleatória $X_1,...,X_n$ do modelo acima, discuta a propriedade da distribuição a posteriori.**
+
+- A priori não informativa usual para o modelo de escala é dada por:
+
+$p(\sigma) \propto \sigma^{-1}$
+
+- Assim, a distribuição a posteriori de $\sigma$ é dada por:
+
+$\sigma|x \propto P(x|\sigma)P(\sigma)$
+
+$\sigma|x \propto \prod_{i=1}^{n} \frac{1}{\sigma} \cdot \sigma^{-1}$
+
+$\sigma|x \propto \frac{1}{\sigma^n}$
+
+**(c) Na situação da parte (b), ache:**
+
+**(i) os estimadores bayesianos sob Perda Quadrática e sob Perda Absoluta;** 
+
+- O estimador bayesiano de $\sigma$ sob perda quadrática é dado por:
+
+$\hat{\sigma} = E[\sigma|x] = \int \sigma p(\sigma|x) d\sigma$
+
+- O estimador bayesiano de $\sigma$ sob perda absoluta é dado por:
+
+$\hat{\sigma} = \text{mediana}(\sigma|x)$
+
+
+
+**(ii) O intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$**
+
+- O intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$ é dado por:
+
+`qunif(alpha/2, min(x), max(x))`
+
+`qunif(1-alpha/2, min(x), max(x))`
+
+**(iii) A probabilidade a posteriori do evento $\theta > \theta_0$.**
+
+- A probabilidade a posteriori do evento $\theta > \theta_0$ é dada por:
+
+$P(\theta > \theta_0|x) = \int_{\theta_0}^{\infty} p(\theta|x) d\theta$
+
+$P(\theta > \theta_0|x) = \int_{\theta_0}^{\infty} \frac{1}{\theta^n} d\theta$
+
+$P(\theta > \theta_0|x) = \left. -\frac{1}{(n-1)\theta^{n-1}} \right|_{\theta_0}^{\infty}$
+
+$P(\theta > \theta_0|x) = \frac{1}{(n-1)\theta_0^{n-1}}$
+
+## Questão 3
+
+**Considere o modelo $x_1,...,x_n|\theta \sim \text{Ber}(\theta)$.**
+
+**(a) Calcule a priori de Jeffreys e mostre que ela é própria.**
+
+- A priori de Jeffreys é dada por:
+
+$p(\theta) \propto \sqrt{I(\theta)}$
+
+$I(\theta) = -E\left[\frac{\partial^2}{\partial \theta^2} \log f(x|\theta)\right]$
+
+$I(\theta) = -E\left[\frac{\partial^2}{\partial \theta^2} \log \theta^x(1-\theta)^{1-x}\right]$
+
+$I(\theta) = -E\left[\frac{\partial^2}{\partial \theta^2} (x\log \theta + (1-x)\log(1-\theta))\right]$
+
+$I(\theta) = -E\left[\frac{\partial}{\partial \theta} \left(\frac{x}{\theta} - \frac{1-x}{1-\theta}\right)\right]$
+
+$I(\theta) = -E\left[\frac{-x}{\theta^2} + \frac{1-x}{(1-\theta)^2}\right]$
+
+$I(\theta) = E\left[\frac{x}{\theta^2} + \frac{1-x}{(1-\theta)^2}\right]$
+
+$I(\theta) = \frac{1}{\theta^2} E[x] + \frac{1}{(1-\theta)^2} E[1-x]$
+
+$I(\theta) = \frac{1}{\theta^2} \theta + \frac{1}{(1-\theta)^2} (1-\theta)$
+
+$I(\theta) = \frac{1}{\theta} + \frac{1}{1-\theta}$
+
+- Assim, a priori de Jeffreys é dada por:
+
+$p(\theta) \propto \sqrt{\frac{1}{\theta} + \frac{1}{1-\theta}}$
+
+- Para mostrar que a priori de Jeffreys é própria, é necessário verificar se a integral da priori é finita:
+
+$\int \sqrt{\frac{1}{\theta} + \frac{1}{1-\theta}} d\theta$
+
+```{r}
+integrate(function(theta) sqrt(1/theta + 1/(1-theta)), lower = 0, upper = 1)$value
+```
+
+- Assim, como a integral é finita, a priori de Jeffreys é própria.
+
+**(b) Considere uma amostra aleatória $X_1,...,X_n$ do modelo acima e a priori de Jeffreys. Ache o estimador bayesiano de $\theta$ sob Perda Quadrática e explique como achar um intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$.**
+
+- O estimador bayesiano de $\theta$ sob perda quadrática é dado por:
+
+$\hat{\theta} = E[\theta|x] = \int \theta p(\theta|x) d\theta$
+
+- Um exemplo de cálculo do intervalo HPD para $\theta$ com credibilidade $100(1 - \alpha)\%$ pode ser dado por:
+
+`qbeta(alpha/2, sum(x), n - sum(x))`
+
+`qbeta(1-alpha/2, sum(x), n - sum(x))`
+
+# Lista 4
+
+## Questão 1
+
+**Considere uma amostra $y_1,...,y_n$ da distribuição Normal com média $\mu$ e variância $\sigma^2 = 1/\tau$ desconhecidas, e suponha que a priori a distribuição de $(\mu,\tau)$ é especificada da seguinte forma: $\mu|\tau \sim N(\mu_0,1/\lambda_0\tau)$ e $\tau \sim \text{Gama}(\alpha_0,\beta_0)$, onde $\lambda_0$, $\alpha_0$ e $\beta_0$ são positivas.**
+
+**(a) Ache a distribuição a posteriori de $p(\mu,\tau|D)$ e as distribuições marginais $p(\mu|D)$ e $p(\tau|D)$.**
+
+- A distribuição a posteriori de $p(\mu,\tau|D)$ é dada por:
+
+$p(\mu,\tau|D) \propto p(D|\mu,\tau)p(\mu|\tau)p(\tau)$
+
+$p(\mu,\tau|D) \propto \prod_{i=1}^{n} \frac{1}{\sqrt{2\pi\tau}} e^{-\frac{1}{2\tau}(y_i - \mu)^2} \cdot \frac{1}{\sqrt{2\pi\lambda_0\tau}} e^{-\frac{1}{2\lambda_0\tau}(\mu - \mu_0)^2} \cdot \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)} \tau^{\alpha_0 - 1} e^{-\beta_0\tau}$
+
+$p(\mu,\tau|D) \propto \frac{1}{\sqrt{2\pi\tau}^n} e^{-\frac{1}{2\tau}\sum_{i=1}^{n}(y_i - \mu)^2} \cdot \frac{1}{\sqrt{2\pi\lambda_0\tau}} e^{-\frac{1}{2\lambda_0\tau}(\mu - \mu_0)^2} \cdot \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)} \tau^{\alpha_0 - 1} e^{-\beta_0\tau}$
+
+$p(\mu,\tau|D) \propto \tau^{n/2 - 1} e^{-\frac{1}{2\tau}\sum_{i=1}^{n}(y_i - \mu)^2} \cdot \tau^{1/2} e^{-\frac{1}{2\lambda_0\tau}(\mu - \mu_0)^2} \cdot \tau^{\alpha_0 - 1} e^{-\beta_0\tau}$
+
+$p(\mu,\tau|D) \propto \tau^{n/2 + 1/2 + \alpha_0 - 1} e^{-\frac{1}{2\tau}\sum_{i=1}^{n}(y_i - \mu)^2 - \frac{1}{2\lambda_0\tau}(\mu - \mu_0)^2 - \beta_0\tau}$
+
+$p(\mu,\tau|D) \propto \tau^{n/2 + 1/2 + \alpha_0 - 1} e^{-\frac{1}{2\tau}(\sum_{i=1}^{n}(y_i - \mu)^2 + \frac{1}{\lambda_0}(\mu - \mu_0)^2 + 2\beta_0)}$
+
+- Assim, a distribuição a posteriori de $p(\mu,\tau|D)$ é dada por:
+
+$p(\mu,\tau|D) \sim \text{Gama}(\alpha_0 + n/2, \frac{1}{2}(\sum_{i=1}^{n}y_i^2 + \frac{1}{\lambda_0}(\mu - \mu_0)^2 + 2\beta_0))$
+
+
+**(b) Discuta neste contexto o uso da distribuição a priori não informativa $p(\mu,\tau) \propto 1/\tau$. A distribuição a posteriori é própria? Qual é a relação da distribuição $p(\mu|D)$ e os resultados clássicos?**
+
+- A priori não informativa $p(\mu,\tau) \propto 1/\tau$ é uma distribuição imprópria, de forma que a distribuição a posteriori é própria. A distribuição a posteriori de $\mu$ é dada por:
+
+$p(\mu|D) = \int p(\mu,\tau|D) d\tau$
+
+- A distribuição a posteriori de $\mu$ é dada por:
+
+$p(\mu|D) \sim t_{2\alpha_0 + n}(\mu_0, \frac{1}{\lambda_0(\alpha_0 + n)})$
+
+## Questão 2c
+
+**Seja $\mathbf{n} = (n_1,...,n_k)$ um vetor aleatório com distribuição multinomial e densidade $p(\mathbf{n}|\boldsymbol{\theta}) \propto \prod_{i=1}^k \theta_i^{n_i}$, onde $\boldsymbol{\theta} = (\theta_1,...,\theta_k)$, $\theta_i > 0$ e $\sum_{i} \theta_i = 1$. Considere a priori para $\boldsymbol{\theta}$ uma distribuição de Dirichlet com parâmetro $\boldsymbol{\alpha} = (\alpha_1,...,\alpha_k)$, isto é $p(\boldsymbol{\theta}) \propto\prod_{i=1}^k \theta_i^{\alpha_i - 1}$.**
+
+**(c) No caso particular $\boldsymbol{\alpha} = (0,0,...,0)$ a distribuição a priori de $\boldsymbol{\theta}$ é imprópria. Mostre que a distribuição a posteriori é própria se e somente se $n_i > 0$ para $i = 1,2,...,k$.**
+
+## Questão 3
+
+**Na véspera do primeiro turno para a eleição de governador do DF em 2010, a Datafolha divulgou uma pesquisa indicando que, de 891 eleitores entrevistados que já tinham decidido em quem votar, Agnelo Queiroz tinha a preferência de 467, Weslian Roriz de 315 e outros candidatos de 109 eleitores. Formule um modelo para analisar esses dados. O interesse centra fundamentalmente em três perguntas:** 
+
+**(a) a eleição poderia ser definida no primeiro turno?**
+
+- A eleição poderia ser definida no primeiro turno se o candidato Agnelo tivesse mais de 50% dos votos válidos. Assim, o modelo pode ser formulado como:
+
+$p(\theta) \propto \theta^{467} (1 - \theta)^{315}$
+
+
+**(b) O candidato Agnelo poderia ser eleito no primeiro turno?** 
+
+-  Assim, a probabilidade de Agnelo ser eleito no primeiro turno é dada por:
+
+$P(\theta > 0.5) = 1 - \Phi\left(\frac{\log\left[\frac{0.5}{1 - 0.5}\right] - 0.75}{\sqrt{1 + 782}}\right)$
+
+$P(\theta > 0.5) = 1 - \Phi\left(\frac{\log\left[\frac{1}{2}\right] - 0.75}{\sqrt{783}}\right)$
+
+$P(\theta > 0.5) = 1 - \Phi\left(\frac{-0.6931 - 0.75}{\sqrt{783}}\right)$
+
+$P(\theta > 0.5) = 1 - \Phi\left(\frac{-1.4431}{\sqrt{783}}\right)$
+
+$P(\theta > 0.5) = 1 - \Phi\left(-0.0516\right)$
+
+$P(\theta > 0.5) = 1 - 0.4794$
+
+$P(\theta > 0.5) = 0.5206$
+
+
+**(c) qual será a diferença na porcentagem dos votos válidos entre os dois primeiros colocados?**
+
+- A diferença na porcentagem dos votos válidos entre os dois primeiros colocados é dada por:
+
+$P(\theta_1 - \theta_2 > 0) = 1 - \Phi\left(\frac{\log\left[\frac{467}{782}{1 - \frac{467}{782}}\right] - 0.75}{\sqrt{1 + 782}}\right)$
+
+- Calculando, o resultado é:
+
+$P(\theta_1 - \theta_2 > 0) = 1 - \Phi\left(\frac{\log\left[\frac{467}{782}{1 - \frac{467}{782}}\right] - 0.75}{\sqrt{1 + 782}}\right)$
+
+
+# Lista 5
+
+## Questão 2
+
+**Considere $n = 12$ ensaios de Bernoulli com probabilidade de sucesso $p$ e $y = 9$ sucessos. Suponha que a distribuição a priori de $p$ é especificada de forma que $\eta = \log\left[\frac{p}{1 - p}\right]$ segue uma distribuição Normal com média $\mu = 0$ e variância $\sigma^2 = 1$. Obtenha aproximações para $\mathbb{E}(p|y = 9)$, $\text{DP}(p|y = 9)$ e $\Pr(p > \frac{1}{2}|y = 9)$. Repita o exercício para os casos que $\sigma^2 = 4$ e $9$ e compare com o caso $\sigma^2 = 1$.**
+
+- A distribuição a priori de $\eta$ é dada por:
+
+$p(\eta) = \frac{1}{\sqrt{2\pi}} e^{-\frac{\eta^2}{2}}$
+
+- Assim, a distribuição a posteriori de $\eta$ é dada por:
+
+$p(\eta|y) \propto p(y|\eta)p(\eta)$
+
+$p(\eta|y) \propto \binom{12}{9} e^{9\eta} (1-e^{\eta})^3 e^{-\frac{\eta^2}{2}}$
+
+- A distribuição a posteriori de $\eta$ é dada por:
+
+$p(\eta|y) = \frac{1}{\sqrt{2\pi}} e^{-\frac{(\eta - 0.75)^2}{2(1 + 12)}}$
+
+- Assim, a distribuição a posteriori de $p$ é dada por:
+
+$p(p|y) = \frac{1}{\sqrt{2\pi}} e^{-\frac{(\log\left[\frac{p}{1 - p}\right] - 0.75)^2}{2(1 + 12)}}$
+
+- A esperança a posteriori de $p$ é dada por:
+
+$\mathbb{E}(p|y) = \frac{1}{1 + e^{-0.75}}$
+
+- A variância a posteriori de $p$ é dada por:
+
+$\text{Var}(p|y) = \frac{1}{(1 + e^{-0.75})^2} \cdot \frac{e^{-0.75}}{(1 + e^{-0.75})^2}$
+
+- A probabilidade a posteriori de $p > \frac{1}{2}$ é dada por:
+
+$\Pr(p > \frac{1}{2}|y) = 1 - \Phi\left(\frac{\log\left[\frac{1}{2}{1 - \frac{1}{2}}\right] - 0.75}{\sqrt{1 + 12}}\right)$
+
+- Assim, para $\sigma^2 = 4$:
+
+$p(p|y) = \frac{1}{\sqrt{2\pi}} e^{-\frac{(\log\left[\frac{p}{1 - p}\right] - 0.75)^2}{2(4 + 12)}}$
+
+$\mathbb{E}(p|y) = \frac{1}{1 + e^{-0.75}}$
+
+$\text{Var}(p|y) = \frac{1}{(1 + e^{-0.75})^2} \cdot \frac{e^{-0.75}}{(4 + 12)^2}$
+
+$\Pr(p > \frac{1}{2}|y) = 1 - \Phi\left(\frac{\log\left[\frac{1}{2}{1 - \frac{1}{2}}\right] - 0.75}{\sqrt{4 + 12}}\right)$
+
+- E, para $\sigma^2 = 9$:
+
+$p(p|y) = \frac{1}{\sqrt{2\pi}} e^{-\frac{(\log\left[\frac{p}{1 - p}\right] - 0.75)^2}{2(9 + 12)}}$
+
+$\mathbb{E}(p|y) = \frac{1}{1 + e^{-0.75}}$
+
+$\text{Var}(p|y) = \frac{1}{(1 + e^{-0.75})^2} \cdot \frac{e^{-0.75}}{(9 + 12)^2}$
+
+$\Pr(p > \frac{1}{2}|y) = 1 - \Phi\left(\frac{\log\left[\frac{1}{2}{1 - \frac{1}{2}}\right] - 0.75}{\sqrt{9 + 12}}\right)$
