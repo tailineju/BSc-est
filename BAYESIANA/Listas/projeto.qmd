@@ -2,7 +2,7 @@
 title: "Projeto"
 subtitle: "Inferência Bayesiana"
 author: "Tailine J. S. Nonato"
-date: "2024-06-30"
+date: "2024-30-06"
 format: pdf
 ---
 
@@ -70,6 +70,14 @@ for (i in 1:n) {
 
 # Amostragem de beta
 beta <- rgamma(1, a, b)
+
+# Inicialização do vetor lambda
+lambda <- numeric(n)
+
+# Amostragem de lambda_i
+for (i in 1:n) {
+  lambda[i] <- rgamma(1, alpha0, beta)
+}
 
 # Cálculo das aproximações
 E_lambda <- mean(lambda)

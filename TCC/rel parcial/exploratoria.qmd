@@ -52,9 +52,9 @@ df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
 df <- merge(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
 
-diag <- anti_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
 
-df_escola <- df_escola %>% filter(!ID_ESCOLA %in% diag$ID_ESCOLA)
+df_escola <- df_escola %>% 
+  filter(ID_ESCOLA %in% unique(df$ID_ESCOLA))
 
 df %>% summarise(n_distinct(ID_ESCOLA)) %>% pull()
 
@@ -152,9 +152,7 @@ Análise:
 #| eval: false
 #| message: false
 
-
-
-nse_freq <- df %>%
+nse_freq <- df_escola %>%
     mutate(NIVEL_SOCIO_ECONOMICO = as.factor(NIVEL_SOCIO_ECONOMICO)) %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     count(NIVEL_SOCIO_ECONOMICO) %>%
@@ -172,7 +170,7 @@ kable(nse_freq, caption = "Frequência do Nível Socioeconômico das Escolas", b
 #| eval: false
 #| message: false
 
-area_freq <- df %>%
+area_freq <- df_escola %>%
     mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
     count(ID_AREA) %>%
     mutate(prop = round(n / sum(n) * 100,2)) %>%
@@ -188,7 +186,7 @@ kable(area_freq, caption = "Frequência da Área das Escolas", booktabs = TRUE,
 #| eval: false
 #| message: false
 
-loc_freq <- df %>%
+loc_freq <- df_escola %>%
     mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
     mutate(ID_LOCALIZACAO = factor(ID_LOCALIZACAO)) %>%
     count(ID_LOCALIZACAO) %>%

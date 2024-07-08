@@ -11,7 +11,7 @@ format: pdf
 #| warning: false
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra)
+pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra,write)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
 dados <- read.csv("base_completa_2024.csv")
@@ -31,6 +31,9 @@ escolas_somente_nao_pagos <- dados_nao_pagos %>%
         anti_join(dados_pagos, by = "CO_ENTIDADE")
 
 dados <- rbind(dados_pagos, escolas_somente_nao_pagos)
+dados$NO_UF <- case_when(
+                NO_UF == "Goiás",
+)
 ```
 
 # Visão Geral 
@@ -88,6 +91,8 @@ dados$UEx <- factor(dados$UEx, levels = c("Sem UEx", "Com UEx"))
 dados$alunos <- ifelse(as.numeric(dados$Quantidade.Alunos) < 50, "<50", "50+")
 dados$alunos <- factor(dados$alunos, levels = c( "<50","50+"))
 
+#write.xlsx(dados,"base24_att.xlsx")
+
 # definindo todas as tabelas
 tab2 <- dados %>% 
         filter(TP_LOCALIZACAO_DIFERENCIADA == 1) %>%
@@ -138,7 +143,7 @@ tab5 <- dados %>%
         summarise(n = n(), .groups = 'drop') %>%
         spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
-        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        select(NO_UF, `pdde_pagos`,`pdde_naopagos`) %>%
         rename(`Não pagos` = `pdde_naopagos`,
                `Pagos` = `pdde_pagos`) %>%
         mutate(Total = rowSums(select(., -NO_UF))) %>%
@@ -196,7 +201,7 @@ tab9 <- dados %>%
         summarise(n = n(), .groups = 'drop') %>%
         spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
-        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        select(NO_UF, `pdde_pagos`,`pdde_naopagos`) %>%
         rename(`Não pagos` = `pdde_naopagos`,
                `Pagos` = `pdde_pagos`) %>%
         mutate(Total = rowSums(select(., -NO_UF))) %>%
@@ -256,7 +261,7 @@ tab13 <- dados %>%
         summarise(n = n(), .groups = 'drop') %>%
         spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
-        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        select(NO_UF, `pdde_pagos`,`pdde_naopagos`) %>%
         rename(`Não pagos` = `pdde_naopagos`,
                `Pagos` = `pdde_pagos`) %>%
         mutate(Total = rowSums(select(., -NO_UF))) %>%
@@ -318,7 +323,7 @@ tab17 <- dados %>%
         summarise(n = n(), .groups = 'drop') %>%
         spread(fonte, n, fill = 0) %>%
         mutate_at(vars(`pdde_naopagos`,`pdde_pagos`), as.numeric) %>%
-        select(NO_UF, `pdde_naopagos`,`pdde_pagos`) %>%
+        select(NO_UF, `pdde_pagos`,`pdde_naopagos`) %>%
         rename(`Não pagos` = `pdde_naopagos`,
                `Pagos` = `pdde_pagos`) %>%
         mutate(Total = rowSums(select(., -NO_UF))) %>%
@@ -329,6 +334,7 @@ tab17 <- dados %>%
         mutate_if(is.numeric, ~format(., decimal.mark = ",", big.mark = "."))
 ```	
 
+\newpage
 
 ## Tabela 2 - Visão geral das escolas públicas em área de assentamento (Centro-Oeste, 2024)
 ```{r}
@@ -336,7 +342,7 @@ tab17 <- dados %>%
 #| warning: false
 #| message: false
 
-nomes<- c("UF", "Estadual", "Municipal", "Com UEx", "Sem UEx", "50+", "<50", "Pagos", "Não pagos", "Total")
+nomes<- c("UF", "Estadual", "Municipal", "Com UEx", "Sem UEx", "<50", "50+", "Pagos", "Não pagos", "Total")
 
 assentamento <- data.frame(tab2[,1:3], tab3[,2:3], tab4[,2:3], tab5[,2:4])
 colnames(assentamento) <- nomes
@@ -481,22 +487,50 @@ kable(tab21, align = "l") %>%
 
 ## Tabela 10 - Número de escolas públicas por UEx e Quantidade de Alunos em cada UF (Centro-Oeste, 2024)
 ```{r}
+#| eval: false
 #| echo: false
 #| warning: false
 #| message: false
 tab22 <- dados %>% 
         group_by(NO_UF, alunos, UEx) %>%
         summarise(n = n(), .groups = 'drop') %>%
+        spread(UEx,n,fill=0) %>%
         add_row(NO_UF = "Total", 
                 alunos = "", 
                 UEx = "", 
                 n = sum(.$n, na.rm = TRUE)) %>%
         mutate(n = format(n, big.mark = ".", decimal.mark = ","))%>%
         rename("UF" = NO_UF, "Número de alunos" = alunos, "UEx" = UEx, "Número de escolas" = n)
-kable(tab22, align = "l") %>%
-        kable_styling(full_width = F, position = "left")%>%
-        footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
+#kable(tab22, align = "l", format="latex") %>%
+ #       kable_styling(full_width = F, position = "left")%>%
+ #       footnote(general = "Consulta Escola 2024; Censo Escolar 2023", general_title = "Fonte:")
 ```
+
+
+\begin{tabular}{lll}
+\hline
+UF/Nº de alunos & Sem UEx & Com UEx\\
+\hline
+\multicolumn{3}{l}{\textbf{Distrito Federal}} \\
+ Menos de 50 & 0 & 4\\
+ Mais de 50 & 6 & 650\\
+ Total
+ \addlinespace
+\multicolumn{3}{l}{\textbf{Goiás}}\\
+Menos de 50 & 72 & 183\\
+Mais de 50 & 60 & 3162\\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Mato Grosso}} \\ 
+Menos de 50 & 113 & 88\\
+Mais de 50 & 65 & 1980\\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Mato Grosso do Sul}} \\
+Menos de 50 & 4 & 11\\
+Mais de 50 & 11 & 1311\\
+\hline
+\multicolumn{3}{l}{\rule{0pt}{1em}\textit{Fonte:}}\\
+\multicolumn{3}{l}{\rule{0pt}{1em}Consulta Escola 2024; Censo Escolar 2023}\\
+\end{tabular}
 
 ```{r}	
 #| echo: false
@@ -521,8 +555,8 @@ addWorksheet(wb, "tradicionais")
 writeData(wb, "tradicionais", tradicionais)
 
 
-addWorksheet(wb, "UEx e N de alunos")
-writeData(wb, "UEx e N de alunos", tab22)
+#addWorksheet(wb, "UEx e N de alunos")
+#writeData(wb, "UEx e N de alunos", tab22)
 
 
 # Save the workbook
