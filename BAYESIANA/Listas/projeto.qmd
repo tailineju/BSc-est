@@ -1,8 +1,9 @@
 ---
-title: "Projeto"
-subtitle: "Inferência Bayesiana"
+title: "Projeto - Resolução Lista 5"
+subtitle: "Inferência Bayesiana | 1º/2024"
 author: "Tailine J. S. Nonato"
-date: "2024-30-06"
+date: today
+date-format: long
 format: pdf
 ---
 
@@ -16,31 +17,152 @@ Para $i = 1,...,n$, considere observações independentes $s_i|\lambda_i \sim \t
 
 (i) Calcule a distribuição condicional de $\lambda= (\lambda_1,...,\lambda_n) |D,\beta$.
 
-(ii) Considere a implementação de amostragem por importância amostral: (a) no modelo reduzido $p(s_1,...,s_n;\beta) = p(s_1,...,s_n |\beta) p(\beta)$, obtido após integrar $\lambda= (\lambda_1,...,\lambda_n)$ com distribuição de proposta $p^*(\beta)$ e pesos de importância $w_i \propto \frac{p(\beta_i |D)}{p^*(\beta_i)}$. (b) no modelo completo $p(s_1,...,s_n;\lambda_1,...,\lambda_n;\beta) = p(s_1,...,s_n |\lambda_1,...,\lambda_n) p(\lambda_1,...,\lambda_n |\beta) p(\beta)$, com distribuição de proposta $p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta)$.
+(ii) Considere a implementação de amostragem por importância amostral: 
+
+  (ii.a) no modelo reduzido $p(s_1,...,s_n;\beta) = p(s_1,...,s_n |\beta) p(\beta)$, obtido após integrar $\lambda= (\lambda_1,...,\lambda_n)$ com distribuição de proposta $p^*(\beta)$ e pesos de importância $w_i \propto \frac{p(\beta_i |D)}{p^*(\beta_i)}$. 
+
+  (ii.b) no modelo completo $p(s_1,...,s_n;\lambda_1,...,\lambda_n;\beta) = p(s_1,...,s_n |\lambda_1,...,\lambda_n) p(\lambda_1,...,\lambda_n |\beta) p(\beta)$, com distribuição de proposta $p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta)$.
 
 Mostre que no caso (b) os pesos de importância são idênticos ao caso (a) e use esse resultado para aproximar $E(\lambda_i |D)$ e $\text{Var}(\lambda_i |D)$ por importância amostral para os dados sobre falhas em linhas de bombeamento disponíveis nas notas de aula (ou em Gaver e O’Muircheartaigh,1987, Technometrics, Vol. 29, pags. 1-15) usando $\alpha_0 = 0.166$, $a = 0.1$ e $b = 0.01$.
 
 ### Resolução
+(i) Distribuição condicional de $\lambda_i | D, \beta$:
 
-(i) A distribuição condicional de $\lambda= (\lambda_1,...,\lambda_n) |D,\beta$ é dada por 
+- Tem-se que:
 
-$$
-p(\lambda|D,\beta) = \frac{p(D|\lambda,\beta)p(\lambda|\beta)}{p(D|\beta)}.
-$$
+$s_i | \lambda_i \sim \text{Poisson}(\lambda_i t_i)$
 
-(ii) A distribuição de proposta $p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta)$ é dada por
+$\lambda_i | \beta \sim \text{iid Gamma}(\alpha_0, \beta)$
 
-$$
-p^*(\lambda_1,...,\lambda_n;\beta) = p^*(\beta) p(\lambda_1,\lambda_n |D,\beta) = p^*(\beta) \prod_{i=1}^n p(\lambda_i |D,\beta).
-$$
+$\beta \sim \text{Gamma}(a, b)$
 
-Os pesos de importância são dados por
+- Assim, a priori conjunta é:
 
-$$
-w_i \propto \frac{p(\lambda_i |D,\beta)}{p^*(\lambda_i |D,\beta)} = \frac{p(\lambda_i |D,\beta)}{p^*(\lambda_i |D,\beta)} = \frac{p(\lambda_i |D,\beta)}{p(\lambda_i |D,\beta)} = 1.
-$$
+$f(\lambda_i | \beta) = \frac{\beta^{\alpha_0}}{\Gamma(\alpha_0)} \lambda_i^{\alpha_0 - 1} e^{-\beta \lambda_i}$
 
-Portanto, os pesos de importância são idênticos ao caso (a).
+- A posteriori pode ser obtida por:
+
+$f(\lambda_i | s_i, \beta) \propto P(s_i | \lambda_i) f(\lambda_i | \beta)$
+
+$f(\lambda_i | s_i, \beta) \propto \left( \frac{(\lambda_i t_i)^{s_i} e^{-\lambda_i t_i}}{s_i!} \right) \left( \frac{\beta^{\alpha_0}}{\Gamma(\alpha_0)} \lambda_i^{\alpha_0 - 1} e^{-\beta \lambda_i} \right)$
+
+$f(\lambda_i | s_i, \beta) \propto \lambda_i^{s_i + \alpha_0 - 1} e^{-\lambda_i(t_i + \beta)}$
+
+- Logo, a distribuição condicional de $\lambda_i | s_i, \beta$ é:
+
+$\lambda_i | s_i, \beta \sim \text{Gamma}(s_i + \alpha_0, t_i + \beta)$
+
+- E a distribuição condicional de $\lambda | D, \beta$ é:
+
+$\lambda_i | D, \beta \sim \text{Gamma}(s_i + \alpha_0, t_i + \beta)$
+
+
+(ii) Implementação de amostragem por importância amostral
+
+  (a) Modelo Reduzido
+
+- A marginal $p(s_1, \ldots, s_n | \beta)$ pode ser obtida por:
+
+$p(s_i | \beta) = \int_0^\infty p(s_i | \lambda_i) p(\lambda_i | \beta) d\lambda_i$
+
+$p(s_i | \beta) = \int_0^\infty \frac{(\lambda_i t_i)^{s_i} e^{-\lambda_i t_i}}{s_i!} \frac{\beta^{\alpha_0}}{\Gamma(\alpha_0)} \lambda_i^{\alpha_0 - 1} e^{-\beta \lambda_i} d\lambda_i$
+
+$p(s_i | \beta) = \frac{\Gamma(s_i + \alpha_0)}{s_i! \Gamma(\alpha_0)} \frac{\beta^{\alpha_0} t_i^{s_i}}{(t_i + \beta)^{s_i + \alpha_0}}$
+
+- Logo,
+
+$p(s_1, \ldots, s_n | \beta) = \prod_{i=1}^n \frac{\Gamma(s_i + \alpha_0)}{s_i! \Gamma(\alpha_0)} \frac{\beta^{\alpha_0} t_i^{s_i}}{(t_i + \beta)^{s_i + \alpha_0}}$
+
+- Como visto anteriormente, a priori de $\beta$ é:
+
+$\beta \sim \text{Gamma}(a, b)$
+
+- Logo, a posteriori de $\beta$ pode ser obtida por:
+
+$p(\beta | D) \propto p(s_1, \ldots, s_n | \beta) p(\beta)$
+
+$p(\beta | D) \propto \left( \prod_{i=1}^n \frac{\Gamma(s_i + \alpha_0)}{s_i! \Gamma(\alpha_0)} \frac{\beta^{\alpha_0} t_i^{s_i}}{(t_i + \beta)^{s_i + \alpha_0}} \right) \left( \frac{b^a}{\Gamma(a)} \beta^{a - 1} e^{-b \beta} \right)$
+
+- Assim, a posteriori de $\beta$ é:
+
+$\beta | D \sim \text{Gamma}\left(a + \sum_{i=1}^n s_i + \alpha_0, b + \sum_{i=1}^n t_i\right)$
+
+- Para a implementação de amostragem por importância amostral, a distribuição proposta $p^*(\beta)$ é dada por:
+
+$p^*(\beta) = p(\beta)$
+
+- E os pesos de importância:
+
+$w_i \propto \frac{p(\beta_i | D)}{p^*(\beta_i)}$
+
+  (b) Modelo Completo
+
+- A priori é dada por:
+
+$p(\lambda | \beta) = \prod_{i=1}^n \frac{\beta^{\alpha_0}}{\Gamma(\alpha_0)} \lambda_i^{\alpha_0 - 1} e^{-\beta \lambda_i}$
+
+- Logo, a priori conjunta é:
+
+$p(\lambda, \beta | D) \propto p(s_1, \ldots, s_n | \lambda) p(\lambda | \beta) p(\beta)$
+
+- A distribuição de proposta então é:
+
+$p^*(\lambda, \beta) = p^*(\beta) p(\lambda | D, \beta)$
+
+- É possível observar que a distribuição de proposta é a mesma que a distribuição de proposta do modelo reduzido, ou seja, $p^*(\lambda, \beta) = p^*(\beta) p(\lambda | D, \beta)$
+
+- E os pesos de importância são idênticos ao caso (a), ou seja,
+
+$w_i \propto \frac{p(\beta_i | D)}{p^*(\beta_i)}$
+
+- Utilizando os dados sobre falhas em linhas de bombeamento disponíveis em Gaver e O’Muircheartaigh,1987,Technometrics, Vol. 29, podemos aproximar $E(\lambda_i | D)$ e $\text{Var}(\lambda_i | D)$ por importância amostral utilizando o R:
+
+```{r}
+#| warning: false
+#| message: false
+
+
+if(!require(pacman)) install.packages("pacman")
+pacman::p_load(MCMCpack)
+
+alpha0 <- 0.166
+a <- 0.1
+b <- 0.01
+
+s <- c(5,1,5,14,3,19,1,1,4,22)
+t <- c(94.32,15.72,62.88,125.76,5.24,31.44,1.04,1.04,2.09,10.48)
+n <- length(s)
+
+N <- 10000
+
+beta_prop <- rgamma(N, shape = 2, rate = 2)
+
+log_pesos <- sapply(beta_prop, function(beta) {
+  log_priori <- dgamma(beta, shape = a, rate = b, log = TRUE)
+  log_veros <- sum(sapply(1:n, function(i) {
+    lgamma(s[i] + alpha0) - lgamma(alpha0) - lgamma(s[i] + 1) +
+    alpha0 * log(beta) + s[i] * log(t[i]) - (s[i] + alpha0) * log(t[i] + beta)
+  }))
+  log_priori + log_veros
+})
+
+max_log_pesos <- max(log_pesos)
+pesos <- exp(log_pesos - max_log_pesos)
+pesos <- pesos / sum(pesos)
+
+beta_post <- sample(beta_prop, size = N, replace = TRUE, prob = pesos)
+
+lambda_amost <- matrix(NA, nrow = N, ncol = n)
+for (i in 1:n) {
+  lambda_amost[, i] <- rgamma(N, shape = s[i] + alpha0, rate = t[i] + beta_post)
+}
+
+lambda_medias <- colMeans(lambda_amost)
+lambda_medias
+
+lambda_vars <- apply(lambda_amost, 2, var)
+lambda_vars
+```
 
 ## Questão 6
 
@@ -48,41 +170,36 @@ Obtenha as aproximações do Exercício 5 usando o amostrador de Gibbs.
 
 ### Resolução
 
-O amostrador de Gibbs é um método de Monte Carlo Markov Chain (MCMC) que permite amostrar de distribuições condicionais completas. Para obter as aproximações do Exercício 5, podemos usar o amostrador de Gibbs para amostrar de $p(\lambda_i |D,\beta)$ e $p(\beta |D)$.
+- Com as mesmas informações anteriores aplica-se o amostrador de Gibbs utilizando o R da seguinte forma:
 
 ```{r}
-# Implementação do amostrador de Gibbs
+#| warning: false
+#| message: false
 
-# Definição dos parâmetros
-alpha0 <- 0.166
-a <- 0.1
-b <- 0.01
-n <- 1000
 
-# Inicialização dos parâmetros
-lambda <- rep(0, n)
-beta <- 0
+burn_in <- 1000
 
-# Amostragem de lambda_i
-for (i in 1:n) {
-  lambda[i] <- rgamma(1, alpha0, beta)
+beta <- 1
+
+lambda_amost <- matrix(NA, nrow = N, ncol = n)
+beta_amost <- numeric(N)
+
+# lambda_i \sim Gamma(s_i + alpha0, t_i + beta)
+set.seed(2024)
+for (j in 1:N) {
+  for (i in 1:n) {
+    lambda_amost[j, i] <- rgamma(1, shape = s[i] + alpha0, rate = t[i] + beta)
+  }
+  beta <- rgamma(1, shape = a + n * alpha0, rate = b + sum(lambda_amost[j, ]))
+  beta_amost[j] <- beta
 }
 
-# Amostragem de beta
-beta <- rgamma(1, a, b)
+lambda_amost <- lambda_amost[-(1:burn_in), ]
+beta_amost <- beta_amost[-(1:burn_in)]
 
-# Inicialização do vetor lambda
-lambda <- numeric(n)
+lambda_means <- colMeans(lambda_amost)
+lambda_means
 
-# Amostragem de lambda_i
-for (i in 1:n) {
-  lambda[i] <- rgamma(1, alpha0, beta)
-}
-
-# Cálculo das aproximações
-E_lambda <- mean(lambda)
-Var_lambda <- var(lambda)
+lambda_vars <- apply(lambda_amost, 2, var)
+lambda_vars
 ```
-
-As aproximações obtidas são $E(\lambda_i |D) = `r E_lambda`$ e $\text{Var}(\lambda_i |D) = `r Var_lambda`$.
-
