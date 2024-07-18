@@ -2,7 +2,8 @@
 title: "LISTA 6"
 subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
 author: "Tailine J. S. Nonato"
-date: "06/30/2024"
+date: today
+date-format: long
 format: pdf
 ---
 
@@ -32,10 +33,10 @@ Tente analisar separadamente as seguintes séries temporais mensais encontradas 
 ```{r}
 #| message: false
 #| warning: false
+
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,readxl, knitr, aTSA)
+pacman::p_load(tidyverse,readxl, knitr, aTSA, forecast)
 options(OutDec = ",")
-setwd("C:/Users/User/Documents/GitHub/gradest-1/SERIES/Lista6")
 ```
 
 ## Leitura e manipulação dos dados
@@ -43,9 +44,147 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/SERIES/Lista6")
 ```{r}
 #| message: false
 #| warning: false
+
 df <- read_csv("ALGONQUIN_PARK_Ontario_Canada.csv")
 df$data <- as.Date(paste0(df$`Date/Time`, "-01"), format = "%Y-%m-%d")
 ```
+
+
+## Automatização da análise
+
+Para fins de replicabilidade, cria-se uma função em R para realizar todas as análises acima em diferentes séries temporais.
+
+```{r}
+#| message: false
+#| warning: false
+
+classificar_modelo <- function(mape) {
+  if (mape < 10) {
+    return("Excelente")
+  } else if (mape < 20) {
+    return("Bom")
+  } else if (mape < 50) {
+    return("Razoável")
+  } else {
+    return("Ruim")
+  }
+}
+
+calcular_mape <- function(validacao, previsao) {
+  n <- length(validacao)
+  m <- round(n * 0.8)
+  mape <- round(
+    (100 / (n - m)) * sum(
+    abs((validacao[(m + 1):n] - previsao$mean[(m + 1):n]) / validacao[(m + 1):n])),0)
+  return(mape)
+}
+
+analise_serie_temporal <- function(serie_temporal) {
+  serie_temporal <- na.omit(serie_temporal)
+  if (length(serie_temporal) < 50) {
+    stop("Série temporal muito curta para análise significativa.")
+  }
+  if (length(serie_temporal) == 0) {
+    stop("Série temporal está vazia após a remoção de NA.")
+  }
+  
+  plot(serie_temporal, type = "l", main = "Série Temporal")
+  acf(serie_temporal, lag.max = 12, main = "Função de Autocorrelação")
+  pacf(serie_temporal, lag.max = 12, main = "Função de Autocorrelação Parcial")
+  
+  teste_adf <- aTSA::adf.test(serie_temporal)
+  valor_p_adf <- if (!is.null(teste_adf$p.value)) teste_adf$p.value else NA
+  d <- ifelse(!is.na(valor_p_adf) && valor_p_adf > 0.05, 1, 0)
+  
+  if (length(d) == 0) {
+    stop("d é vazio após o teste ADF.")
+  }
+  
+  s <- 12
+  D <- ifelse(d == 1, 1, 0)
+  
+  if (d == 1) {
+    serie_temporal <- diff(serie_temporal, differences = d)
+  }
+  
+  comprimento_st <- length(serie_temporal)
+  m <- round(comprimento_st * 0.8)
+  treinamento <- serie_temporal[1:m]
+  validacao <- serie_temporal[(m + 1):comprimento_st]
+  
+  valores_p <- 0:2
+  valores_q <- 0:2
+  valores_P <- 0:1
+  valores_Q <- 0:1
+  
+  resultados <- list()
+  
+  for (p in valores_p) {
+    for (q in valores_q) {
+      for (P in valores_P) {
+        for (Q in valores_Q) {
+          modelo <- tryCatch({
+            Arima(treinamento, order = c(p, d, q), seasonal = c(P, D, Q, s))
+          }, error = function(e) {
+            NULL
+          })
+          
+          if (!is.null(modelo)) {
+            valor_bic <- BIC(modelo)
+            resultados[[paste(p, q, P, Q, sep = "_")]] <- valor_bic
+          }
+        }
+      }
+    }
+  }
+  
+  resultados_df <- do.call(rbind, lapply(names(resultados), function(x) {
+    partes <- unlist(strsplit(x, "_"))
+    data.frame(p = as.numeric(partes[1]), q = as.numeric(partes[2]),
+               P = as.numeric(partes[3]), Q = as.numeric(partes[4]),
+               BIC = resultados[[x]])
+  }))
+  
+  melhor_modelo <- resultados_df[resultados_df$BIC == min(resultados_df$BIC),]
+  n <- nrow(melhor_modelo)
+  modelos <- vector("list", n)
+  
+  for (i in 1:n) {
+    p <- melhor_modelo$p[i]
+    q <- melhor_modelo$q[i]
+    P <- melhor_modelo$P[i]
+    Q <- melhor_modelo$Q[i]
+    
+    modelos[[i]] <- Arima(treinamento, order = c(p, d, q), seasonal = c(P, D, Q, s))
+  }
+  
+  valores_bic <- numeric(n)
+  
+  for (i in 1:n) {
+    valores_bic[i] <- BIC(modelos[[i]])
+  }
+  
+  indice_melhor_modelo_bic <- which.min(valores_bic)
+  modelo_final <- modelos[[indice_melhor_modelo_bic]]
+  
+  checkresiduals(modelo_final)
+  previsao <- forecast(modelo_final, h = length(validacao))
+  plot(previsao)
+  lines(validacao, col = 'red')
+  
+  mape <- calcular_mape(validacao, previsao)
+  mae <- mean(abs(validacao - previsao$mean))
+  classificacao <- classificar_modelo(mape)
+  
+  return(list(
+    Modelo = modelo_final, 
+    MAPE = mape, 
+    MAE = mae, 
+    Classificacao = classificacao))
+}
+
+
+```	
 
 ## Análise da série "Mean Max Temp (°C)"
 
@@ -53,14 +192,11 @@ df$data <- as.Date(paste0(df$`Date/Time`, "-01"), format = "%Y-%m-%d")
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Mean Max Temp (°C)`, type = "l", 
-    main = "Mean Max Temp (°C)", xlab = "Date", ylab = "Mean Max Temp (°C)")
 
-mmaxt <- na.omit(df$`Mean Max Temp (°C)`)
-acf(mmaxt, lag.max = 36, main = "ACF Mean Max Temp (°C)")
-pacf(mmaxt, lag.max = 36, main = "PACF Mean Max Temp (°C)")
-adf.test(mmaxt)
+analise_serie_temporal(df$`Mean Max Temp (°C)`)
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). No entanto, o teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. Pela avaliação do MAPE, o modelo seria razoável, mas dada a rejeição da normalidade, o modelo não é adequado.
 
 ## Análise da série "Mean Min Temp (°C)"
 
@@ -68,14 +204,11 @@ adf.test(mmaxt)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Mean Min Temp (°C)`, type = "l", 
-    main = "Mean Min Temp (°C)", xlab = "Date", ylab = "Mean Min Temp (°C)")
 
-mmint <- na.omit(df$`Mean Min Temp (°C)`)
-acf(mmint, lag.max = 36, main = "ACF Mean Min Temp (°C)")
-pacf(mmint, lag.max = 36, main = "PACF Mean Min Temp (°C)")
-adf.test(mmint)
+analise_serie_temporal(df$`Mean Min Temp (°C)`)
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. Pela avaliação do MAPE, o modelo seria razoável, mas, assim como no caso anterior, dada a rejeição da normalidade, o modelo não é adequado.
 
 ## Análise da série "Mean Temp (°C)"
 
@@ -83,14 +216,12 @@ adf.test(mmint)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Mean Temp (°C)`, type = "l", 
-    main = "Mean Temp (°C)", xlab = "Date", ylab = "Mean Temp (°C)")
 
-mt <- na.omit(df$`Mean Temp (°C)`)
-acf(mt, lag.max = 36, main = "ACF Mean Temp (°C)")
-pacf(mt, lag.max = 36, main = "PACF Mean Temp (°C)")
-adf.test(mt)
+analise_serie_temporal(df$`Mean Temp (°C)`)
 ```
+
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. Pela avaliação do MAPE, o modelo seria razoável, mas, assim como nos casos anteriores, dada a rejeição da normalidade, o modelo não é adequado.
 
 ## Análise da série "Extr Max Temp (°C)"
 
@@ -98,14 +229,11 @@ adf.test(mt)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Extr Max Temp (°C)`, type = "l", 
-    main = "Extr Max Temp (°C)", xlab = "Date", ylab = "Extr Max Temp (°C)")
 
-emaxt <- na.omit(df$`Extr Max Temp (°C)`)
-acf(emaxt, lag.max = 36, main = "ACF Extr Max Temp (°C)")
-pacf(emaxt, lag.max = 36, main = "PACF Extr Max Temp (°C)")
-adf.test(emaxt)
+analise_serie_temporal(df$`Extr Max Temp (°C)`) 
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. O MAPE neste caso deu um valor estranhamente alto, o que por si só sugere que o modelo é ruim.
 
 ## Análise da série "Extr Min Temp (°C)"
 
@@ -113,14 +241,12 @@ adf.test(emaxt)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Extr Min Temp (°C)`, type = "l", 
-    main = "Extr Min Temp (°C)", xlab = "Date", ylab = "Extr Min Temp (°C)")
 
-emint <- na.omit(df$`Extr Min Temp (°C)`)
-acf(emint, lag.max = 36, main = "ACF Extr Min Temp (°C)")
-pacf(emint, lag.max = 36, main = "PACF Extr Min Temp (°C)")
-adf.test(emint)
+analise_serie_temporal(df$`Extr Min Temp (°C)`)
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. O MAPE por si só sugere que o modelo é ruim.
+
 
 ## Análise da série "Total Rain (mm)"
 
@@ -128,14 +254,11 @@ adf.test(emint)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Total Rain (mm)`, type = "l", 
-    main = "Total Rain (mm)", xlab = "Date", ylab = "Total Rain (mm)")
 
-rain <- na.omit(df$`Total Rain (mm)`)
-acf(rain, lag.max = 36, main = "ACF Total Rain (mm)")
-pacf(rain, lag.max = 36, main = "PACF Total Rain (mm)")
-adf.test(rain)
+analise_serie_temporal(df$`Total Rain (mm)`)
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. O MAPE por si só sugere que o modelo é ruim.
 
 ## Análise da série "Total Snow (cm)"
 
@@ -143,14 +266,11 @@ adf.test(rain)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Total Snow (cm)`, type = "l", 
-    main = "Total Snow (cm)", xlab = "Date", ylab = "Total Snow (cm)")
 
-snow <- na.omit(df$`Total Snow (cm)`)
-acf(snow, lag.max = 36, main = "ACF Total Snow (cm)")
-pacf(snow, lag.max = 36, main = "PACF Total Snow (cm)")
-adf.test(snow)
+analise_serie_temporal(df$`Total Snow (cm)`)
 ```
+
+O teste ADF sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(2,0,2). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos. O MAPE por si só sugere que o modelo é ruim.
 
 ## Análise da série "Total Precip (mm)"
 
@@ -158,13 +278,8 @@ adf.test(snow)
 #| message: false
 #| warning: false
 
-plot(df$data, df$`Total Precip (mm)`, type = "l", 
-    main = "Total Precip (mm)", xlab = "Date", ylab = "Total Precip (mm)")
 
-precip <- na.omit(df$`Total Precip (mm)`)
-acf(precip, lag.max = 36, main = "ACF Total Precip (mm)")
-pacf(precip, lag.max = 36, main = "PACF Total Precip (mm)")
-adf.test(precip)
+analise_serie_temporal(df$`Total Precip (mm)`)
 ```
 
-
+O teste ADF não sugere estacionariedade da série. O modelo selecionado com o critério de BIC mínimo é ARIMA(1,0,0). O teste de Llung-Box rejeita a hipótese nula de normalidade dos resíduos sob $\alpha=5%$. Pela avaliação do MAPE, o modelo seria razoável, mas, assim como nos casos anteriores, dada a rejeição da normalidade e da estacionariedade, o modelo não é adequado.

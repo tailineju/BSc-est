@@ -2,13 +2,14 @@
 title: "LISTA 5"
 subtitle: "ANÁLISE DE SÉRIES TEMPORAIS"
 author: "Tailine J. S. Nonato"
-date: "06/30/2024"
+date: today
+date-format: long
 format: pdf
 ---
 
 # Descrição da Atividade
 Considere a série do consumo mensal de energia elétrica (`ConsumoEnergiaEAgua_New.xlsx`). Denotando $X_t$ como o valor do consumo registrado no mês $t$ e $D_t$ como o número de dias de leitura, faça o que se pede a seguir.
-	
+
 ## Etapa 1
 
 Calcule o consumo médio diário $Y_t=\frac{X_t}{D_t}$ , e explique o porquê dessa transformação.
@@ -37,15 +38,75 @@ Faça o gráfico da evolução temporal de ${Z_t}$, e descreva em um parágrafo 
 
 Repita os passos 3 e 4, comparando os novos resultados com os anteriores.
 
+## Etapa 8 a 14
+
+Considere que $\hat{Y}_(t+h)$ representa a previsão no instante t+h obtida com base nas informações disponíveis até o tempo t; ou seja, $Y_1,…,Y_t \rightarrow \hat{Y}_(t+h)$. Separe a massa de dados em duas partes, conforme esquema abaixo:
+
+- Treinamento (modelagem): $Y_1,…,Y_m$
+
+- Validação: $Y_(m+1),…,Y_n$
+
+De 8 a 10 utilize os dados de treinamento para a modelagem, e de 11 a 14 utilize os dados de validação para a avaliação do modelo.
+
+### Etapa 8 
+
+Considerando o modelo SARIMA(p,d,q)×(P,D,Q)s para a série $Y_t$, defina um valor apropriado para a ordem sazonal s e as ordens de diferenciações d e D com base nos passos anteriores.
+
+
+### Etapa 9
+Defina uma malha de valores para as ordens autorregressivas p e P e de médias móveis q e Q, e obtenha o valor do critério de informação bayesiano de Schwarz (BIC) para cada combinação (p,d,q)×(P,D,Q) por meio da função sarima do pacote astsa.
+
+### Etapa 10
+
+Liste os modelos com os menores BIC. Certifique-se que o melhor modelo não possua uma ordem na extremidade da malha definida no item 9. Se houver, retorne para o passo 9, ampliando a malha.
+
+### Etapa 11
+
+Inicie o diagnóstico com o modelo que apresenta o menor BIC:
+
+1. Analise as estimativas dos parâmetros por meio da função sarima do pacote astsa.
+
+2. Faça os gráficos da FAC e FACP residual, e aplique o teste de Ljung-Box.
+
+3. Teste a normalidade residual.
+
+4. Caso haja problemas em 11.1 e 11.2, repita a análise com os próximos modelos candidatos.
+
+5. Caso não seja possível encontrar um modelo adequado, será preciso redefinir o modelo no passo 8. Se as ordens s, d, e D estiverem corretas, então é possível que o modelo SARIMA não seja apropriado.
+
+### Etapa 12
+
+Como o método de estimação é recursivo, a obtenção dos erros de previsão um passo à frente na massa de validação pode ser realizada da seguinte forma:
+
+
+1. Aplique o modelo sobre a base de dados completa, usando a função sarima do pacote astsa.
+
+2. Obtenha os erros de previsão um passo à frente observados na parte da validação do modelo, ou seja, $\hat{e}_t=Y_t-\hat{Y}_t$, para $t=m+1,…,n$.
+
+3. Calcule um índice de desempenho preditivo. Por exemplo, obtenha o MAPE (mean absolute percentage error):
+$$
+MAPE=\frac{100}{n-m} \cdot \sum_{t=m+1}^n\left(\frac{|Y_t-\hat{Y}_t|}{|Y_t|}\right)
+$$
+
+4. Como referência, modelos com MAPE inferiores a 10% geralmente são considerados muito bons. Entre 10% e 20% são bons modelos preditivos, e entre 20% e 50% são modelos razoáveis/aceitáveis.
+
+### Etapa 13
+
+Utilize a função sarima.for do pacote astsa para a obtenção de previsões para os próximos 12 meses (ou outro horizonte desejado) e a banda de previsão com 95% de cobertura. Discuta sobre as limitações dessas previsões, incluindo um insigh sobre como proceder se a hipótese de normalidade residual for descartada no passo 11.3.
+
+### Etapa 14
+
+Redija um parágrafo concluindo o estudo (inclua uma recomendação sobre como o modelo deve ser atualizado à medida que novas informações estiverem disponíveis).
+
+
 # Respostas
 ## Carregando os pacotes necessários
 ```{r}
 #| message: false
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(tidyverse,readxl, knitr, aTSA)
+pacman::p_load(tidyverse,readxl, knitr, aTSA,forecast,astsa)
 options(OutDec = ",")
-setwd("C:/Users/User/Documents/GitHub/gradest-1/SERIES/Lista5")
 ```
 
 ## Leitura e manipulação dos dados
@@ -103,8 +164,52 @@ pacf(energia$consumo, lag.max = 12, main = "Função de autocorrelação parcial
 #| message: false
 #| warning: false
 
-adf.test(energia$consumo)
+# Período sazonal (em meses)
+s <- 12
+
+adf_test <- aTSA::adf.test(energia$consumo)
+
+p_value_adf <- adf_test$type1[1, "p.value"]
+
+if(p_value_adf > 0.05){
+  d <- 1
+  energia$consumo_diff <- c(NA,diff(energia$consumo, differences = d))
+} else {
+  d <- 0
+  energia$consumo_diff <- energia$consumo
+}
+
+create_harmonics <- function(x, period, K){
+  t <- 1:length(x)
+  harmonics <- data.frame(
+    tsin = sin(2 * pi * K * t / period),
+    tcos = cos(2 * pi * K * t / period)
+  )
+  return(harmonics)
+}
+
+K <- 1
+harmonics <- create_harmonics(energia$consumo, s, K)
+
+modelo <- lm(energia$consumo ~ harmonics$tsin + harmonics$tcos)
+
+summary(modelo)
+
+sazonaldiff <- diff(energia$consumo, lag = s)
+adf_test_sazonal <- aTSA::adf.test(sazonaldiff)
+p_value_adf_sazonal <- adf_test_sazonal$type1[1, "p.value"]
+
+if(p_value_adf_sazonal > 0.05){D <- 1} else {D <- 0}
+
+fit <- auto.arima(energia$consumo, seasonal = TRUE, D = D, d = d)
+
+summary(fit)
+
+forecasts <- forecast(fit, h = 12)
+plot(forecasts)
 ```
+
+A série é estacionária após a primeira diferenciação.
 
 ## Etapa 5
 
@@ -145,3 +250,390 @@ acf(variacao, lag.max = 12, main = "Função de autocorrelação")
 pacf(variacao, lag.max = 12, main = "Função de autocorrelação parcial")
 adf.test(variacao)
 ```
+
+## Amostras de treinamento e validação
+
+```{r}
+#| message: false
+#| warning: false
+
+m <- round(nrow(energia)*0.8,0)
+n <- nrow(energia)
+
+treinamento <- energia[1:m,]
+validacao <- energia[(m+1):n,]
+```
+
+
+## Etapa 8
+
+Nesse caso, temos dados mensais, logo assume-se que a ordem sazonal é 12 ($s=12$). 
+
+```{r}
+#| message: false
+#| warning: false
+
+adf_test <- aTSA::adf.test(treinamento$consumo)
+
+p_value_adf <- adf_test$type1[1, "p.value"]
+
+if(p_value_adf > 0.05){
+  d <- 1
+  treinamento$consumo_diff <- c(NA,diff(treinamento$consumo, differences = d))
+} else {
+  d <- 0
+  treinamento$consumo_diff <- treinamento$consumo
+}
+
+d
+
+sazonal_diff <- diff(treinamento$consumo, lag = s)
+adf_test_sazonal <- aTSA::adf.test(sazonal_diff)
+p_value_adf_sazonal <- adf_test_sazonal$type1[1, "p.value"]
+
+if(p_value_adf_sazonal > 0.05){
+  D <- 1
+} else {
+  D <- 0
+}
+
+D
+```
+
+
+## Etapa 9
+
+```{r}
+#| message: false
+#| warning: false
+
+p_values <- 0:2
+q_values <- 0:2
+P_values <- 0:1
+Q_values <- 0:1
+
+calculate_bic <- function(x, p, d, q, P, D, Q, s) {
+  model <- tryCatch({
+    sarima(x, p, d, q, P, D, Q, s, details = FALSE)
+  }, error = function(e) {
+    return(NA)
+  })
+  return(model$BIC)
+}
+
+resultados <- list()
+
+for (p in p_values) {
+  for (q in q_values) {
+    for (P in P_values) {
+      for (Q in Q_values) {
+        modelo <- Arima(treinamento$consumo, 
+        order = c(p, d, q), seasonal = c(P, D, Q, s))
+        bic_value <- BIC(modelo)
+        resultados[[paste(p, q, P, Q, sep = "_")]] <- bic_value
+      }
+    }
+  }
+}
+
+resultados_df <- do.call(rbind, lapply(names(resultados), function(x) {
+  parts <- unlist(strsplit(x, "_"))
+  data.frame(p = as.numeric(parts[1]), q = as.numeric(parts[2]),
+             P = as.numeric(parts[3]), Q = as.numeric(parts[4]),
+             BIC = resultados[[x]])
+}))
+
+kable(resultados_df, align = "c",
+    caption = "Head - Valores do critério de informação bayesiano (BIC)")
+```
+
+
+## Etapa 10
+
+```{r}
+#| message: false
+#| warning: false
+
+melhor_modelo <- resultados_df[resultados_df$BIC == min(resultados_df$BIC),]
+
+kable(melhor_modelo, align = "c",
+    caption = "Melhor modelo")
+```
+
+## Etapa 11
+
+```{r}
+#| message: false
+#| warning: false
+
+modelo_final <- Arima(treinamento$consumo, 
+order = c(melhor_modelo$p[1], d, melhor_modelo$q[1]), 
+seasonal = c(melhor_modelo$P[1], D, melhor_modelo$Q[1], s))
+
+summary(modelo_final)
+
+residuos <- residuals(modelo_final)
+
+acf(residuos, lag.max = 12, main = "Função de autocorrelação dos resíduos")
+
+pacf(residuos, lag.max = 12, main = "Função de autocorrelação parcial dos resíduos")
+
+Box.test(residuos, lag = 12, type = "Ljung-Box")
+
+shapiro.test(residuos)
+
+```
+
+Não sendo um bom modelo, testa-se o segundo:
+
+```{r}
+#| message: false
+#| warning: false
+
+
+modelo_final <- Arima(treinamento$consumo, 
+order = c(melhor_modelo$p[2], d, melhor_modelo$q[2]), 
+seasonal = c(melhor_modelo$P[2], D, melhor_modelo$Q[2], s))
+
+summary(modelo_final)
+
+residuos <- residuals(modelo_final)
+
+acf(residuos, lag.max = 12, main = "Função de autocorrelação dos resíduos")
+
+pacf(residuos, lag.max = 12, main = "Função de autocorrelação parcial dos resíduos")
+
+Box.test(residuos, lag = 12, type = "Ljung-Box")
+
+shapiro.test(residuos)
+```
+
+Ainda não é um bom modelo, testa-se o terceiro:
+
+```{r}
+#| message: false
+#| warning: false
+
+modelo_final <- Arima(treinamento$consumo, 
+order = c(melhor_modelo$p[3], d, melhor_modelo$q[3]), 
+seasonal = c(melhor_modelo$P[3], D, melhor_modelo$Q[3], s))
+
+summary(modelo_final)
+
+residuos <- residuals(modelo_final)
+
+acf(residuos, lag.max = 12, main = "Função de autocorrelação dos resíduos")
+
+pacf(residuos, lag.max = 12, main = "Função de autocorrelação parcial dos resíduos")
+
+Box.test(residuos, lag = 12, type = "Ljung-Box")
+
+shapiro.test(residuos)
+```
+
+Ainda não é um bom modelo, testa-se o quarto:
+
+```{r}
+#| message: false
+#| warning: false
+
+modelo_final <- Arima(treinamento$consumo, 
+order = c(melhor_modelo$p[4], d, melhor_modelo$q[4]), 
+seasonal = c(melhor_modelo$P[4], D, melhor_modelo$Q[4], s))
+
+summary(modelo_final)
+
+residuos <- residuals(modelo_final)
+
+acf(residuos, lag.max = 12, main = "Função de autocorrelação dos resíduos")
+
+pacf(residuos, lag.max = 12, main = "Função de autocorrelação parcial dos resíduos")
+
+Box.test(residuos, lag = 12, type = "Ljung-Box")
+
+shapiro.test(residuos)
+```
+
+Nenhum dos modelos testados é adequado. Considerando que as ordens $s$, $d$ e $D$ estão corretas, é possível que o modelo SARIMA não seja apropriado.
+
+## Etapa 12
+
+```{r}
+#| message: false
+#| warning: false
+
+previsao <- forecast(modelo_final, h = nrow(validacao))
+plot(previsao)
+
+erros <- resid(modelo_final)
+plot(erros, type = 'l', main = "", xlab = "Data", ylab = "Residuos")
+
+mape <- mean(abs((validacao$consumo - previsao$mean)/validacao$consumo))
+mape
+```
+
+Logo, utilizando a referência de MAPE, o modelo é considerado razoável/aceitável, pois se apresenta em 40%.
+
+
+## Etapa 13
+
+```{r}
+#| message: false
+#| warning: false
+
+
+#previsao <- sarima.for(treinamento$consumo, n.ahead = 12, model = modelo_final, d=1, D=0, p=0, q=2, P=1, Q=1, s=12)
+#plot(previsao)
+```
+
+As previsões são limitadas pela hipótese de normalidade residual. Caso a hipótese seja descartada, é possível que o modelo não seja adequado, como foi observado durante esse estudo. 
+
+Logo, também não é possível realizar a previsão para os próximos 12 meses.
+ 
+
+# Automatização da análise
+
+Para fins de replicabilidade, cria-se uma função em R para realizar todas as análises acima em diferentes séries temporais.
+
+```{r}
+#| message: false
+#| warning: false
+
+analise_serie_temporal <- function(serie_temporal){
+  serie_temporal <- serie_temporal[,c(1,3,4)]
+  serie_temporal <- na.omit(serie_temporal)
+  
+  serie_temporal$consumo <- serie_temporal$Energia/serie_temporal$Dias
+  
+  plot(serie_temporal$mes, serie_temporal$consumo, type = "l", 
+       main = "Consumo médio diário de energia elétrica",
+       xlab = "Data",
+       ylab = "Consumo médio diário")
+  
+  acf(serie_temporal$consumo, lag.max = 12, main = "Função de autocorrelação")
+  pacf(serie_temporal$consumo, lag.max = 12, main = "Função de autocorrelação parcial")
+  
+  adf_test <- aTSA::adf.test(serie_temporal$consumo)
+  
+  p_value_adf <- adf_test$type1[1, "p.value"]
+  
+  if(p_value_adf > 0.05){
+    d <- 1
+    serie_temporal$consumo_diff <- c(NA,diff(serie_temporal$consumo, differences = d))
+  } else {
+    d <- 0
+    serie_temporal$consumo_diff <- serie_temporal$consumo
+  }
+  
+  create_harmonics <- function(x, period, K){
+    t <- 1:length(x)
+    harmonics <- data.frame(
+      tsin = sin(2 * pi * K * t / period),
+      tcos = cos(2 * pi * K * t / period)
+    )
+    return(harmonics)
+  }
+  
+  K <- 1
+  harmonics <- create_harmonics(serie_temporal$consumo, s, K)
+  
+  modelo <- lm(serie_temporal$consumo ~ harmonics$tsin + harmonics$tcos)
+  
+  s <- 12
+  
+  sazonal_diff <- diff(serie_temporal$consumo, lag = s)
+  adf_test_sazonal <- aTSA::adf.test(sazonal_diff)
+  p_value_adf_sazonal <- adf_test_sazonal$type1[1, "p.value"]
+  
+  if(p_value_adf_sazonal > 0.05){D <- 1} else {D <- 0}
+  
+  m <- round(nrow(serie_temporal)*0.8,0)
+  n <- nrow(serie_temporal)
+
+    treinamento <- serie_temporal[1:m,]
+    validacao <- serie_temporal[(m+1):n,]
+
+    adf_test <- aTSA::adf.test(treinamento$consumo)
+
+    p_value_adf <- adf_test$type1[1, "p.value"]
+
+    if(p_value_adf > 0.05){
+      d <- 1
+      treinamento$consumo_diff <- c(NA,diff(treinamento$consumo, differences = d))
+    } else {
+      d <- 0
+      treinamento$consumo_diff <- treinamento$consumo
+    }
+
+    d
+
+    sazonal_diff <- diff(treinamento$consumo, lag = s)
+
+    adf_test_sazonal <- aTSA::adf.test(sazonal_diff)
+
+    p_value_adf_sazonal <- adf_test_sazonal$type1[1, "p.value"]
+
+    if(p_value_adf_sazonal > 0.05){
+      D <- 1
+    } else {
+      D <- 0
+    }
+
+    D
+
+    p_values <- 0:2
+    q_values <- 0:2
+    P_values <- 0:1
+    Q_values <- 0:1
+
+    resultados <- list()
+
+    for (p in p_values) {
+      for (q in q_values) {
+        for (P in P_values) {
+          for (Q in Q_values) {
+            modelo <- Arima(treinamento$consumo, 
+                            order = c(p, d, q), seasonal = c(P, D, Q, s))
+            bic_value <- BIC(modelo)
+            resultados[[paste(p, q, P, Q, sep = "_")]] <- bic_value
+          }
+        }
+      }
+    }
+
+    resultados_df <- do.call(rbind, lapply(names(resultados), function(x) {
+      parts <- unlist(strsplit(x, "_"))
+      data.frame(p = as.numeric(parts[1]), q = as.numeric(parts[2]),
+                 P = as.numeric(parts[3]), Q = as.numeric(parts[4]),
+                 BIC = resultados[[x]])
+    }))
+
+    melhor_modelo <- resultados_df[resultados_df$BIC == min(resultados_df$BIC),]
+
+    modelo_final <- Arima(treinamento$consumo, 
+                          order = c(melhor_modelo$p[1], d, melhor_modelo$q[1]), 
+                          seasonal = c(melhor_modelo$P[1], D, melhor_modelo$Q[1], s))
+
+    summary(modelo_final)
+
+    residuos <- residuals(modelo_final)
+
+    acf(residuos, lag.max = 12, main = "Função de autocorrelação dos resíduos")
+
+    pacf(residuos, lag.max = 12, main = "Função de autocorrelação parcial dos resíduos")
+
+    Box.test(residuos, lag = 12, type = "Ljung-Box")
+
+    shapiro.test(residuos)
+
+    previsao <- forecast(modelo_final, h = nrow(validacao))
+
+    plot(previsao)
+
+    erros <- resid(modelo_final)
+
+    mape <- mean(abs((validacao$consumo - previsao$mean)/validacao$consumo))
+
+    return(mape)
+}
+```	
