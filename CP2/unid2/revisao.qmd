@@ -1,0 +1,38 @@
+---
+title: "Revisão - Unidade 3"
+subtitle: "Cálculo de Probabilidade 2 | 2º/2024"
+author: "Tailine J. S. Nonato"
+date: "2024-07-21"
+format: 
+  pdf:
+    geometry: landscape
+---
+
+
+\begin{table}[H]
+\centering
+\resizebox{\textwidth}{!}{\begin{tabular}{|l|l|p{4cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{Distribuição} & \textbf{Tipo} & \textbf{\(f(x)\)} & \textbf{\(E[X]\)} & \textbf{\(Var(X)\)} & \textbf{\(M_X(t)\)} & \textbf{\(\phi_X(t)\)} \\ \hline
+Binomial & Discreta & \( P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k} \) & \( np \) & \( np(1 - p) \) & \( (1 - p + pe^t)^n \) & \( (1 - p + pe^{it})^n \) \\ \hline
+Poisson & Discreta & \( P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!} \) & \( \lambda \) & \( \lambda \) & \( \exp(\lambda(e^t - 1)) \) & \( \exp(\lambda(e^{it} - 1)) \) \\ \hline
+Geométrica & Discreta & \( P(X = k) = (1 - p)^{k - 1} p \) & \( \frac{1}{p} \) & \( \frac{1 - p}{p^2} \) & \( \frac{pe^t}{1 - (1 - p)e^t}, \, t < -\ln(1 - p) \) & \( \frac{p e^{it}}{1 - (1 - p)e^{it}} \) \\ \hline
+Uniforme (contínua) & Contínua & \( f(x) = \frac{1}{b - a}, \, a \leq x \leq b \) & \( \frac{a + b}{2} \) & \( \frac{(b - a)^2}{12} \) & \( \frac{e^{tb} - e^{ta}}{t(b - a)} \) & \( \frac{e^{itb} - e^{ita}}{it(b - a)} \) \\ \hline
+Normal & Contínua & \( f(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} e^{-\frac{(x - \mu)^2}{2\sigma^2}} \) & \( \mu \) & \( \sigma^2 \) & \( \exp(\mu t + \frac{\sigma^2 t^2}{2}) \) & \( \exp(i \mu t - \frac{\sigma^2 t^2}{2}) \) \\ \hline
+Exponencial & Contínua & \( f(x) = \lambda e^{-\lambda x}, \, x \geq 0 \) & \( \frac{1}{\lambda} \) & \( \frac{1}{\lambda^2} \) & \( \frac{\lambda}{\lambda - t}, \, t < \lambda \) & \( \frac{\lambda}{\lambda - it} \) \\ \hline
+Gamma & Contínua & \( f(x) = \frac{\lambda^k x^{k - 1} e^{-\lambda x}}{\Gamma(k)}, \, x \geq 0 \) & \( \frac{k}{\lambda} \) & \( \frac{k}{\lambda^2} \) & \( \left( \frac{\lambda}{\lambda - t} \right)^k, \, t < \lambda \) & \( \left( \frac{\lambda}{\lambda - it} \right)^k \) \\ \hline
+\end{tabular}}
+\end{table}
+\newpage
+\section*{Observações}
+
+1. \textbf{Função de densidade/probabilidade (\(f(x)\))}: Representa a função que define a distribuição de probabilidade. Para distribuições discretas, é a função de probabilidade de massa; para distribuições contínuas, é a função de densidade de probabilidade.
+
+2. \textbf{Esperança (\(E[X]\))}: Média esperada ou valor esperado da variável aleatória.
+
+3. \textbf{Variância (\(Var(X)\))}: Medida da dispersão dos valores da variável aleatória em relação à média.
+
+4. \textbf{Função Geradora de Momentos (\(M_X(t)\))}: Função utilizada para obter os momentos da distribuição, definida como \( M_X(t) = E[e^{tX}] \).
+
+5. \textbf{Função Característica (\(\phi_X(t)\))}: Função que fornece a transformada de Fourier da distribuição de probabilidade, definida como \( \phi_X(t) = E[e^{itX}] \).
+

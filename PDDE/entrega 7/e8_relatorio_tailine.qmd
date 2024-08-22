@@ -15,8 +15,8 @@ pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra,write)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
 dados <- read.csv("base_completa_2024.csv")
-dados_pagos <- dados %>% filter(fonte == "pdde_pagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
-dados_nao_pagos <- dados %>% filter(fonte == "pdde_naopagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
+dados_pagos <- dados %>% filter(Situacao_Pagamento == "Pagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
+dados_nao_pagos <- dados %>% filter(Situacao_Pagamento == "Nao Pagos")  %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
 
 #escolas que estão em pagos e nao pagos
 dados_dup <- dados_pagos %>% 
@@ -31,9 +31,6 @@ escolas_somente_nao_pagos <- dados_nao_pagos %>%
         anti_join(dados_pagos, by = "CO_ENTIDADE")
 
 dados <- rbind(dados_pagos, escolas_somente_nao_pagos)
-dados$NO_UF <- case_when(
-                NO_UF == "Goiás",
-)
 ```
 
 # Visão Geral 
@@ -47,9 +44,9 @@ Os dados foram extraídos do Consulta Escola em 02 de julho de 2024.
 
 #first of all - check if Quantidade_ALunos and QT_MAT_BAS are the same for schools
 
-dados$alunos1 <- ifelse(dados$QT_MAT_BAS == dados$Quantidade.Alunos, "Igual", "Diferente")
+dados$Diff_Alunos_Matriculados <- ifelse(dados$QT_MAT_BAS == dados$Quantidade.Alunos, "Igual", "Diferente")
 
-dados$alunos2 <- dados$QT_MAT_BAS - dados$Quantidade.Alunos
+dados$Diff_Alunos_Matriculados_Quant <- dados$QT_MAT_BAS - dados$Quantidade.Alunos
 
 tab0 <- dados %>%
         filter(alunos2!=0)%>%
@@ -80,18 +77,20 @@ tab1 %>%
 #| warning: false
 #| message: false
 
-dados$UEx <- ifelse(dados$`CNPJ.Executora` == dados$`CNPJ.Município.SEDUC`, "Sem UEx", "Com UEx")
+#rename fonte to Situacao_Pagamento
+
+dados$Cadastro_UEx <- ifelse(dados$`CNPJ.Executora` == dados$`CNPJ.Município.SEDUC`, "Sem UEx", "Com UEx")
 
 dados$CNPJ<- as.numeric(substr(dados$CNPJ.Executora, start=2,stop=10))
 
-dados$UEx <- ifelse(is.na(dados$CNPJ), "Sem UEx", dados$UEx)
+dados$Cadastro_UEx <- ifelse(is.na(dados$CNPJ), "Sem UEx", dados$Cadastro_UEx)
 
-dados$UEx <- factor(dados$UEx, levels = c("Sem UEx", "Com UEx"))
+dados$Cadastro_UEx <- factor(dados$Cadastro_UEx, levels = c("Sem UEx", "Com UEx"))
 
-dados$alunos <- ifelse(as.numeric(dados$Quantidade.Alunos) < 50, "<50", "50+")
-dados$alunos <- factor(dados$alunos, levels = c( "<50","50+"))
+dados$Alunos_Matriculados <- ifelse(as.numeric(dados$Quantidade.Alunos) > 50, "Maior que 50", "Menor ou igual a 50")
+dados$Alunos_Matriculados <- factor(dados$Alunos_Matriculados, levels = c( "Menor ou igual a 50","Maior que 50"))
 
-#write.xlsx(dados,"base24_att.xlsx")
+write.xlsx(dados,"base24.xlsx")
 
 # definindo todas as tabelas
 tab2 <- dados %>% 

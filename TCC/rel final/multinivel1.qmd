@@ -11,25 +11,22 @@ format: pdf
 ```{r}
 #| warning: false
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lme4, gridExtra, clipr)
+pacman::p_load(vroom,tidyverse, knitr, openxlsx, kableExtra, lmerTest, gridExtra, clipr,lattice,nlme,lme4)
 options(OutDec = ",")
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 ```
 
 ## Leitura dos dados
 ```{r}	
-#| warning: false
-#| eval: false
-#| message: false
 
-
-df <- vroom("dados_tcc2.csv", locale = locale(encoding = "UTF-8"), delim = ",")
+df <- vroom("dadostcc_2407.csv")%>%
+  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NIVEL_SOCIO_ECONOMICO, NSEA, ID_AREA, ID_LOCALIZACAO, PC_FORMACAO_DOCENTE_FINAL, TX_RESP_Q002, TX_RESP_Q004, TX_RESP_Q011, TX_RESP_Q015, TX_RESP_Q016, TX_RESP_Q017A, TX_RESP_Q017B, TX_RESP_Q017C, TX_RESP_Q017D, TX_RESP_Q018A, TX_RESP_Q018B)
 
 var_df <- names(df)
 dim(df)
 
-df <- df %>% 
-  filter(IN_PREENCHIMENTO_LP == 1, IN_PREENCHIMENTO_MT == 1)
+#df <- df %>% 
+#  filter(IN_PREENCHIMENTO_LP == 1, IN_PREENCHIMENTO_MT == 1)
 
 set.seed(123)
 df_sampled <- df %>% sample_n(5000)
@@ -48,37 +45,69 @@ theme_tcc <- function() {
       axis.title = element_text(colour = "black")
     )
 }
+#rename variable NIVEL_SOCIO_ECONOMICO to NSE
+
+df_sampled <- df_sampled %>% 
+  rename(INSE=NIVEL_SOCIO_ECONOMICO) 
+
+## make variables NSE, ID_AREA, ID_LOCALIZACAO, PC_FORMACAO_DOCENTE_FINAL, TX_RESP_Q002, TX_RESP_Q004, TX_RESP_Q011, TX_RESP_Q015, TX_RESP_Q016, TX_RESP_Q017A, TX_RESP_Q017B, TX_RESP_Q017C, TX_RESP_Q017D, TX_RESP_Q018A, TX_RESP_Q018B factors
+
+
+df_used <- df %>%
+  filter(across(everything(), ~ !(. %in% c("*", "."))))
+
+variables_to_factor <- c("NIVEL_SOCIO_ECONOMICO", "ID_AREA", "ID_LOCALIZACAO", "PC_FORMACAO_DOCENTE_FINAL", "TX_RESP_Q002", "TX_RESP_Q004", "TX_RESP_Q011", "TX_RESP_Q015", "TX_RESP_Q016", "TX_RESP_Q017A", "TX_RESP_Q017B", "TX_RESP_Q017C", "TX_RESP_Q017D", "TX_RESP_Q018A", "TX_RESP_Q018B")
+df_used[variables_to_factor] <- lapply(df_used[variables_to_factor], as.factor)
+
+df_used <- na.omit(df_used)
+
 ```	
 
 ## Modelo nulo
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
 
 #modelo nulo
-modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df)
+modelo_nulo <- lmerTest::lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo)
+
+#modelo_nulo <- lme(fixed=PROFICIENCIA_LP_SAEB ~ 1, random=~1|ID_ESCOLA, data = df_sampled)
+
+RandomEffects <- as.data.frame(VarCorr(modelo_nulo))
+RandomEffects
+
+ICC_between <- RandomEffects[1,4]/(RandomEffects[1,4]+RandomEffects[2,4]) 
+ICC_between
 ```
 
-## Modelo com variáveis preditoras
+
+## Modelo no nível aluno
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
+modelo1<- lm(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
+summary(modelo1)
 
-#modelo com variáveis preditoras
-modelo <- lmer(PROFICIENCIA_LP_SAEB ~ NIVEL_SOCIO_ECONOMICO + ID_AREA + ID_LOCALIZACAO + (1|ID_ESCOLA), data = df)
-summary(modelo)
+modelo11 <- step(modelo1, direction = "both")
+summary(modelo11)
+
+modelo2<- lm(PROFICIENCIA_MT_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
+summary(modelo2)
+
+modelo21 <- step(modelo2, direction = "both")
+summary(modelo21)
 ```
+
+## Modelo nos dois níveis
+
+```{r}
+modelo3 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + NIVEL_SOCIO_ECONOMICO + ID_AREA +  ID_LOCALIZACAO + PC_FORMACAO_DOCENTE_FINAL + (1|ID_ESCOLA), data = df_used)
+summary(modelo3)
+
+modelo4 <- lmer(PROFICIENCIA_MT_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1|ID_ESCOLA), data = df_used)
+```	
+
 
 ## Análise de resíduos
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-residuos <- residuals(modelo)
+residuos <- residuals(modelo2)
 qqnorm(residuos)
 qqline(residuos)
 ```

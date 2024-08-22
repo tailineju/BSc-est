@@ -24,10 +24,10 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 
 pdde_pagos <- read.csv2("pdde_pagos.csv", skip = 5)
 pdde_naopagos <- read.csv2("pdde_naopagos.csv", skip = 5)
-pdde_naopagos <- pdde_naopagos %>% select(-X,-X.1,-X.2)
+#pdde_naopagos <- pdde_naopagos %>% select(-X,-X.1,-X.2)
 
-pdde_pagos$fonte <- "pdde_pagos"
-pdde_naopagos$fonte <- "pdde_naopagos"
+pdde_pagos$Situacao_Pagamento <- "Pagos"
+pdde_naopagos$Situacao_Pagamento <- "Nao Pagos"
 pdde <- rbind(pdde_pagos, pdde_naopagos)
 
 #censo23_co <- censo23 %>%
@@ -43,13 +43,13 @@ dados <- censo23_co %>% inner_join(pdde, by = c("CO_ENTIDADE" = "Código.Escola"
 
 unique(dados$Destinação)
 
-write.csv(dados, "base_completa_2024.csv")
+#dados <- read.csv("base_completa_2024.csv")
+dados <- dados %>% distinct(CO_ENTIDADE, .keep_all = TRUE)
+       # select(NO_UF, NO_MUNICIPIO,CO_ENTIDADE, TP_LOCALIZACAO, TP_DEPENDENCIA, TP_LOCALIZACAO_DIFERENCIADA, TP_SITUACAO_FUNCIONAMENTO, Situacao_Pagamento) %>%
+       # filter(TP_DEPENDENCIA %in% c(2:3)) %>% 
+        
 
-dados <- read.csv("base_completa_2024.csv")
-dados <- dados %>% 
-        select(NO_UF, NO_MUNICIPIO,CO_ENTIDADE, TP_LOCALIZACAO, TP_DEPENDENCIA, TP_LOCALIZACAO_DIFERENCIADA, TP_SITUACAO_FUNCIONAMENTO, fonte) %>%
-        filter(TP_DEPENDENCIA %in% c(2:3)) %>% 
-        distinct(CO_ENTIDADE, .keep_all = TRUE)
+write.csv(dados, "base_completa_2024.csv")
 
 escolas_participantes <- dados %>% filter(fonte %in% c("pdde_pagos","pdde_naopagos"))
 #write.xlsx(escolas_participantes, "escolas_participantes.xlsx", rowNames = FALSE)

@@ -64,7 +64,7 @@ df <- df %>%
   mutate(ID_ESCOLA = as.factor(ID_ESCOLA))
 
 dim(df)
-write.csv(df,"dadostcc_3.csv")
+write.csv(df,"dadostcc_2407.csv")
 ```
 
 ## Leitura dos dados
@@ -74,7 +74,7 @@ write.csv(df,"dadostcc_3.csv")
 #| message: false
 
 
-df <- vroom("dados_tcc3.csv", locale = locale(encoding = "UTF-8"), delim = ",")
+df <- vroom("dadostcc_3.csv", locale = locale(encoding = "UTF-8"), delim = ",")
 
 var_df <- names(df)
 dim(df)
@@ -97,6 +97,108 @@ theme_tcc <- function() {
     )
 }
 ```	
+
+### Critério Brasil
+```{r}
+df_aluno <- df_aluno %>%
+  mutate(PONT1 = case_when( #Escolaridade da pessoa de referência 0 1 2 4 7
+      TX_RESP_Q004 == "A" ~ 0,
+      TX_RESP_Q004 == "B" ~ 1,
+      TX_RESP_Q004 == "C" ~ 2,
+      TX_RESP_Q004 == "D" ~ 4,
+      TX_RESP_Q004 == "E" ~ 7,
+      TRUE ~ NA_real_),
+    PONT2 = case_when( #Banheiros 0 3 7 10 14
+      TX_RESP_Q009F == "A" ~ 0,
+      TX_RESP_Q009F == "B" ~ 3,
+      TX_RESP_Q009F == "C" ~ 7,
+      TX_RESP_Q009F == "D" ~ 14,
+      TRUE ~ NA_real_),
+   PONT3  = 0,#  case_when( #Empregados domésticos 0 3 7 10 13
+    #  TX_RESP_Q009d == "A" ~ 0,
+    #  TX_RESP_Q009d == "B" ~ 3,
+    #  TX_RESP_Q009d == "C" ~ 7,
+    #  TX_RESP_Q009d == "D" ~ 13,
+    #  TRUE ~ NA_real_),
+    PONT4 = case_when( #Automóveis 0 3 5 8 11
+      TX_RESP_Q009G == "A" ~ 0,
+      TX_RESP_Q009G == "B" ~ 3,
+      TX_RESP_Q009G == "C" ~ 5,
+      TX_RESP_Q009G == "D" ~ 11,
+      TRUE ~ NA_real_),
+    PONT5 = case_when(#Microcomputador 0 3 6 8 11 
+      TX_RESP_Q009A == "A" ~ 0,
+      TX_RESP_Q009A == "B" ~ 3,
+      TX_RESP_Q009A == "C" ~ 6,
+      TX_RESP_Q009A == "D" ~ 11,
+      TRUE ~ NA_real_),
+    PONT6  = 0,#case_when(#Lava louca 0 3 6 6 6
+   #   TX_RESP_Q009d == "A" ~ 0,
+  #    TX_RESP_Q009d == "B" ~ 3,
+  #    TX_RESP_Q009d == "C" ~ 6,
+   #   TX_RESP_Q009d == "D" ~ 6,
+    #  TRUE ~ NA_real_),
+    PONT7 = case_when(#Geladeira 0 2 3 5 5
+      TX_RESP_Q009A == "A" ~ 0,
+      TX_RESP_Q009A == "B" ~ 2,
+      TX_RESP_Q009A == "C" ~ 3,
+      TX_RESP_Q009A == "D" ~ 5,
+      TRUE ~ NA_real_),
+    PONT8 = case_when(#Freezer 0 2 4 6 6
+      TX_RESP_Q010I == "A" ~ 0,
+      TX_RESP_Q010I == "B" ~ 6,
+      TRUE ~ NA_real_),
+    PONT9 = case_when(#Lava roupa 0 2 4 6 6
+      TX_RESP_Q010H == "A" ~ 0,
+      TX_RESP_Q010H == "B" ~ 6,
+      TRUE ~ NA_real_),
+    PONT10  = 0,#case_when(#DVD 0 1 3 4 6
+  #    TX_RESP_Q009d == "A" ~ 0,
+  #    TX_RESP_Q009d == "B" ~ 1,
+  #    TX_RESP_Q009d == "C" ~ 3,
+  #    TX_RESP_Q009d == "D" ~ 6,
+  #    TRUE ~ NA_real_),
+    PONT11 = case_when(#Micro-ondas 0 2 4 4 4
+      TX_RESP_Q010F == "A" ~ 0,
+      TX_RESP_Q010F == "B" ~ 2,
+      TX_RESP_Q010F == "C" ~ 4,
+      TX_RESP_Q010F == "D" ~ 4,
+      TRUE ~ NA_real_),
+    PONT12  = 0,#case_when(#Motocicleta 0 1 3 3 3
+     # TX_RESP_Q009d == "A" ~ 0,
+     # TX_RESP_Q009d == "B" ~ 1,
+     # TX_RESP_Q009d == "C" ~ 3,
+     # TX_RESP_Q009d == "D" ~ 3,
+     # TRUE ~ NA_real_),
+    PONT13 = 0,#case_when(#Secadora roupa 0 2 2 2 2
+     # TX_RESP_Q009d == "A" ~ 0,
+     # TX_RESP_Q009d == "B" ~ 2,
+     # TX_RESP_Q009d == "C" ~ 2,
+     # TX_RESP_Q009d == "D" ~ 2,
+     # TRUE ~ NA_real_),
+    PONT14 = case_when(#água encanada 
+      TX_RESP_Q008B == "A" ~ 0,
+      TX_RESP_Q008B == "B" ~ 4,
+      TRUE ~ NA_real_),
+    PONT15 = case_when(#rua pavimentada
+      TX_RESP_Q008C == "A" ~ 0,
+      TX_RESP_Q008C == "B" ~ 2,
+      TRUE ~ NA_real_) )
+      
+df_aluno<- df_aluno %>% 
+    mutate(pont = PONT1 + PONT2 + PONT3 + PONT4 + PONT5 + PONT6 + PONT7 + PONT8 + PONT9 + PONT10 + PONT11 + PONT12 + PONT13 + PONT14,
+    NSEA= case_when(
+      pont == 0 ~ "Nível VII",
+      between(pont, 0,16.99) ~ "Nível VI",
+      between(pont, 17,22.99) ~"Nível V",
+      between(pont, 23,28.99) ~ "Nível IV",
+      between(pont, 29,37.99)~ "Nível III",
+      between(pont, 38,45.99) ~ "Nível II",
+      pont >= 45 ~ "Nível I"))
+
+table(df_aluno$NSEA)
+plot(table(df_aluno$NSEA))
+```
 
 ## Análise descritiva dos dados
 
@@ -482,7 +584,7 @@ df %>%
     count(TX_RESP_Q004) %>%
     mutate(prop = round(n / sum(n) * 100,2)) %>%
     select(TX_RESP_Q004, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Nível de Escolaridade dos Responsáveis", format = "latex") %>%
+    kable(booktabs = TRUE, caption = "Frequência do Nível de Escolaridade da Mãe", format = "latex") %>%
     kable_styling()
 
 df %>%

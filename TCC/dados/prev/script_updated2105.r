@@ -97,3 +97,31 @@ dados_2021$ID_ESCOLA <- mapeamento[as.character(dados_2021$ID_ESCOLA)]
 # Salvando os datasets
 write_csv(dados_2017_pdde, "T:/3. Resultados/1ª Extração de Resultados/dados_2017_pdde.csv")
 write_csv(dados_2021, "T:/3. Resultados/1ª Extração de Resultados/dados_2021.csv")
+
+
+# --------------------
+# left join 2017 e 2021
+
+dados_2017_pdde$ANO <- 2017
+dados_2021$ANO <- 2021
+
+dados <- left_join(dados_2017_pdde,dados_2021, by="ID_ESCOLA")
+
+# -------------------
+# modelagem
+
+
+modelo1<- lm(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
+summary(modelo1)
+
+modelo11 <- step(modelo1, direction = "both")
+summary(modelo11)
+
+modelo2<- lm(PROFICIENCIA_MT_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
+summary(modelo2)
+
+modelo21 <- step(modelo2, direction = "both")
+summary(modelo21)
+
+
+

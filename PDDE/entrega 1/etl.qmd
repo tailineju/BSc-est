@@ -10,7 +10,7 @@ format: html
 #| message: false
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(tidyverse, knitr, openxlsx)
-setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 1")
+setwd("C:/Users/User/Documents/GitHub/gradest-1/PDDE/entrega 7")
 setwd("/Users/tailine.nonato/Documents/VSCode/PDDE/entrega 1")
 ```
 
@@ -32,8 +32,8 @@ Descrição da manipulação:
 - Importação dos dados no R
 
 ```{r}
-pdde_pagos <- read.csv("dados/pdde_pagos.csv", skip = 5)
-pdde_naopagos <- read.csv("dados/pdde_naopagos.csv", skip = 5)
+pdde_pagos <- read.csv2("pdde_pagos.csv", skip = 5)
+pdde_naopagos <- read.csv2("pdde_naopagos.csv", skip = 5)
 ```
 
 
@@ -45,7 +45,7 @@ Censo Escolar 2022 na região Centro-Oeste:
 #    filter(NO_REGIAO == "Centro-Oeste")
 
 #write.csv(censo22_co, "dados/censo22_co.csv", row.names = FALSE)
-censo22_co <- read.csv("dados/censo22_co.csv")
+censo22_co <- read.csv("censo23_co.csv")
 ```
 
 PDDE 2023 com pagos e não-pagos:
