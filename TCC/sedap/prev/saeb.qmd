@@ -1,0 +1,58 @@
+---
+title: 'ETL SAEB'
+author: 'Tailine J. S. Nonato'
+date: '2024/04/14'
+output: pdf
+---
+
+# Objetivo
+
+Integrar os dados do SAEB 2017 e SAEB 2021 de forma a ter as notas médias dos alunos de 2017 e 2021 (em colunas) em um único dataset.
+
+# Dados
+```{r}
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse)
+setwd("C:/Users/User/Downloads/TCC_DADOS/saeb")
+```
+
+```{r}
+saeb_2017 <- read.csv("microdados_saeb_2015/DADOS/TS_ESCOLA.csv", encoding="latin1")
+saeb_2021 <- read.csv("microdados_saeb_2017/DADOS/TS_ESCOLA.csv",encoding="latin1")
+```
+
+# Limpeza dos dados
+
+```{r}
+# Filtrar apenas escolas do Centro-Oeste
+saeb_2017_co <- saeb_2017 %>% filter(ID_UF %in% c(50, 51, 52, 53))  
+saeb_2021_co <- saeb_2021 %>% filter(ID_UF %in% c(50, 51, 52, 53)) 
+
+# ID_PROVA_BRASIL em 2017 = ID_SAEB em 2021
+saeb_2017_co <- saeb_2017_co %>% rename(ID_SAEB = ID_PROVA_BRASIL)
+```
+
+```{r}
+# Selecionar apenas as colunas de interesse (até nível socioeconômico e depois apenas as médias)
+
+saeb_2017_notas <- saeb_2017_co %>% select(ID_SAEB,ID_ESCOLA,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_9EF_LP,MEDIA_9EF_MT)
+
+saeb_2021_notas <- saeb_2021_co %>% select(ID_SAEB,ID_ESCOLA,ID_ESCOLA,ID_MUNICIPIO,IN_PUBLICA,ID_LOCALIZACAO,NIVEL_SOCIO_ECONOMICO,MEDIA_9EF_LP,MEDIA_9EF_MT)
+```	
+
+```{r}
+# encontrar escolas que estão em ambos os datasets
+escolas2017 <- saeb_2017_notas$ID_ESCOLA
+escolas2021 <- saeb_2021_notas$ID_ESCOLA
+
+escolas_comuns <- intersect(escolas2017, escolas2021)
+
+# outro método
+
+escolas_comuns <- saeb_2017_notas %>% inner_join(saeb_2021_notas, by = "ID_ESCOLA") %>% select(ID_ESCOLA)
+```
+
+```{r}
+# Salvar o dataset final
+write.csv(saeb, "saeb.csv", row.names = FALSE)
+```

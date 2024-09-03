@@ -1,0 +1,58 @@
+---
+title: 'ETL PDDE'
+author: 'Tailine J. S. Nonato'
+date: '2024/04/14'
+output: pdf
+---
+
+# Objetivo
+
+Criar um processo ETL para os dados do PDDE de 2017 a 2021. Cada arquivo, em formato `csv`, contém informações de um ano específico de forma que cada escola pode ser observada mais de uma vez visto que cada observação é equivalente a uma parcela de pagamento do recurso do PDDE, tornando-se necessário somar as parcelas para chegar em um saldo final por ano.
+
+O objetivo é unir esses arquivos em um único dataset utilizando o código da escola e mantendo memória sobre o ano de origem dos dados e o saldo de cada ano.
+
+# Dados
+
+```{r}
+if(!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse)
+setwd("C:/Users/User/Downloads/TCC_DADOS/pdde_pagos")
+```
+
+```{r}
+# Lendo os arquivos
+files <- list.files(path = "C:/Users/User/Downloads/TCC_DADOS/pdde_pagos/df", pattern = ".csv", full.names = TRUE)
+
+# Lendo os arquivos
+data1 <- map_dfr(files, ~read_csv(.x, skip=5) %>%
+                select(Ano, `Código Escola`, everything()), .id = "id_ano")
+
+# Removendo "." em variáveis de valor numérico
+data2 <- data %>%
+  mutate(`Valor Custeio` = as.numeric(str_replace_all(`Valor Custeio`, "\\.", "")),
+         `Valor Capital` = as.numeric(str_replace_all(`Valor Capital`, "\\.", "")),
+         `Valor Total` = `Valor Custeio` + `Valor Capital`)
+
+# Salvando o dataset
+write_csv(data2, "pdde.csv")
+```
+
+# Limpeza
+
+```{r}
+# Lendo o dataset
+dados <- read_csv("pdde.csv")
+
+# Somando o saldo de cada escola por ano
+saldo <- dados %>%
+  group_by(`Código Escola`, Ano) %>%
+  summarise(Saldo = sum(`Valor Total`, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = Ano, values_from = Saldo, 
+              names_prefix = "Saldo_", values_fill = 0)
+
+# Vale verificar saldo por destinação, já que existem escolar em mais de um programa
+
+# Salvando o dataset
+write_csv(saldo, "pdde_saldo_ac.csv")
+teste<-read.csv("pdde_saldo_ac.csv")
+```

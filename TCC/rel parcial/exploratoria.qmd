@@ -25,19 +25,9 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 
 
 df_aluno <- vroom("TS_ALUNO_9EF_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #2.388.931
-df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_LP ==1) #1.943.252
-df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_MT ==1) #1.942.375
+df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_LP ==1, IN_PREENCHIMENTO_MT ==1) #1.943.252, #1.942.375
 
 df_escola <- vroom("TS_ESCOLA_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #70.606
-
-
-unique(df_escola$NIVEL_SOCIO_ECONOMICO)
-
-dim(df_aluno)
-dim(df_escola)
-
-var_al <- names(df_aluno)
-var_es <- names(df_escola)
 
 df_aluno <- df_aluno %>% filter(ID_REGIAO == 5) #162.370
 df_escola <- df_escola %>% filter(ID_REGIAO == 5) #4.794
@@ -45,26 +35,17 @@ df_escola <- df_escola %>% filter(ID_REGIAO == 5) #4.794
 write.csv(df_aluno, file = "TS_ALUNO_9EF_2019_co.csv")
 write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
 
+
+```	
+
+## Direto com Centro-Oeste
+```{r}
 df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
 df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
-#df <- inner_join(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
-
 df <- merge(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
 
-
-df_escola <- df_escola %>% 
-  filter(ID_ESCOLA %in% unique(df$ID_ESCOLA))
-
-df %>% summarise(n_distinct(ID_ESCOLA)) %>% pull()
-
-df <- df%>% filter(ID_REGIAO == 5)
-
-df <- df %>% 
-  mutate(ID_ESCOLA = as.factor(ID_ESCOLA))
-
-dim(df)
-write.csv(df,"dadostcc_2407.csv")
+write.csv(df,"dados_tcc.csv")
 ```
 
 ## Leitura dos dados
@@ -73,8 +54,7 @@ write.csv(df,"dadostcc_2407.csv")
 #| eval: false
 #| message: false
 
-
-df <- vroom("dadostcc_3.csv", locale = locale(encoding = "UTF-8"), delim = ",")
+df <- vroom("dadostcc.csv", locale = locale(encoding = "UTF-8"), delim = ",")
 
 var_df <- names(df)
 dim(df)

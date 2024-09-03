@@ -1,5 +1,0 @@
-pdde 2024 centro-oeste
-censo 2023 centro-oeste
-UF, Município, Administração (pub/par), Localização,Localização Diferenciada
-
-- obs: pdde primeira infancia
