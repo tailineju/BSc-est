@@ -19,10 +19,6 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 ## Filtragem dos dados para região Centro-Oeste
 
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
 
 df_aluno <- vroom("TS_ALUNO_9EF_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #2.388.931
 df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_LP ==1, IN_PREENCHIMENTO_MT ==1) #1.943.252, #1.942.375
@@ -38,48 +34,12 @@ write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
 
 ```	
 
-## Direto com Centro-Oeste
+## Direto com Centro-Oeste + Criterio Brasil
 ```{r}
-df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
-df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
+#df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
+#df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
-df <- merge(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
 
-write.csv(df,"dados_tcc.csv")
-```
-
-## Leitura dos dados
-```{r}	
-#| warning: false
-#| eval: false
-#| message: false
-
-df <- vroom("dadostcc.csv", locale = locale(encoding = "UTF-8"), delim = ",")
-
-var_df <- names(df)
-dim(df)
-
-set.seed(123)
-df_sampled <- df %>% sample_n(5000)
-
-theme_tcc <- function() {
-  theme_classic() +
-    theme(
-      axis.line = element_line(colour = "black"),
-      panel.border = element_rect(colour = "black", fill=NA),
-      panel.background = element_blank(),
-      plot.background = element_blank(),
-      axis.ticks = element_line(colour = "black"),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.text = element_text(colour = "black", size=16),
-      axis.title = element_text(colour="black", size=18),
-    )
-}
-```	
-
-### Critério Brasil
-```{r}
 df_aluno <- df_aluno %>%
   mutate(PONT1 = case_when( #Escolaridade da pessoa de referência 0 1 2 4 7
       TX_RESP_Q004 == "A" ~ 0,
@@ -176,6 +136,43 @@ df_aluno<- df_aluno %>%
       between(pont, 38,45.99) ~ "Nível II",
       pont >= 45 ~ "Nível I"))
 
+df <- merge(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
+
+write.csv(df,"dados_tcc.csv")
+```
+
+## Leitura dos dados
+```{r}	
+#| warning: false
+#| eval: false
+#| message: false
+
+df <- vroom("dadostcc.csv", locale = locale(encoding = "UTF-8"), delim = ",")
+
+var_df <- names(df)
+dim(df)
+
+set.seed(123)
+df_sampled <- df %>% sample_n(5000)
+
+theme_tcc <- function() {
+  theme_classic() +
+    theme(
+      axis.line = element_line(colour = "black"),
+      panel.border = element_rect(colour = "black", fill=NA),
+      panel.background = element_blank(),
+      plot.background = element_blank(),
+      axis.ticks = element_line(colour = "black"),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.text = element_text(colour = "black", size=16),
+      axis.title = element_text(colour="black", size=18),
+    )
+}
+```	
+
+### Critério Brasil
+```{r}
 table(df_aluno$NSEA)
 plot(table(df_aluno$NSEA))
 ```

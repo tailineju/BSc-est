@@ -23,7 +23,7 @@ format: pdf
 
 7. Definição do melhor modelo
 
-# Pacotes
+# Pacotes e Funções	
 
 ```{r}
 #| warning: false
@@ -31,54 +31,18 @@ format: pdf
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(vroom,tidyverse,lme4)
 options(OutDec = ",")
-setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel final")
+setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/rel parcial")
 ```
 
 ## Leitura dos dados
 ```{r}	
 
-df <- vroom("dadostcc_2407.csv")%>%
+df <- vroom("dados_tcc.csv")%>%
   select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NIVEL_SOCIO_ECONOMICO, NSEA, ID_AREA, ID_LOCALIZACAO, PC_FORMACAO_DOCENTE_FINAL, TX_RESP_Q002, TX_RESP_Q004, TX_RESP_Q011, TX_RESP_Q015, TX_RESP_Q016, TX_RESP_Q017A, TX_RESP_Q017B, TX_RESP_Q017C, TX_RESP_Q017D, TX_RESP_Q018A, TX_RESP_Q018B)
 
-var_df <- names(df)
-dim(df)
-
-#df <- df %>% 
-#  filter(IN_PREENCHIMENTO_LP == 1, IN_PREENCHIMENTO_MT == 1)
-
-set.seed(123)
-df_sampled <- df %>% sample_n(5000)
-
-theme_tcc <- function() {
-  theme_classic() +
-    theme(
-      axis.line = element_line(colour = "black"),
-      panel.border = element_rect(colour = "black", fill=NA),
-      panel.background = element_blank(),
-      plot.background = element_blank(),
-      axis.ticks = element_line(colour = "black"),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.text = element_text(colour = "black"),
-      axis.title = element_text(colour = "black")
-    )
-}
-#rename variable NIVEL_SOCIO_ECONOMICO to NSE
-
-df_sampled <- df_sampled %>% 
-  rename(INSE=NIVEL_SOCIO_ECONOMICO) 
-
-## make variables NSE, ID_AREA, ID_LOCALIZACAO, PC_FORMACAO_DOCENTE_FINAL, TX_RESP_Q002, TX_RESP_Q004, TX_RESP_Q011, TX_RESP_Q015, TX_RESP_Q016, TX_RESP_Q017A, TX_RESP_Q017B, TX_RESP_Q017C, TX_RESP_Q017D, TX_RESP_Q018A, TX_RESP_Q018B factors
-
-
 df_used <- df %>%
-  filter(across(everything(), ~ !(. %in% c("*", "."))))
-
-variables_to_factor <- c("NIVEL_SOCIO_ECONOMICO", "ID_AREA", "ID_LOCALIZACAO", "PC_FORMACAO_DOCENTE_FINAL", "TX_RESP_Q002", "TX_RESP_Q004", "TX_RESP_Q011", "TX_RESP_Q015", "TX_RESP_Q016", "TX_RESP_Q017A", "TX_RESP_Q017B", "TX_RESP_Q017C", "TX_RESP_Q017D", "TX_RESP_Q018A", "TX_RESP_Q018B")
-df_used[variables_to_factor] <- lapply(df_used[variables_to_factor], as.factor)
-
-df_used <- na.omit(df_used)
-
+  filter(across(everything(), ~ !(. %in% c("*", ".")))) %>%
+  na.omit(df_used)
 ```	
 
 
@@ -118,8 +82,6 @@ qqline(residuos)
 
 ## Modelo nulo
 ```{r}
-
-#modelo nulo
 modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo)
 
@@ -133,4 +95,45 @@ ICC_between
 ```
 
 
-## Modelo com adição de variáveis 
+## Modelo com adição de variáveis do primeiro nível
+
+```{r}
+modelo1 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1|ID_ESCOLA), data = df_used)
+
+summary(modelo1)
+```
+
+## Modelo com adição de variáveis do segundo nível
+
+```{r}
+modelo2 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + NIVEL_SOCIO_ECONOMICO + ID_AREA +  ID_LOCALIZACAO + PC_FORMACAO_DOCENTE_FINAL + (1|ID_ESCOLA), data = df_used)
+
+summary(modelo2)
+```
+
+## Modelo com adição de efeitos aleatórios do primeiro nível
+
+```{r}
+modelo3 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1 + NSEA|ID_ESCOLA), data = df_used)
+
+system.time({
+  modelo3 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1 + NSEA|ID_ESCOLA), data = df_used)
+})
+
+summary(modelo3)
+```
+
+## Comparação entre modelos utilizando X²
+
+```{r}
+anova(modelo1, modelo2)
+anova(modelo2, modelo3)
+```
+
+## Análise de resíduos
+
+```{r}
+residuos <- residuals(modelo2)
+qqnorm(residuos)
+qqline(residuos)
+```
