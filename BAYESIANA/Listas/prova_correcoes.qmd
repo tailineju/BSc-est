@@ -1,0 +1,13 @@
+---
+title: "Recuperação: Resolução da Prova"
+subtitle: "Inferência Bayesiana | 1º/2024"
+author: "Tailine J. S. Nonato"
+date: today
+date-format: long
+format: pdf
+---
+
+
+# Lista 2
+
+## Questão 1

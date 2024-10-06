@@ -29,8 +29,8 @@ format: pdf
 #| warning: false
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse,lme4)
-options(OutDec = ",")
+pacman::p_load(vroom,tidyverse,lme4,stargazer, texreg) #stargazer is for latex output
+#options(OutDec = ",")
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 ```
 
@@ -84,10 +84,14 @@ qqline(residuos)
 modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo)
 
+#stargazer(modelo_nulo, type = "latex")
+```	
+
+```{r}	
 #modelo_nulo <- lme(fixed=PROFICIENCIA_LP_SAEB ~ 1, random=~1|ID_ESCOLA, data = df_sampled)
 
-#RandomEffects <- as.data.frame(VarCorr(modelo_nulo))
-#RandomEffects
+RandomEffects <- as.data.frame(VarCorr(modelo_nulo))
+RandomEffects
 
 ICC_between <- RandomEffects[1,4]/(RandomEffects[1,4]+RandomEffects[2,4]) 
 ICC_between
