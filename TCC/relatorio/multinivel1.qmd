@@ -84,7 +84,7 @@ qqline(residuos)
 modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo)
 
-#stargazer(modelo_nulo, type = "latex")
+stargazer(modelo_nulo, type = "latex")
 ```	
 
 ```{r}	
