@@ -44,41 +44,6 @@ df_used <- df %>%
   na.omit(df_used)
 ```	
 
-
-## Modelo no nível aluno
-```{r}
-modelo1<- lm(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
-summary(modelo1)
-
-modelo11 <- step(modelo1, direction = "both")
-summary(modelo11)
-
-modelo2<- lm(PROFICIENCIA_MT_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B, data=df_used)
-summary(modelo2)
-
-modelo21 <- step(modelo2, direction = "both")
-summary(modelo21)
-```
-
-## Modelo nos dois níveis
-
-```{r}
-modelo3 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + NIVEL_SOCIO_ECONOMICO + ID_AREA +  ID_LOCALIZACAO + PC_FORMACAO_DOCENTE_FINAL + (1|ID_ESCOLA), data = df_used)
-summary(modelo3)
-
-modelo4 <- lmer(PROFICIENCIA_MT_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1|ID_ESCOLA), data = df_used)
-```	
-
-
-## Análise de resíduos
-```{r}
-residuos <- residuals(modelo2)
-qqnorm(residuos)
-qqline(residuos)
-```
-
-
-
 ## Modelo nulo
 ```{r}
 modelo_nulo <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
@@ -101,17 +66,31 @@ ICC_between
 ## Modelo com adição de variáveis do primeiro nível
 
 ```{r}
-modelo1 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1|ID_ESCOLA), data = df_used)
+modelo1 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + (1|ID_ESCOLA), data = df_used)
 
-summary(modelo1)
+stargazer(modelo1, type = "latex")
+
+randomEffects <- as.data.frame(VarCorr(modelo1))
+#randomEffects
+
+ICC_between <- randomEffects[1,4]/(randomEffects[1,4]+randomEffects[2,4])
+ICC_between
 ```
 
 ## Modelo com adição de variáveis do segundo nível
 
 ```{r}
-modelo2 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017B + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + NIVEL_SOCIO_ECONOMICO + ID_AREA +  ID_LOCALIZACAO + PC_FORMACAO_DOCENTE_FINAL + (1|ID_ESCOLA), data = df_used)
+modelo2 <- lmer(PROFICIENCIA_LP_SAEB ~ NSEA + TX_RESP_Q002 + TX_RESP_Q004 + TX_RESP_Q011 + TX_RESP_Q015 + TX_RESP_Q017A + TX_RESP_Q017C + TX_RESP_Q017D + TX_RESP_Q018A + TX_RESP_Q018B + NIVEL_SOCIO_ECONOMICO + ID_AREA +  ID_LOCALIZACAO + PC_FORMACAO_DOCENTE_FINAL + (1|ID_ESCOLA), data = df_used)
 
 summary(modelo2)
+
+stargazer(modelo2, type = "latex")
+
+randomEffects <- as.data.frame(VarCorr(modelo2))
+#randomEffects
+
+ICC_between <- randomEffects[1,4]/(randomEffects[1,4]+randomEffects[2,4])
+ICC_between
 ```
 
 ## Modelo com adição de efeitos aleatórios do primeiro nível
