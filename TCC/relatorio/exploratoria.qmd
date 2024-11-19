@@ -19,7 +19,6 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 ## Filtragem dos dados para região Centro-Oeste
 
 ```{r}
-
 df_aluno <- vroom("TS_ALUNO_9EF_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #2.388.931
 df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_LP ==1, IN_PREENCHIMENTO_MT ==1) #1.943.252, #1.942.375
 
@@ -30,113 +29,130 @@ df_escola <- df_escola %>% filter(ID_REGIAO == 5) #4.794
 
 write.csv(df_aluno, file = "TS_ALUNO_9EF_2019_co.csv")
 write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
-
-
 ```	
 
-## Direto com Centro-Oeste + Criterio Brasil
+## Direto com Centro-Oeste
 ```{r}
-#df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
-#df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
-
+df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
+df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
 df_aluno <- df_aluno %>%
   mutate(PONT1 = case_when( #Escolaridade da pessoa de referência 0 1 2 4 7
       TX_RESP_Q004 == "A" ~ 0,
       TX_RESP_Q004 == "B" ~ 1,
       TX_RESP_Q004 == "C" ~ 2,
-      TX_RESP_Q004 == "D" ~ 4,
-      TX_RESP_Q004 == "E" ~ 7,
+      TX_RESP_Q004 == "D" ~ 3,
+      TX_RESP_Q004 == "E" ~ 4,
+      TX_RESP_Q004 == "F" ~ 0,
       TRUE ~ NA_real_),
     PONT2 = case_when( #Banheiros 0 3 7 10 14
       TX_RESP_Q009F == "A" ~ 0,
-      TX_RESP_Q009F == "B" ~ 3,
-      TX_RESP_Q009F == "C" ~ 7,
-      TX_RESP_Q009F == "D" ~ 14,
+      TX_RESP_Q009F == "B" ~ 1,
+      TX_RESP_Q009F == "C" ~ 2,
+      TX_RESP_Q009F == "D" ~ 3,
       TRUE ~ NA_real_),
-   PONT3  = 0,#  case_when( #Empregados domésticos 0 3 7 10 13
-    #  TX_RESP_Q009d == "A" ~ 0,
-    #  TX_RESP_Q009d == "B" ~ 3,
-    #  TX_RESP_Q009d == "C" ~ 7,
-    #  TX_RESP_Q009d == "D" ~ 13,
-    #  TRUE ~ NA_real_),
     PONT4 = case_when( #Automóveis 0 3 5 8 11
       TX_RESP_Q009G == "A" ~ 0,
-      TX_RESP_Q009G == "B" ~ 3,
-      TX_RESP_Q009G == "C" ~ 5,
-      TX_RESP_Q009G == "D" ~ 11,
+      TX_RESP_Q009G == "B" ~ 1,
+      TX_RESP_Q009G == "C" ~ 2,
+      TX_RESP_Q009G == "D" ~ 3,
       TRUE ~ NA_real_),
     PONT5 = case_when(#Microcomputador 0 3 6 8 11 
       TX_RESP_Q009A == "A" ~ 0,
-      TX_RESP_Q009A == "B" ~ 3,
-      TX_RESP_Q009A == "C" ~ 6,
-      TX_RESP_Q009A == "D" ~ 11,
+      TX_RESP_Q009A == "B" ~ 1,
+      TX_RESP_Q009A == "C" ~ 2,
+      TX_RESP_Q009A == "D" ~ 3,
       TRUE ~ NA_real_),
-    PONT6  = 0,#case_when(#Lava louca 0 3 6 6 6
-   #   TX_RESP_Q009d == "A" ~ 0,
-  #    TX_RESP_Q009d == "B" ~ 3,
-  #    TX_RESP_Q009d == "C" ~ 6,
-   #   TX_RESP_Q009d == "D" ~ 6,
-    #  TRUE ~ NA_real_),
     PONT7 = case_when(#Geladeira 0 2 3 5 5
       TX_RESP_Q009A == "A" ~ 0,
-      TX_RESP_Q009A == "B" ~ 2,
-      TX_RESP_Q009A == "C" ~ 3,
-      TX_RESP_Q009A == "D" ~ 5,
+      TX_RESP_Q009A == "B" ~ 1,
+      TX_RESP_Q009A == "C" ~ 2,
+      TX_RESP_Q009A == "D" ~ 3,
       TRUE ~ NA_real_),
     PONT8 = case_when(#Freezer 0 2 4 6 6
       TX_RESP_Q010I == "A" ~ 0,
-      TX_RESP_Q010I == "B" ~ 6,
+      TX_RESP_Q010I == "B" ~ 1,
       TRUE ~ NA_real_),
     PONT9 = case_when(#Lava roupa 0 2 4 6 6
       TX_RESP_Q010H == "A" ~ 0,
-      TX_RESP_Q010H == "B" ~ 6,
+      TX_RESP_Q010H == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT10  = 0,#case_when(#DVD 0 1 3 4 6
-  #    TX_RESP_Q009d == "A" ~ 0,
-  #    TX_RESP_Q009d == "B" ~ 1,
-  #    TX_RESP_Q009d == "C" ~ 3,
-  #    TX_RESP_Q009d == "D" ~ 6,
-  #    TRUE ~ NA_real_),
     PONT11 = case_when(#Micro-ondas 0 2 4 4 4
       TX_RESP_Q010F == "A" ~ 0,
-      TX_RESP_Q010F == "B" ~ 2,
-      TX_RESP_Q010F == "C" ~ 4,
-      TX_RESP_Q010F == "D" ~ 4,
+      TX_RESP_Q010F == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT12  = 0,#case_when(#Motocicleta 0 1 3 3 3
-     # TX_RESP_Q009d == "A" ~ 0,
-     # TX_RESP_Q009d == "B" ~ 1,
-     # TX_RESP_Q009d == "C" ~ 3,
-     # TX_RESP_Q009d == "D" ~ 3,
-     # TRUE ~ NA_real_),
-    PONT13 = 0,#case_when(#Secadora roupa 0 2 2 2 2
-     # TX_RESP_Q009d == "A" ~ 0,
-     # TX_RESP_Q009d == "B" ~ 2,
-     # TX_RESP_Q009d == "C" ~ 2,
-     # TX_RESP_Q009d == "D" ~ 2,
-     # TRUE ~ NA_real_),
     PONT14 = case_when(#água encanada 
       TX_RESP_Q008B == "A" ~ 0,
-      TX_RESP_Q008B == "B" ~ 4,
+      TX_RESP_Q008B == "B" ~ 1,
       TRUE ~ NA_real_),
     PONT15 = case_when(#rua pavimentada
-      TX_RESP_Q008C == "A" ~ 0,
-      TX_RESP_Q008C == "B" ~ 2,
+      TX_RESP_Q008A == "A" ~ 0,
+      TX_RESP_Q008A == "B" ~ 1,
       TRUE ~ NA_real_) )
-      
-df_aluno<- df_aluno %>% 
-    mutate(pont = PONT1 + PONT2 + PONT3 + PONT4 + PONT5 + PONT6 + PONT7 + PONT8 + PONT9 + PONT10 + PONT11 + PONT12 + PONT13 + PONT14,
-    NSEA= case_when(
-      pont == 0 ~ "Nível VII",
-      between(pont, 0,16.99) ~ "Nível VI",
-      between(pont, 17,22.99) ~"Nível V",
-      between(pont, 23,28.99) ~ "Nível IV",
-      between(pont, 29,37.99)~ "Nível III",
-      between(pont, 38,45.99) ~ "Nível II",
-      pont >= 45 ~ "Nível I"))
+```
+
+## PCA
+```{r}
+# Selecionar as colunas relevantes para a PCA
+pca_data <- df_aluno %>%
+  select(PONT1, PONT2, PONT4, PONT5, PONT7, PONT8, PONT9, PONT11, PONT14, PONT15) %>%
+  mutate(across(everything(), as.numeric)) 
+
+non_na_rows <- complete.cases(pca_data)
+  
+pca_data <- pca_data %>% na.omit()
+
+pca_data_norm <- scale(pca_data)
+
+# Realizar a PCA
+pca_result <- princomp(pca_data_norm)
+
+# Visualizar a variância explicada por cada componente principal
+summary(pca_result)
+
+# Initialize the NSE column with NAs
+df_aluno$NSE_pca <- NA
+
+# Assign the PCA scores to the non-NA rows
+df_aluno$NSE_pca[non_na_rows] <- pca_result$scores[, 1]
+
+```	
+
+## NSE e escolaridade
+ ```{r}	
+#| warning: false
+#| eval: false
+#| message: false   
+
+
+df_escola <- df_escola %>%
+  mutate(NSE_esc = case_when(
+    NIVEL_SOCIO_ECONOMICO == "Nível I" ~ 1,
+    NIVEL_SOCIO_ECONOMICO == "Nível II" ~ 2,
+    NIVEL_SOCIO_ECONOMICO == "Nível III" ~ 3,
+    NIVEL_SOCIO_ECONOMICO == "Nível IV" ~ 4,
+    NIVEL_SOCIO_ECONOMICO == "Nível V" ~ 5,
+    NIVEL_SOCIO_ECONOMICO == "Nível VI" ~ 6,
+    NIVEL_SOCIO_ECONOMICO == "Nível VII" ~ 7,
+    TRUE ~ as.numeric(NIVEL_SOCIO_ECONOMICO)
+  ))
+
+# var ESCDADE=POINT1
+
+df_aluno <- df_aluno %>%
+  mutate(ESCDADE = PONT1)
+
+````
+
+ ```{r}	
+#| warning: false
+#| eval: false
+#| message: false     
 
 df <- merge(df_aluno,df_escola, by = c("ID_ESCOLA", "ID_REGIAO","ID_SAEB", "ID_UF","ID_MUNICIPIO","ID_AREA","IN_PUBLICA", "ID_LOCALIZACAO"))
+
+# check variables
+var_df <- names(df)
 
 write.csv(df,"dados_tcc.csv")
 ```
@@ -176,11 +192,6 @@ theme_tcc <- function() {
 }
 ```	
 
-### Critério Brasil
-```{r}
-table(df_aluno$NSEA)
-plot(table(df_aluno$NSEA))
-```
 
 ## Análise descritiva dos dados
 
@@ -1205,17 +1216,6 @@ ggsave("img/boxplot_mt_quadrinhos.pdf", width = 8, height = 5, dpi = 300)
 unique(df_used$NIVEL_SOCIO_ECONOMICO)
 table(df_used$NIVEL_SOCIO_ECONOMICO)
 
-df_used <- df_used %>%
-  mutate(NSE_pont = case_when(
-    NIVEL_SOCIO_ECONOMICO == "Nível I" ~ 1,
-    NIVEL_SOCIO_ECONOMICO == "Nível II" ~ 2,
-    NIVEL_SOCIO_ECONOMICO == "Nível III" ~ 3,
-    NIVEL_SOCIO_ECONOMICO == "Nível IV" ~ 4,
-    NIVEL_SOCIO_ECONOMICO == "Nível V" ~ 5,
-    NIVEL_SOCIO_ECONOMICO == "Nível VI" ~ 6,
-    NIVEL_SOCIO_ECONOMICO == "Nível VII" ~ 7,
-    TRUE ~ as.numeric(NIVEL_SOCIO_ECONOMICO)
-  ))
 
 table(df_used$NSE_pont)
 
