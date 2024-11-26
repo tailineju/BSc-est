@@ -23,8 +23,8 @@ write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
 
 ## Leitura dos dados já filtrados
 
-df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
-df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
+df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv")
+df_escola <- vroom("TS_ESCOLA_2019_co.csv")
 
 # Pontuação do questionário socioeconômico
 df_aluno <- df_aluno %>%
@@ -42,6 +42,7 @@ df_aluno <- df_aluno %>%
       TX_RESP_Q009F == "C" ~ 2,
       TX_RESP_Q009F == "D" ~ 3,
       TRUE ~ NA_real_),
+    #PONT3 =
     PONT4 = case_when( #Automóveis 0 3 5 8 11
       TX_RESP_Q009G == "A" ~ 0,
       TX_RESP_Q009G == "B" ~ 1,
@@ -101,7 +102,7 @@ df_aluno$NSE_pca[non_na_rows] <- pca_result$scores[, 1]
 # Escolaridade da mãe
 
 df_aluno <- df_aluno %>%
-  mutate(ESCDADE = PONT1)
+  mutate(escolaridade = PONT1)
 
 # NSE da escola
 
@@ -127,18 +128,13 @@ write.csv(df,"dados_tcc.csv")
 # Dados para os modelos ----------------------------------------------
 
 df_used <- vroom("dados_tcc.csv")%>%
-  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NSE_esc, ID_AREA, ID_LOCALIZACAO, TX_RESP_Q002, TX_RESP_Q004, ESCDADE, TX_RESP_Q015, NSE_pca)
+  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NSE_esc, ID_AREA, ID_LOCALIZACAO, TX_RESP_Q002, TX_RESP_Q004, escolaridade, TX_RESP_Q015, NSE_pca)
 
 kable(head(df_used))
 
 df_used <- df_used %>%
   filter(across(everything(), ~ !(. %in% c("*", ".")))) %>%
   na.omit(df_used)
-
-write_csv(df_used, "df_used.csv")
-
-## Leitura direta dos dados já filtrados
-df_used <- vroom("df_used.csv")
 
 # Recode área e localização da escola
 table(df_used$ID_AREA)
@@ -149,6 +145,13 @@ df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 1, 0, 1)
 
 table(df_used$ID_AREA)
 table(df_used$ID_LOCALIZACAO)
+
+write_csv(df_used, "df_used.csv")
+
+## Leitura direta dos dados já filtrados
+df_used <- vroom("df_used.csv")
+
+
 
 # Theme para gráficos ----------------------------------------------
 theme_tcc <- function() {
@@ -177,23 +180,18 @@ plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$NSE_pca, main = "Proficiênci
 plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$NSE_esc, main = "Proficiência em Língua Portuguesa x NSE Escola", xlab = "NSE Escola", ylab = "Proficiência")
 plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$NSE_esc, main = "Proficiência em Matemática x NSE Escola", xlab = "NSE Escola", ylab = "Proficiência")
 
-plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$ESCDADE, main = "Proficiência em Língua Portuguesa x ESCDADE")
-plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$ESCDADE, main = "Proficiência em Matemática x ESCDADE", xlab = "ESCDADE", ylab = "Proficiência")
+plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$escolaridade, main = "Proficiência em Língua Portuguesa x escolaridade")
+plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$escolaridade, main = "Proficiência em Matemática x escolaridade", xlab = "escolaridade", ylab = "Proficiência")
 
-# 
-### Quantidade de Escolas
-	 
-
-
-df %>% 
+# ## Quantidade de Escolas
+df_used %>% 
     summarise(n = n_distinct(ID_ESCOLA))
-
 
 ### Quantidade de Alunos por Escola
 
 
 
-df %>%
+df_used %>%
     group_by(ID_ESCOLA) %>%
     summarise(n = n()) %>%
     ggplot(aes(x = n)) +
@@ -204,7 +202,7 @@ df %>%
 ggsave("img/dist_alunos_escola.pdf", width = 8, height = 5, dpi = 300)
 
 # quadro resumo
-df %>%
+df_used %>%
   group_by(ID_ESCOLA) %>%
   summarise(n = n()) %>%
   summarise(
@@ -271,7 +269,7 @@ kable(loc_freq, caption = "Frequência da Administração das Escolas", booktabs
 
 
 #lingua portuguesa (ggplot histogram)
-df %>%
+df_used %>%
     ggplot(aes(x = PROFICIENCIA_LP_SAEB)) +
     geom_histogram(binwidth = 10,  fill = "white", color="black") +
     labs(x = "Língua Portuguesa",
@@ -291,7 +289,7 @@ df_sampled %>%
 ggsave("img/qqplot_lp.pdf", width = 5, height = 5, dpi = 300)
 
 #lingua portuguesa (boxplot)
-df %>%
+df_used %>%
     ggplot(aes(y = PROFICIENCIA_MT_SAEB)) +
   geom_boxplot(fill = "white") +
   labs(x = "Língua Portuguesa", y="") +
@@ -301,7 +299,7 @@ df %>%
 ggsave("img/boxplot_lp.pdf", width = 5, height = 5, dpi = 300)
 
 #matemática (ggplot histogram)
-df %>%
+df_used %>%
     ggplot(aes(x = PROFICIENCIA_MT_SAEB)) +
     geom_histogram(binwidth = 10,  fill = "white", color="black") +
     labs(x = "Matemática",
@@ -322,7 +320,7 @@ df_sampled %>%
 ggsave("img/qqplot_mt.pdf", width = 5, height = 5, dpi = 300)
 
 #matematica (boxplot)
-df %>%
+df_used %>%
     ggplot(aes(y = PROFICIENCIA_MT_SAEB)) +
   geom_boxplot(fill = "white") +
   labs(x = "Matemática", y="") +
@@ -336,7 +334,7 @@ ggsave("img/boxplot_mt.pdf", width = 5, height = 5, dpi = 300)
 
 
 
-lp_stats <- summarise(df,
+lp_stats <- summarise(df_used,
   Média = mean(PROFICIENCIA_LP_SAEB, na.rm = TRUE),
   `Desvio Padrão` = sd(PROFICIENCIA_LP_SAEB, na.rm = TRUE),
   Mínimo = min(PROFICIENCIA_LP_SAEB, na.rm = TRUE),
@@ -347,7 +345,7 @@ lp_stats <- summarise(df,
 ) %>% pivot_longer(everything(), names_to = "Estatística", values_to = "Língua Portuguesa")
 
 # Calculate summary statistics for Matemática
-mt_stats <- summarise(df,
+mt_stats <- summarise(df_used,
   Média = mean(PROFICIENCIA_MT_SAEB, na.rm = TRUE),
   `Desvio Padrão` = sd(PROFICIENCIA_MT_SAEB, na.rm = TRUE),
   Mínimo = min(PROFICIENCIA_MT_SAEB, na.rm = TRUE),
@@ -377,7 +375,7 @@ combined_stats %>%
 
 
 
-df %>%
+df_used %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -387,7 +385,7 @@ df %>%
     theme_tcc()
 ggsave("img/boxplot_lp_nse.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
+df_used %>%
     filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
     ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -403,7 +401,7 @@ ggsave("img/boxplot_mt_nse.pdf", width = 8, height = 5, dpi = 300)
 
 
 
-df %>%
+df_used %>%
     mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
     ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -413,7 +411,7 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_area.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
+df_used %>%
     mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
     ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -429,7 +427,7 @@ ggsave("img/boxplot_mt_area.pdf", width = 8, height = 5, dpi = 300)
 
 
 
-df %>%
+df_used %>%
     mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
     ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -439,7 +437,7 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_loc.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
+df_used %>%
     mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
     ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -454,8 +452,8 @@ ggsave("img/boxplot_mt_loc.pdf", width = 8, height = 5, dpi = 300)
 unique(df$TX_RESP_Q002)
 
 #tabela de frequencia
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q002 = case_when(
       TX_RESP_Q002 == "A" ~ "Branca",
       TX_RESP_Q002 == "B" ~ "Preta",
@@ -472,8 +470,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência da Raça/Cor dos Responsáveis", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q002 = case_when(
       TX_RESP_Q002 == "A" ~ "Branca",
       TX_RESP_Q002 == "B" ~ "Preta",
@@ -492,8 +490,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_raca.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q002 = case_when(
       TX_RESP_Q002 == "A" ~ "Branca",
       TX_RESP_Q002 == "B" ~ "Preta",
@@ -522,16 +520,16 @@ unique(df$TX_RESP_Q004)
 
 # tabela de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     count(TX_RESP_Q004) %>%
     mutate(prop = round(n / sum(n) * 100,2)) %>%
     select(TX_RESP_Q004, prop) %>%
     kable(booktabs = TRUE, caption = "Frequência do Nível de Escolaridade da Mãe", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q004, y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -540,8 +538,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_mae.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q004, y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -557,8 +555,8 @@ ggsave("img/boxplot_mt_mae.pdf", width = 8, height = 5, dpi = 300)
 
 #tabela de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q011 = case_when(
     TX_RESP_Q011 == "A" ~ "Menos de 30min",
     TX_RESP_Q011 == "B" ~ "Entre 30min e 1h",
@@ -572,7 +570,7 @@ df %>%
     kable(booktabs = TRUE, caption = "Tempo para chegar a escola", format = "latex") %>%
     kable_styling()
 
-df %>%
+df_used %>%
   filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".", "*")) %>%
   mutate(TX_RESP_Q011 = case_when(
     TX_RESP_Q011 == "A" ~ "Menos de 30min",
@@ -588,8 +586,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_tempo.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q011 = case_when(
       TX_RESP_Q011 == "A" ~ "Menos de 30min",
       TX_RESP_Q011 == "B" ~ "Entre 30min e 1h",
@@ -614,8 +612,8 @@ ggsave("img/boxplot_mt_tempo.pdf", width = 8, height = 5, dpi = 300)
 
 #tabela de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q015 = case_when(
       TX_RESP_Q015 == "A" ~ "Não",
       TX_RESP_Q015 == "B" ~ "1 vez",
@@ -630,8 +628,8 @@ df %>%
     kable_styling()
 
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q015 = case_when(
       TX_RESP_Q015 == "A" ~ "Não",
       TX_RESP_Q015 == "B" ~ "1 vez",
@@ -647,8 +645,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_reprovacao.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q015 = case_when(
       TX_RESP_Q015 == "A" ~ "Não",
       TX_RESP_Q015 == "B" ~ "1 vez",
@@ -671,8 +669,8 @@ ggsave("img/boxplot_mt_reprovacao.pdf", width = 8, height = 5, dpi = 300)
 
 #tab de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q016 = case_when(
       TX_RESP_Q016 == "A" ~ "Não",
       TX_RESP_Q016 == "B" ~ "1 vez",
@@ -687,8 +685,8 @@ df %>%
     kable_styling()
 
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q016 = case_when(
       TX_RESP_Q016 == "A" ~ "Não",
       TX_RESP_Q016 == "B" ~ "1 vez",
@@ -704,8 +702,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_abandono.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q016 = case_when(
       TX_RESP_Q016 == "A" ~ "Não",
       TX_RESP_Q016 == "B" ~ "1 vez",
@@ -730,8 +728,8 @@ unique(df$TX_RESP_Q017A)
 
 #tab freq
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017A = case_when(
       TX_RESP_Q017A == "A" ~ "Não tem",
       TX_RESP_Q017A == "B" ~ "Menos de 1h",
@@ -747,8 +745,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência do Tempo de Lazer dos Alunos", format = "latex")
 
 
-df %>% 
-  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
+df_used %>% 
+  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
   mutate(TX_RESP_Q017A = case_when(
     TX_RESP_Q017A == "A" ~ "Não tem",
     TX_RESP_Q017A == "B" ~ "Menos de 1h",
@@ -765,8 +763,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_lazer.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017A = case_when(
     TX_RESP_Q017A == "A" ~ "Não tem",
     TX_RESP_Q017A == "B" ~ "Menos de 1h",
@@ -793,8 +791,8 @@ ggsave("img/boxplot_mt_lazer.pdf", width = 8, height = 5, dpi = 300)
 
 unique(df$TX_RESP_Q017B)
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017B %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017B = case_when(
       TX_RESP_Q017B == "A" ~ "Não tem",
       TX_RESP_Q017B == "B" ~ "Menos de 1h",
@@ -810,8 +808,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_cursos.pdf", width = 8, height = 5, dpi = 300)
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017B %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017B = case_when(
       TX_RESP_Q017B == "A" ~ "Não tem",
       TX_RESP_Q017B == "B" ~ "Menos de 1h",
@@ -834,8 +832,8 @@ ggsave("img/boxplot_mt_cursos.pdf", width = 8, height = 5, dpi = 300)
 
 # tabela de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017C = case_when(
       TX_RESP_Q017C == "A" ~ "Não tem",
       TX_RESP_Q017C == "B" ~ "Menos de 1h",
@@ -851,8 +849,8 @@ df %>%
     kable_styling()
 
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017C = case_when(
       TX_RESP_Q017C == "A" ~ "Não tem",
       TX_RESP_Q017C == "B" ~ "Menos de 1h",
@@ -868,8 +866,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_domesticos.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017C = case_when(
       TX_RESP_Q017C == "A" ~ "Não tem",
       TX_RESP_Q017C == "B" ~ "Menos de 1h",
@@ -893,8 +891,8 @@ ggsave("img/boxplot_mt_domesticos.pdf", width = 8, height = 5, dpi = 300)
 
 #tab de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017D = case_when(
       TX_RESP_Q017D == "A" ~ "Não tem",
       TX_RESP_Q017D == "B" ~ "Menos de 1h",
@@ -909,8 +907,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência do Tempo de Estudo dos Alunos", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
    mutate(TX_RESP_Q017D = case_when(
       TX_RESP_Q017D == "A" ~ "Não tem",
       TX_RESP_Q017D == "B" ~ "Menos de 1h",
@@ -926,8 +924,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_estudo.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
      mutate(TX_RESP_Q017D = case_when(
       TX_RESP_Q017D == "A" ~ "Não tem",
       TX_RESP_Q017D == "B" ~ "Menos de 1h",
@@ -950,8 +948,8 @@ ggsave("img/boxplot_mt_estudo.pdf", width = 8, height = 5, dpi = 300)
 
 #tab de frequencia
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017E = case_when(
       TX_RESP_Q017E == "A" ~ "Não tem",
       TX_RESP_Q017E == "B" ~ "Menos de 1h",
@@ -966,8 +964,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência do Tempo de Trabalho dos Alunos", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
      mutate(TX_RESP_Q017E = case_when(
       TX_RESP_Q017E == "A" ~ "Não tem",
       TX_RESP_Q017E == "B" ~ "Menos de 1h",
@@ -983,8 +981,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_trabalho.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q017E = case_when(
       TX_RESP_Q017E == "A" ~ "Não tem",
       TX_RESP_Q017E == "B" ~ "Menos de 1h",
@@ -1010,8 +1008,8 @@ unique(df$TX_RESP_Q018A)
 
 #tab frequency()
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q018A = case_when(
       TX_RESP_Q018A == "A" ~ "Nunca ou quase nunca",
       TX_RESP_Q018A == "B" ~ "De vez em quando",
@@ -1024,8 +1022,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência do Uso de Notícias pelos Alunos", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q018A, y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -1034,8 +1032,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_noticias.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q018A, y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -1051,8 +1049,8 @@ ggsave("img/boxplot_mt_noticias.pdf", width = 8, height = 5, dpi = 300)
 
 #tab frequency(
 
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
+df_used %>% 
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     mutate(TX_RESP_Q018B = case_when(
       TX_RESP_Q018B == "A" ~ "Nunca ou quase nunca",
       TX_RESP_Q018B == "B" ~ "De vez em quando",
@@ -1065,8 +1063,8 @@ df %>%
     kable(booktabs = TRUE, caption = "Frequência do Uso de Livros pelos Alunos", format = "latex") %>%
     kable_styling()
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q018B, y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -1075,8 +1073,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_livros.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q018B, y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -1092,8 +1090,8 @@ ggsave("img/boxplot_mt_livros.pdf", width = 8, height = 5, dpi = 300)
 
 #descartar
 
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018C %in% c(".","*")) %>%
+df_used %>%
+    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
     ggplot(aes(x = TX_RESP_Q018C, y = PROFICIENCIA_LP_SAEB)) +
     geom_boxplot(fill = "white") +
     labs(x = "",
@@ -1102,8 +1100,8 @@ df %>%
   theme_tcc()
 ggsave("img/boxplot_lp_quadrinhos.pdf", width = 8, height = 5, dpi = 300)
 
-df %>%
-  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018C %in% c(".","*")) %>%
+df_used %>%
+  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1) %>%
   ggplot(aes(x = TX_RESP_Q018C, y = PROFICIENCIA_MT_SAEB)) +
   geom_boxplot(fill = "white") +
   labs(x = "",
@@ -1211,14 +1209,14 @@ tab_model(modelo_nulo_lp, show.icc = TRUE, title="Modelo Nulo")
 
 ### Modelo 1
 
-modelo1_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + (1|ID_ESCOLA), data = df_used)
+modelo1_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + (1|ID_ESCOLA), data = df_used)
 summary(modelo1_lp)
 tab_model(modelo1_lp, show.icc = TRUE, title="Modelo com adição de variáveis do primeiro nível")
 
 
 ### Modelo 2
 
-modelo2_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
+modelo2_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
 summary(modelo2_lp)
 tab_model(modelo2_lp, show.icc = TRUE, title="Modelo com adição de variáveis do segundo nível")
 
@@ -1226,18 +1224,22 @@ tab_model(modelo2_lp, show.icc = TRUE, title="Modelo com adição de variáveis 
 ### Modelo 3
 
 
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q015|ID_ESCOLA), data = df_used)
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + TX_RESP_Q015|ID_ESCOLA), data = df_used)
 summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q002|ID_ESCOLA), data = df_used)
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + TX_RESP_Q002|ID_ESCOLA), data = df_used)
 summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (NSE_pca|ID_ESCOLA), data = df_used)
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca|ID_ESCOLA), data = df_used)
 summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 
+
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca|ID_ESCOLA), data = df_used)
+summary(modelo3_lp)
+tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 
 ### Comparação entre modelos
 
@@ -1264,31 +1266,31 @@ tab_model(modelo_nulo_mt, show.icc = TRUE)
 
 ### Modelo 1
 
-modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + (1|ID_ESCOLA), data = df_used)
+modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + (1|ID_ESCOLA), data = df_used)
 summary(modelo1_mt)
 tab_model(modelo1_mt, show.icc = TRUE, title="Modelo com adição de variáveis do primeiro nível")
 
 
 ### Modelo 2
 
-modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
+modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
 summary(modelo2_mt)
 tab_model(modelo2_mt, show.icc = TRUE, title="Modelo com adição de variáveis do segundo nível")
 	
 
 ### Modelo 3
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q015|ID_ESCOLA), data = df_used)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q015|ID_ESCOLA), data = df_used)
 summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 	
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q002|ID_ESCOLA), data = df_used)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q002|ID_ESCOLA), data = df_used)
 summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 	
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (NSE_pca|ID_ESCOLA), data = df_used)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (NSE_pca|ID_ESCOLA), data = df_used)
 summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 	

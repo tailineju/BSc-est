@@ -25,14 +25,17 @@ format: html
 
 - [ ] Nível socioeconômico escola
 
-- [ ] Recode área e localização
+- [ ] Recode (área e localização)
 
-- [ ] Recode Escolaridade
+- [ ] Recode (Escolaridade)
+
+- [ ] Random effects
 
 # Setup
 
 ```{r}
 #| warning: false
+#| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr) 
@@ -44,9 +47,10 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 #| warning: false
 #| eval: false
 #| echo: false
+#| label: dados1
 
 df <- vroom("dados_tcc.csv")%>%
-  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NSE_esc, ID_AREA, ID_LOCALIZACAO, TX_RESP_Q002, TX_RESP_Q004, ESCDADE, TX_RESP_Q015, NSE_pca)
+  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NSE_esc, ID_AREA, ID_LOCALIZACAO, TX_RESP_Q002, TX_RESP_Q004, escolaridade, reprov, NSE_pca)
 
 kable(head(df))
 
@@ -59,18 +63,11 @@ write_csv(df_used, "df_used.csv")
 
 ```{r}	
 #| warning: false
+#| label: dados2
+
 df_used <- vroom("df_used.csv")
 
-table(df_used$ID_AREA)
-table(df_used$ID_LOCALIZACAO)
-
-# turn 1 to 0 and 2 to 1
-df_used$ID_AREA <- ifelse(df_used$ID_AREA == 1, 0, 1)
-df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 1, 0, 1)
-
-
-table(df_used$ID_AREA)
-table(df_used$ID_LOCALIZACAO)
+df_used$reprov <- ifelse(df_used$TX_RESP_Q015 == "A", 0, ifelse(df_used$TX_RESP_Q015 == "B", 1, 2))
 ```
 
 
@@ -78,6 +75,7 @@ table(df_used$ID_LOCALIZACAO)
 #| warning: false
 #| eval: false
 #| echo: false
+#| label: exploratoria_num
 
 # Exploratória (var. numéricas)
 
@@ -87,8 +85,8 @@ plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$pont, main = "Proficiência e
 plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$NSE_pca, main = "Proficiência em Língua Portuguesa x NSE Escola", xlab = "NSE Escola", ylab = "Proficiência")
 plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$NSE_pca, main = "Proficiência em Matemática x NSE Escola", xlab = "NSE Escola", ylab = "Proficiência")
 
-plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$ESCDADE, main = "Proficiência em Língua Portuguesa x ESCDADE")
-plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$ESCDADE, main = "Proficiência em Matemática x ESCDADE", xlab = "ESCDADE", ylab = "Proficiência")
+plot(y = df_used$PROFICIENCIA_LP_SAEB, x = df_used$escolaridade, main = "Proficiência em Língua Portuguesa x escolaridade")
+plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$escolaridade, main = "Proficiência em Matemática x escolaridade", xlab = "escolaridade", ylab = "Proficiência")
 ```
 
 # Modelos
@@ -101,7 +99,8 @@ plot(y = df_used$PROFICIENCIA_MT_SAEB, x = df_used$ESCDADE, main = "Proficiênci
 
 ### Modelo 0
 ```{r}
-#| warning: false
+#| warning: false 
+#| label: modelo0_lp
 modelo_nulo_lp <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo_lp)
 tab_model(modelo_nulo_lp, show.icc = TRUE, title="Modelo Nulo")
@@ -110,7 +109,8 @@ tab_model(modelo_nulo_lp, show.icc = TRUE, title="Modelo Nulo")
 ### Modelo 1
 ```{r}
 #| warning: false
-modelo1_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + (1|ID_ESCOLA), data = df_used)
+#| label: modelo1_lp
+modelo1_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + (1|ID_ESCOLA), data = df_used)
 summary(modelo1_lp)
 tab_model(modelo1_lp, show.icc = TRUE, title="Modelo com adição de variáveis do primeiro nível")
 ```
@@ -118,7 +118,8 @@ tab_model(modelo1_lp, show.icc = TRUE, title="Modelo com adição de variáveis 
 ### Modelo 2
 ```{r}
 #| warning: false
-modelo2_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
+#| label: modelo2_lp
+modelo2_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
 summary(modelo2_lp)
 tab_model(modelo2_lp, show.icc = TRUE, title="Modelo com adição de variáveis do segundo nível")
 ```
@@ -126,37 +127,61 @@ tab_model(modelo2_lp, show.icc = TRUE, title="Modelo com adição de variáveis 
 ### Modelo 3
 ```{r}
 #| warning: false
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q015|ID_ESCOLA), data = df_used)
-summary(modelo3_lp)
+#| eval: false
+#| label: modelo3_lp1
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + reprov|ID_ESCOLA), data = df_used)
+#summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```
 
 ```{r}
 #| warning: false
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q002|ID_ESCOLA), data = df_used)
-summary(modelo3_lp)
+#| eval: false
+#| label: modelo3_lp2
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + TX_RESP_Q002|ID_ESCOLA), data = df_used)
+#summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```
 
 ```{r}
 #| warning: false
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (NSE_pca|ID_ESCOLA), data = df_used)
-summary(modelo3_lp)
+#| eval: false
+#| label: modelo3_lp3
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca|ID_ESCOLA), data = df_used)
+#summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```
+
+```{r}
+#| warning: false
+#| eval: false
+#| label: modelo3_lp4
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca + reprov|ID_ESCOLA), data = df_used)
+summary(modelo3_lp)
+#tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
+```
+
+- nse_esc * reprov 
+
+- nse_esc * escolaridade 
+
+- grupos raciais (branco+amarelo, cc)
+
 
 ### Comparação entre modelos
 ```{r}
 #| warning: false
+#| label: comparacaolp
 kable(anova(modelo_nulo_lp, modelo1_lp))
 kable(anova(modelo1_lp, modelo2_lp))
-kable(anova(modelo2_lp, modelo3_lp))
+#kable(anova(modelo2_lp, modelo3_lp))
 ```
 
 ### Análise de resíduos (Modelos com efeitos aleatórios)
 ```{r}
 #| warning: false
 #| eval: false
+#| label: residuos_lp
 residuos_lp <- resid(modelo3_lp)
 qqnorm(residuos_lp)
 qqline(residuos_lp)
@@ -167,6 +192,7 @@ qqline(residuos_lp)
 ### Modelo 0
 ```{r}
 #| warning: false
+#| label: modelo0_mt
 modelo_nulo_mt <- lmer(PROFICIENCIA_MT_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
 summary(modelo_nulo_mt)
 tab_model(modelo_nulo_mt, show.icc = TRUE)
@@ -175,7 +201,8 @@ tab_model(modelo_nulo_mt, show.icc = TRUE)
 ### Modelo 1
 ```{r}
 #| warning: false
-modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + (1|ID_ESCOLA), data = df_used)
+#| label: modelo1_mt
+modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + (1|ID_ESCOLA), data = df_used)
 summary(modelo1_mt)
 tab_model(modelo1_mt, show.icc = TRUE, title="Modelo com adição de variáveis do primeiro nível")
 ```
@@ -183,7 +210,8 @@ tab_model(modelo1_mt, show.icc = TRUE, title="Modelo com adição de variáveis 
 ### Modelo 2
 ```{r}
 #| warning: false
-modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
+#| label: modelo2_mt
+modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
 summary(modelo2_mt)
 tab_model(modelo2_mt, show.icc = TRUE, title="Modelo com adição de variáveis do segundo nível")
 ```	
@@ -191,22 +219,37 @@ tab_model(modelo2_mt, show.icc = TRUE, title="Modelo com adição de variáveis 
 ### Modelo 3
 ```{r}
 #| warning: false
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q015|ID_ESCOLA), data = df_used)
-summary(modelo3_mt)
+#| eval: false
+#| label: modelo3_mt1
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + reprov|ID_ESCOLA), data = df_used)
+#summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```	
 
 ```{r}
 #| warning: false
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (TX_RESP_Q002|ID_ESCOLA), data = df_used)
-summary(modelo3_mt)
+#| eval: false
+#| label: modelo3_mt2
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + TX_RESP_Q002|ID_ESCOLA), data = df_used)
+#summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```	
 
 ```{r}
 #| warning: false
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + ESCDADE + TX_RESP_Q015 + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (NSE_pca|ID_ESCOLA), data = df_used)
-summary(modelo3_mt)
+#| eval: false
+#| label: modelo3_mt3
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca|ID_ESCOLA), data = df_used)
+#summary(modelo3_mt)
+tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
+```	
+
+```{r}
+#| warning: false
+#| eval: false
+#| label: modelo3_mt4
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  TX_RESP_Q002 + escolaridade + reprov + NSE_pca + NSE_esc + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_pca|ID_ESCOLA) + (1 + reprov|ID_ESCOLA), data = df_used)
+#summary(modelo3_mt)
 tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```	
 
@@ -214,9 +257,10 @@ tab_model(modelo3_mt, show.icc = TRUE, title="Modelo com adição de efeitos ale
 
 ```{r}
 #| warning: false
+#| label: comparacaomt
 kable(anova(modelo_nulo_lp, modelo1_lp))
 kable(anova(modelo1_lp, modelo2_lp))
-kable(anova(modelo2_mt, modelo3_mt))
+#kable(anova(modelo2_mt, modelo3_mt))
 ```
 
 ## Análise de resíduos (Modelos com efeitos aleatórios)
@@ -225,6 +269,7 @@ kable(anova(modelo2_mt, modelo3_mt))
 ```{r}
 #| warning: false
 #| eval: false
+#| label: residuos_mt
 residuos_mt <- resid(modelo3_mt)
 qqnorm(residuos_mt)
 qqline(residuos_mt)
