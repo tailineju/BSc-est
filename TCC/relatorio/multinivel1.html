@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Tailine J. S. Nonato">
-<meta name="dcterms.date" content="2024-11-19">
+<meta name="dcterms.date" content="2024-11-26">
 
 <title>Análise Multinível SAEB 2019</title>
 <style>
@@ -70,6 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="multinivel1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="multinivel1_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -98,7 +100,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">November 19, 2024</p>
+      <p class="date">November 26, 2024</p>
     </div>
   </div>
   
@@ -120,13 +122,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Definição do melhor modelo</p></li>
 </ol>
 </section>
-<section id="next-steps" class="level1">
-<h1>Next steps</h1>
+<section id="mudanças" class="level1">
+<h1>Mudanças</h1>
 <ul class="task-list">
-<li><p><input type="checkbox">Nível socioeconômico escola</p></li>
-<li><p><input type="checkbox">Recode (área e localização)</p></li>
-<li><p><input type="checkbox">Recode (Escolaridade)</p></li>
-<li><p><input type="checkbox">Random effects</p></li>
+<li><p><input type="checkbox">Aprimoramento da PCA (inclusão de quase todas variáveis do bloco)</p></li>
+<li><p><input type="checkbox">Adição do grupo racial</p></li>
+<li><p><input type="checkbox">Alterações nos efeitos aleatórios</p></li>
+<li><p><input type="checkbox">Adição de interações</p></li>
 </ul>
 </section>
 <section id="setup" class="level1">
@@ -139,617 +141,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="leitura-dos-dados" class="level2">
 <h2 class="anchored" data-anchor-id="leitura-dos-dados">Leitura dos dados</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_used <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"df_used.csv"</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df_used<span class="sc">$</span>reprov <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(df_used<span class="sc">$</span>TX_RESP_Q015 <span class="sc">==</span> <span class="st">"A"</span>, <span class="dv">0</span>, <span class="fu">ifelse</span>(df_used<span class="sc">$</span>TX_RESP_Q015 <span class="sc">==</span> <span class="st">"B"</span>, <span class="dv">1</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df_used <span class="ot">&lt;-</span> <span class="fu">vroom</span>(<span class="st">"df_used.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
 <section id="modelos" class="level1">
 <h1>Modelos</h1>
-<section id="língua-portuguesa" class="level2">
-<h2 class="anchored" data-anchor-id="língua-portuguesa">Língua Portuguesa</h2>
 <ul>
-<li><p><strong>Marginal R^2 (R^2m)</strong>: the proportion of variance explained by the fixed effects relative to the overall variance</p></li>
-<li><p><strong>Conditional R^2 (R^2c)</strong>: the proportion of variance explained by both fixed and random effects relative to the overall variance</p></li>
+<li><p><strong>Marginal <span class="math inline">\(R^2\)</span> (<span class="math inline">\(R^2_m\)</span>)</strong>: the proportion of variance explained by the fixed effects relative to the overall variance</p></li>
+<li><p><strong>Conditional <span class="math inline">\(R^2\)</span> (<span class="math inline">\(R^2_c\)</span>)</strong>: the proportion of variance explained by both fixed and random effects relative to the overall variance</p></li>
 </ul>
+<section id="matemática" class="level2">
+<h2 class="anchored" data-anchor-id="matemática">Matemática</h2>
 <section id="modelo-0" class="level3">
 <h3 class="anchored" data-anchor-id="modelo-0">Modelo 0</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>modelo_nulo_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_nulo_lp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_LP_SAEB ~ 1 + (1 | ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1365668
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.6122 -0.6638  0.0553  0.7064  3.0435 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  239.1   15.46   
- Residual              2010.5   44.84   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-            Estimate Std. Error t value
-(Intercept) 257.9481     0.3479   741.5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo_nulo_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo Nulo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-
-<table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Modelo Nulo</caption>
-<tbody><tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_LP_SAEB</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">257.95</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">257.27&nbsp;–&nbsp;258.63</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2010.49</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">239.15</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.11</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.000 / 0.106</td>
-</tr>
-
-</tbody></table>
-
-</div>
-</div>
-</section>
-<section id="modelo-1" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-1">Modelo 1</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>modelo1_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1_lp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + reprov + NSE_pca +  
-    (1 | ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1354259
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.8125 -0.6578  0.0552  0.7015  3.6608 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  190.7   13.81   
- Residual              1845.9   42.96   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-               Estimate Std. Error t value
-(Intercept)   260.62222    0.42245 616.933
-TX_RESP_Q002B -11.39588    0.42809 -26.621
-TX_RESP_Q002C  -5.55905    0.29685 -18.727
-TX_RESP_Q002D  -5.56368    0.66060  -8.422
-TX_RESP_Q002E -12.86964    0.86010 -14.963
-TX_RESP_Q002F -14.16714    0.57535 -24.623
-ESCDADE         4.31729    0.08454  51.070
-reprov        -17.78966    0.21960 -81.010
-NSE_pca        -0.63395    0.08216  -7.716
-
-Correlation of Fixed Effects:
-              (Intr) TX_RESP_Q002B TX_RESP_Q002C TX_RESP_Q002D TX_RESP_Q002E
-TX_RESP_Q002B -0.342                                                        
-TX_RESP_Q002C -0.492  0.481                                                 
-TX_RESP_Q002D -0.219  0.219         0.308                                   
-TX_RESP_Q002E -0.179  0.169         0.238         0.109                     
-TX_RESP_Q002F -0.280  0.255         0.357         0.161         0.126       
-ESCDADE       -0.413  0.031         0.033         0.017         0.021       
-reprov        -0.170 -0.045        -0.010        -0.012        -0.015       
-NSE_pca        0.071  0.056         0.058         0.022         0.031       
-              TX_RESP_Q002F ESCDAD reprov
-TX_RESP_Q002B                            
-TX_RESP_Q002C                            
-TX_RESP_Q002D                            
-TX_RESP_Q002E                            
-TX_RESP_Q002F                            
-ESCDADE        0.080                     
-reprov        -0.030         0.098       
-NSE_pca        0.023        -0.226  0.011</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo1_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de variáveis do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-
-<table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Modelo com adição de variáveis do primeiro nível</caption>
-<tbody><tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_LP_SAEB</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">260.62</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">259.79&nbsp;–&nbsp;261.45</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [B]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-11.40</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.23&nbsp;–&nbsp;-10.56</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [C]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.56</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.14&nbsp;–&nbsp;-4.98</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [D]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.56</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.86&nbsp;–&nbsp;-4.27</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [E]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.87</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-14.56&nbsp;–&nbsp;-11.18</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [F]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-14.17</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-15.29&nbsp;–&nbsp;-13.04</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCDADE</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.32</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.15&nbsp;–&nbsp;4.48</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">reprov</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-17.79</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-18.22&nbsp;–&nbsp;-17.36</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE pca</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.63</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.79&nbsp;–&nbsp;-0.47</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1845.92</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">190.67</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.09</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.083 / 0.169</td>
-</tr>
-
-</tbody></table>
-
-</div>
-</div>
-</section>
-<section id="modelo-2" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-2">Modelo 2</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>modelo2_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo2_lp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_LP_SAEB ~ TX_RESP_Q002 + ESCDADE + reprov + NSE_pca +  
-    NSE_esc + ID_AREA + ID_LOCALIZACAO + (1 | ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1353673
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--3.7986 -0.6578  0.0556  0.7010  3.6385 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  141.1   11.88   
- Residual              1845.6   42.96   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-                Estimate Std. Error t value
-(Intercept)    212.48295    2.32292  91.472
-TX_RESP_Q002B  -11.19977    0.42787 -26.176
-TX_RESP_Q002C   -5.41600    0.29672 -18.253
-TX_RESP_Q002D   -5.40929    0.66019  -8.194
-TX_RESP_Q002E  -12.14570    0.85856 -14.147
-TX_RESP_Q002F  -14.02753    0.57492 -24.399
-ESCDADE          4.22789    0.08457  49.993
-reprov         -17.74145    0.21917 -80.948
-NSE_pca         -0.74553    0.08227  -9.061
-NSE_esc         10.25094    0.45579  22.491
-ID_AREA          4.59280    0.71238   6.447
-ID_LOCALIZACAO  -6.51426    0.88787  -7.337
-
-Correlation of Fixed Effects:
-              (Intr) TX_RESP_Q002B TX_RESP_Q002C TX_RESP_Q002D TX_RESP_Q002E
-TX_RESP_Q002B -0.096                                                        
-TX_RESP_Q002C -0.116  0.481                                                 
-TX_RESP_Q002D -0.052  0.219         0.308                                   
-TX_RESP_Q002E -0.062  0.170         0.239         0.110                     
-TX_RESP_Q002F -0.068  0.255         0.357         0.161         0.127       
-ESCDADE       -0.034  0.030         0.032         0.017         0.019       
-reprov        -0.040 -0.045        -0.010        -0.012        -0.015       
-NSE_pca        0.072  0.054         0.056         0.022         0.029       
-NSE_esc       -0.959  0.033         0.029         0.013         0.033       
-ID_AREA       -0.525  0.020         0.005         0.000         0.007       
-ID_LOCALIZA   -0.206  0.008         0.005         0.008        -0.020       
-              TX_RESP_Q002F ESCDAD reprov NSE_pc NSE_sc ID_ARE
-TX_RESP_Q002B                                                 
-TX_RESP_Q002C                                                 
-TX_RESP_Q002D                                                 
-TX_RESP_Q002E                                                 
-TX_RESP_Q002F                                                 
-ESCDADE        0.079                                          
-reprov        -0.029         0.098                            
-NSE_pca        0.022        -0.222  0.011                     
-NSE_esc        0.018        -0.049  0.006 -0.068              
-ID_AREA        0.007         0.001  0.020  0.002  0.330       
-ID_LOCALIZA   -0.004         0.016 -0.008 -0.004  0.190 -0.026</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo2_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de variáveis do segundo nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-
-<table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Modelo com adição de variáveis do segundo nível</caption>
-<tbody><tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_LP_SAEB</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">212.48</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">207.93&nbsp;–&nbsp;217.04</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [B]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-11.20</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.04&nbsp;–&nbsp;-10.36</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [C]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.42</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.00&nbsp;–&nbsp;-4.83</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [D]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.41</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.70&nbsp;–&nbsp;-4.12</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [E]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.15</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.83&nbsp;–&nbsp;-10.46</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [F]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-14.03</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-15.15&nbsp;–&nbsp;-12.90</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCDADE</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.23</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.06&nbsp;–&nbsp;4.39</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">reprov</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-17.74</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-18.17&nbsp;–&nbsp;-17.31</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE pca</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.75</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.91&nbsp;–&nbsp;-0.58</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE esc</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.25</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">9.36&nbsp;–&nbsp;11.14</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.59</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.20&nbsp;–&nbsp;5.99</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.51</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-8.25&nbsp;–&nbsp;-4.77</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1845.62</td>
-</tr>
-
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">141.13</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.07</td>
-
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
-</tr><tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.115 / 0.178</td>
-</tr>
-
-</tbody></table>
-
-</div>
-</div>
-</section>
-<section id="modelo-3" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-3">Modelo 3</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>modelo3_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> reprov<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_lp)</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>modelo3_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> TX_RESP_Q002<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_lp)</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>modelo3_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc  <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_pca<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_lp)</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>modelo3_lp <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_LP_SAEB <span class="sc">~</span> TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc  <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_pca<span class="sc">|</span>ID_ESCOLA) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> reprov<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_lp)</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_lp, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="comparação-entre-modelos" class="level3">
-<h3 class="anchored" data-anchor-id="comparação-entre-modelos">Comparação entre modelos</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">anova</span>(modelo_nulo_lp, modelo1_lp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 19%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 12%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 3%">
-<col style="width: 14%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">npar</th>
-<th style="text-align: right;">AIC</th>
-<th style="text-align: right;">BIC</th>
-<th style="text-align: right;">logLik</th>
-<th style="text-align: right;">deviance</th>
-<th style="text-align: right;">Chisq</th>
-<th style="text-align: right;">Df</th>
-<th style="text-align: right;">Pr(&gt;Chisq)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">modelo_nulo_lp</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1365674</td>
-<td style="text-align: right;">1365703</td>
-<td style="text-align: right;">-682833.9</td>
-<td style="text-align: right;">1365668</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">modelo1_lp</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">1354276</td>
-<td style="text-align: right;">1354383</td>
-<td style="text-align: right;">-677126.8</td>
-<td style="text-align: right;">1354254</td>
-<td style="text-align: right;">11414.11</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">anova</span>(modelo1_lp, modelo2_lp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 13%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 4%">
-<col style="width: 14%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">npar</th>
-<th style="text-align: right;">AIC</th>
-<th style="text-align: right;">BIC</th>
-<th style="text-align: right;">logLik</th>
-<th style="text-align: right;">deviance</th>
-<th style="text-align: right;">Chisq</th>
-<th style="text-align: right;">Df</th>
-<th style="text-align: right;">Pr(&gt;Chisq)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">modelo1_lp</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">1354276</td>
-<td style="text-align: right;">1354383</td>
-<td style="text-align: right;">-677126.8</td>
-<td style="text-align: right;">1354254</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">modelo2_lp</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">1353698</td>
-<td style="text-align: right;">1353835</td>
-<td style="text-align: right;">-676835.1</td>
-<td style="text-align: right;">1353670</td>
-<td style="text-align: right;">583.4283</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#kable(anova(modelo2_lp, modelo3_lp))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="análise-de-resíduos-modelos-com-efeitos-aleatórios" class="level3">
-<h3 class="anchored" data-anchor-id="análise-de-resíduos-modelos-com-efeitos-aleatórios">Análise de resíduos (Modelos com efeitos aleatórios)</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>residuos_lp <span class="ot">&lt;-</span> <span class="fu">resid</span>(modelo3_lp)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(residuos_lp)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(residuos_lp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-</section>
-<section id="matemática" class="level2">
-<h2 class="anchored" data-anchor-id="matemática">Matemática</h2>
-<section id="modelo-0-1" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-0-1">Modelo 0</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>modelo_nulo_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo_nulo_mt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_MT_SAEB ~ 1 + (1 | ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1358045
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--4.4878 -0.6680  0.0418  0.6951  3.4170 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  287.1   16.95   
- Residual              1889.1   43.46   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-            Estimate Std. Error t value
-(Intercept) 259.9259     0.3732   696.5</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo_nulo_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>modelo0_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo0_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table style="border-collapse:collapse; border:none;">
@@ -765,8 +173,8 @@ Fixed effects:
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">259.93</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">259.19&nbsp;–&nbsp;260.66</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">262.51</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">261.79&nbsp;–&nbsp;263.24</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
@@ -775,12 +183,12 @@ Fixed effects:
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1889.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1875.07</td>
 </tr>
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">287.14</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">271.18</td>
 
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
@@ -791,11 +199,11 @@ Fixed effects:
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.000 / 0.132</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.000 / 0.126</td>
 </tr>
 
 </tbody></table>
@@ -803,63 +211,14 @@ Fixed effects:
 </div>
 </div>
 </section>
-<section id="modelo-1-1" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-1-1">Modelo 1</h3>
+<section id="modelo-1" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-1">Modelo 1</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>modelo1_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo1_mt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_MT_SAEB ~ TX_RESP_Q002 + ESCDADE + reprov + (1 |  
-    ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1348025
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--4.3932 -0.6635  0.0395  0.6908  3.7728 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  234.3   15.31   
- Residual              1752.9   41.87   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-               Estimate Std. Error t value
-(Intercept)   260.39482    0.43649 596.566
-TX_RESP_Q002B  -9.17793    0.41683 -22.018
-TX_RESP_Q002C  -3.72251    0.28898 -12.882
-TX_RESP_Q002D  -4.98055    0.64390  -7.735
-TX_RESP_Q002E -11.25229    0.83953 -13.403
-TX_RESP_Q002F  -8.49292    0.56088 -15.142
-ESCDADE         4.36064    0.08034  54.278
-reprov        -15.70056    0.21431 -73.260
-
-Correlation of Fixed Effects:
-              (Intr) TX_RESP_Q002B TX_RESP_Q002C TX_RESP_Q002D TX_RESP_Q002E
-TX_RESP_Q002B -0.327                                                        
-TX_RESP_Q002C -0.469  0.480                                                 
-TX_RESP_Q002D -0.208  0.218         0.307                                   
-TX_RESP_Q002E -0.171  0.168         0.237         0.109                     
-TX_RESP_Q002F -0.266  0.254         0.356         0.161         0.126       
-ESCDADE       -0.384  0.045         0.047         0.023         0.028       
-reprov        -0.161 -0.046        -0.010        -0.012        -0.015       
-              TX_RESP_Q002F ESCDAD
-TX_RESP_Q002B                     
-TX_RESP_Q002C                     
-TX_RESP_Q002D                     
-TX_RESP_Q002E                     
-TX_RESP_Q002F                     
-ESCDADE        0.087              
-reprov        -0.030         0.102</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo1_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de variáveis do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>modelo1_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo1_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Modelo com adição de variáveis do primeiro nível</caption>
 <tbody><tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
 <th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
@@ -872,50 +231,32 @@ reprov        -0.030         0.102</code></pre>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">260.39</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">259.54&nbsp;–&nbsp;261.25</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">257.70</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">256.92&nbsp;–&nbsp;258.47</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [B]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-9.18</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-9.99&nbsp;–&nbsp;-8.36</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.38</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.83&nbsp;–&nbsp;4.94</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [C]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-3.72</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.29&nbsp;–&nbsp;-3.16</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.29</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.11&nbsp;–&nbsp;4.47</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [D]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.98</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.24&nbsp;–&nbsp;-3.72</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.95&nbsp;–&nbsp;-13.11</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [E]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-11.25</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.90&nbsp;–&nbsp;-9.61</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [F]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-8.49</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-9.59&nbsp;–&nbsp;-7.39</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCDADE</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.36</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.20&nbsp;–&nbsp;4.52</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">reprov</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-15.70</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-16.12&nbsp;–&nbsp;-15.28</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.38&nbsp;–&nbsp;0.67</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
@@ -924,27 +265,27 @@ reprov        -0.030         0.102</code></pre>
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1752.89</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1755.66</td>
 </tr>
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">234.26</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">215.58</td>
 
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.12</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.11</td>
 
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.072 / 0.182</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.066 / 0.168</td>
 </tr>
 
 </tbody></table>
@@ -952,75 +293,14 @@ reprov        -0.030         0.102</code></pre>
 </div>
 </div>
 </section>
-<section id="modelo-2-1" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-2-1">Modelo 2</h3>
+<section id="modelo-2" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-2">Modelo 2</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>modelo2_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(modelo2_mt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Linear mixed model fit by REML ['lmerMod']
-Formula: PROFICIENCIA_MT_SAEB ~ TX_RESP_Q002 + ESCDADE + reprov + NSE_pca +  
-    NSE_esc + ID_AREA + ID_LOCALIZACAO + (1 | ID_ESCOLA)
-   Data: df_used
-
-REML criterion at convergence: 1347367
-
-Scaled residuals: 
-    Min      1Q  Median      3Q     Max 
--4.3985 -0.6629  0.0394  0.6897  3.7578 
-
-Random effects:
- Groups    Name        Variance Std.Dev.
- ID_ESCOLA (Intercept)  170.2   13.04   
- Residual              1752.5   41.86   
-Number of obs: 130339, groups:  ID_ESCOLA, 2499
-
-Fixed effects:
-                Estimate Std. Error t value
-(Intercept)    203.92059    2.47491  82.395
-TX_RESP_Q002B   -8.85367    0.41724 -21.220
-TX_RESP_Q002C   -3.48481    0.28930 -12.045
-TX_RESP_Q002D   -4.75667    0.64365  -7.390
-TX_RESP_Q002E  -10.46907    0.83830 -12.488
-TX_RESP_Q002F   -8.29259    0.56060 -14.792
-ESCDADE          4.15674    0.08247  50.403
-reprov         -15.64173    0.21392 -73.118
-NSE_pca          0.44745    0.08022   5.578
-NSE_esc         11.82895    0.48622  24.328
-ID_AREA          6.38189    0.76488   8.344
-ID_LOCALIZACAO  -4.73780    0.93075  -5.090
-
-Correlation of Fixed Effects:
-              (Intr) TX_RESP_Q002B TX_RESP_Q002C TX_RESP_Q002D TX_RESP_Q002E
-TX_RESP_Q002B -0.088                                                        
-TX_RESP_Q002C -0.106  0.481                                                 
-TX_RESP_Q002D -0.047  0.219         0.308                                   
-TX_RESP_Q002E -0.058  0.170         0.239         0.109                     
-TX_RESP_Q002F -0.062  0.255         0.357         0.161         0.127       
-ESCDADE       -0.031  0.030         0.032         0.017         0.019       
-reprov        -0.037 -0.045        -0.010        -0.012        -0.015       
-NSE_pca        0.066  0.054         0.056         0.022         0.028       
-NSE_esc       -0.960  0.031         0.026         0.012         0.031       
-ID_AREA       -0.526  0.018         0.004         0.000         0.007       
-ID_LOCALIZA   -0.209  0.008         0.005         0.007        -0.019       
-              TX_RESP_Q002F ESCDAD reprov NSE_pc NSE_sc ID_ARE
-TX_RESP_Q002B                                                 
-TX_RESP_Q002C                                                 
-TX_RESP_Q002D                                                 
-TX_RESP_Q002E                                                 
-TX_RESP_Q002F                                                 
-ESCDADE        0.079                                          
-reprov        -0.029         0.097                            
-NSE_pca        0.022        -0.222  0.011                     
-NSE_esc        0.016        -0.044  0.005 -0.062              
-ID_AREA        0.006         0.001  0.018  0.002  0.329       
-ID_LOCALIZA   -0.004         0.015 -0.007 -0.003  0.193 -0.028</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo2_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de variáveis do segundo nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>modelo2_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo2_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
 <table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">Modelo com adição de variáveis do segundo nível</caption>
 <tbody><tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
 <th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
@@ -1033,74 +313,50 @@ ID_LOCALIZA   -0.004         0.015 -0.007 -0.003  0.193 -0.028</code></pre>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">203.92</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">199.07&nbsp;–&nbsp;208.77</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">201.09</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">196.27&nbsp;–&nbsp;205.92</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [B]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-8.85</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-9.67&nbsp;–&nbsp;-8.04</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.28</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.72&nbsp;–&nbsp;4.84</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [C]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-3.48</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.05&nbsp;–&nbsp;-2.92</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.07&nbsp;–&nbsp;4.42</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [D]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.76</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.02&nbsp;–&nbsp;-3.50</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.95&nbsp;–&nbsp;-13.11</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [E]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-10.47</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-12.11&nbsp;–&nbsp;-8.83</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.35</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.49</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">TX RESP Q002 [F]</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-8.29</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-9.39&nbsp;–&nbsp;-7.19</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCDADE</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.16</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.00&nbsp;–&nbsp;4.32</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">reprov</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-15.64</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-16.06&nbsp;–&nbsp;-15.22</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE pca</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.45</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.29&nbsp;–&nbsp;0.60</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE esc</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.83</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.88&nbsp;–&nbsp;12.78</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.74</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.79&nbsp;–&nbsp;12.70</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.38</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.88&nbsp;–&nbsp;7.88</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.56</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">5.08&nbsp;–&nbsp;8.04</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.74</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.56&nbsp;–&nbsp;-2.91</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.98&nbsp;–&nbsp;-2.23</td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
 <tr>
@@ -1109,12 +365,592 @@ ID_LOCALIZA   -0.004         0.015 -0.007 -0.003  0.193 -0.028</code></pre>
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1752.51</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1755.50</td>
 </tr>
 
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">170.15</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">157.83</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.08</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.106 / 0.180</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+</section>
+<section id="modelo-3" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-3">Modelo 3</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> REPROVACAO<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">202.45</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">197.66&nbsp;–&nbsp;207.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.26</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.71&nbsp;–&nbsp;4.82</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.06&nbsp;–&nbsp;4.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.63</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-14.09&nbsp;–&nbsp;-13.17</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.35</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.46</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.52&nbsp;–&nbsp;12.40</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.97&nbsp;–&nbsp;7.88</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.85&nbsp;–&nbsp;-2.14</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1751.06</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">169.32</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.REPROVACAO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">13.86</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.49</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.08</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.105 / 0.180</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> GRUPO_RACIAL<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">200.85</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">196.03&nbsp;–&nbsp;205.67</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.33</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.75&nbsp;–&nbsp;4.90</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.25</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.07&nbsp;–&nbsp;4.43</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.53</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.95&nbsp;–&nbsp;-13.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.35</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.78</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.83&nbsp;–&nbsp;12.73</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.64</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">5.16&nbsp;–&nbsp;8.12</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.09</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.96&nbsp;–&nbsp;-2.22</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1754.29</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">161.83</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.GRUPO_RACIAL</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">6.10</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.26</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.08</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.106 / 0.180</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_ALUNO<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">201.28</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">196.46&nbsp;–&nbsp;206.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.27</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.71&nbsp;–&nbsp;4.83</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.06&nbsp;–&nbsp;4.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.52</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.94&nbsp;–&nbsp;-13.10</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.36</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.21&nbsp;–&nbsp;0.51</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.71</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.76&nbsp;–&nbsp;12.67</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.52</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">5.04&nbsp;–&nbsp;8.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.98&nbsp;–&nbsp;-2.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1752.93</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">157.62</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.NSE_ALUNO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.79</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.08</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.08</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.106 / 0.181</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+</section>
+<section id="modelo-4" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-4">Modelo 4</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>modelo4_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> REPROVACAO <span class="sc">+</span> GRUPO_RACIAL<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo4_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">202.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">197.47&nbsp;–&nbsp;207.02</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.32</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.74&nbsp;–&nbsp;4.89</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.06&nbsp;–&nbsp;4.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-13.63</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-14.09&nbsp;–&nbsp;-13.17</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.34</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">10.55&nbsp;–&nbsp;12.44</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">5.03&nbsp;–&nbsp;7.94</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-4.00</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.85&nbsp;–&nbsp;-2.15</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1749.83</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">173.96</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.NSE_ALUNO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.03</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.REPROVACAO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">14.03</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.GRUPO_RACIAL</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">5.85</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.23</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.48</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.27</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.114 / NA</td>
+</tr>
+
+</tbody></table>
+
+</div>
+</div>
+</section>
+<section id="modelo-5" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-5">Modelo 5</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>modelo5_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> NSE_ESCOLA<span class="sc">:</span>REPROVACAO <span class="sc">+</span> NSE_ESCOLA<span class="sc">:</span>GRUPO_RACIAL <span class="sc">+</span> NSE_ESCOLA<span class="sc">:</span>ESCOLARIDADE_MAE <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> REPROVACAO <span class="sc">+</span> GRUPO_RACIAL<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo5_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">197.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">191.65&nbsp;–&nbsp;202.84</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">1.33</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.57&nbsp;–&nbsp;5.23</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.504</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">5.89</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.71&nbsp;–&nbsp;7.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-6.92</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-10.11&nbsp;–&nbsp;-3.74</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.35</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.50</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">12.61</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.47&nbsp;–&nbsp;13.76</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.39</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.94&nbsp;–&nbsp;7.84</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-3.93</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.79&nbsp;–&nbsp;-2.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO × NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.47</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.16&nbsp;–&nbsp;-0.78</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL × NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.64</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.19&nbsp;–&nbsp;1.47</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.130</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE × NSE<br>ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.36</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-0.61&nbsp;–&nbsp;-0.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>0.005</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1747.23</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">173.69</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.NSE_ALUNO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.76</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.REPROVACAO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">13.80</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.GRUPO_RACIAL</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">5.27</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.04</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.49</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.29</td>
 
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ICC</td>
@@ -1125,11 +961,11 @@ ID_LOCALIZA   -0.004         0.015 -0.007 -0.003  0.193 -0.028</code></pre>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
 </tr><tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">130339</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.114 / 0.192</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.106 / 0.183</td>
 </tr>
 
 </tbody></table>
@@ -1137,149 +973,132 @@ ID_LOCALIZA   -0.004         0.015 -0.007 -0.003  0.193 -0.028</code></pre>
 </div>
 </div>
 </section>
-<section id="modelo-3-1" class="level3">
-<h3 class="anchored" data-anchor-id="modelo-3-1">Modelo 3</h3>
+<section id="modelo-6" class="level3">
+<h3 class="anchored" data-anchor-id="modelo-6">Modelo 6</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> reprov<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_mt)</span></span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> TX_RESP_Q002<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_mt)</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_pca<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_mt)</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>modelo3_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  TX_RESP_Q002 <span class="sc">+</span> ESCDADE <span class="sc">+</span> reprov <span class="sc">+</span> NSE_pca <span class="sc">+</span> NSE_esc <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_pca<span class="sc">|</span>ID_ESCOLA) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> reprov<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(modelo3_mt)</span></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo3_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>, <span class="at">title=</span><span class="st">"Modelo com adição de efeitos aleatórios do primeiro nível"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section>
-<section id="comparação-entre-modelos-1" class="level3">
-<h3 class="anchored" data-anchor-id="comparação-entre-modelos-1">Comparação entre modelos</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">anova</span>(modelo_nulo_lp, modelo1_lp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>modelo6_mt <span class="ot">&lt;-</span> <span class="fu">lmer</span>(PROFICIENCIA_MT_SAEB <span class="sc">~</span>  GRUPO_RACIAL <span class="sc">+</span> ESCOLARIDADE_MAE <span class="sc">+</span> REPROVACAO <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> NSE_ESCOLA <span class="sc">+</span> ID_AREA <span class="sc">+</span>  ID_LOCALIZACAO <span class="sc">+</span> NSE_ESCOLA<span class="sc">:</span>REPROVACAO <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">+</span> NSE_ALUNO <span class="sc">+</span> REPROVACAO <span class="sc">+</span> GRUPO_RACIAL<span class="sc">|</span>ID_ESCOLA), <span class="at">data =</span> df_used)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tab_model</span>(modelo6_mt, <span class="at">show.icc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 19%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 12%">
-<col style="width: 11%">
-<col style="width: 11%">
-<col style="width: 3%">
-<col style="width: 14%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">npar</th>
-<th style="text-align: right;">AIC</th>
-<th style="text-align: right;">BIC</th>
-<th style="text-align: right;">logLik</th>
-<th style="text-align: right;">deviance</th>
-<th style="text-align: right;">Chisq</th>
-<th style="text-align: right;">Df</th>
-<th style="text-align: right;">Pr(&gt;Chisq)</th>
+
+<table style="border-collapse:collapse; border:none;">
+<tbody><tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
+<th colspan="3" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">PROFICIENCIA_MT_SAEB</th>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">modelo_nulo_lp</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">1365674</td>
-<td style="text-align: right;">1365703</td>
-<td style="text-align: right;">-682833.9</td>
-<td style="text-align: right;">1365668</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">Estimates</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">CI</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">p</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">modelo1_lp</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">1354276</td>
-<td style="text-align: right;">1354383</td>
-<td style="text-align: right;">-677126.8</td>
-<td style="text-align: right;">1354254</td>
-<td style="text-align: right;">11414.11</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">0</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">(Intercept)</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">199.51</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">194.55&nbsp;–&nbsp;204.48</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
 </tr>
-</tbody>
-</table>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">GRUPO RACIAL</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.31</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">3.74&nbsp;–&nbsp;4.88</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ESCOLARIDADE MAE</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.06&nbsp;–&nbsp;4.42</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-7.28</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-10.45&nbsp;–&nbsp;-4.12</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ALUNO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.34</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">0.20&nbsp;–&nbsp;0.49</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">12.11</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">11.12&nbsp;–&nbsp;13.10</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID AREA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">6.39</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">4.94&nbsp;–&nbsp;7.84</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">ID LOCALIZACAO</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-3.97</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-5.82&nbsp;–&nbsp;-2.12</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">REPROVACAO × NSE ESCOLA</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-1.39</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">-2.08&nbsp;–&nbsp;-0.71</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  "><strong>&lt;0.001</strong></td>
+</tr>
+<tr>
+<td colspan="4" style="font-weight:bold; text-align:left; padding-top:.8em;">Random Effects</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">σ<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1749.84</td>
+</tr>
+
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>00</sub> <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">173.82</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.NSE_ALUNO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.00</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.REPROVACAO</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">13.55</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">τ<sub>11</sub> <sub>ID_ESCOLA.GRUPO_RACIAL</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">6.16</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">ρ<sub>01</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">1.00</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.50</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;"></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">-0.27</td>
+
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">N <sub>ID_ESCOLA</sub></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">2499</td>
+</tr><tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">Observations</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="3">110995</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">Marginal R<sup>2</sup> / Conditional R<sup>2</sup></td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="3">0.115 / NA</td>
+</tr>
+
+</tbody></table>
+
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">anova</span>(modelo1_lp, modelo2_lp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 6%">
-<col style="width: 10%">
-<col style="width: 10%">
-<col style="width: 13%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 4%">
-<col style="width: 14%">
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: right;">npar</th>
-<th style="text-align: right;">AIC</th>
-<th style="text-align: right;">BIC</th>
-<th style="text-align: right;">logLik</th>
-<th style="text-align: right;">deviance</th>
-<th style="text-align: right;">Chisq</th>
-<th style="text-align: right;">Df</th>
-<th style="text-align: right;">Pr(&gt;Chisq)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">modelo1_lp</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">1354276</td>
-<td style="text-align: right;">1354383</td>
-<td style="text-align: right;">-677126.8</td>
-<td style="text-align: right;">1354254</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">modelo2_lp</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: right;">1353698</td>
-<td style="text-align: right;">1353835</td>
-<td style="text-align: right;">-676835.1</td>
-<td style="text-align: right;">1353670</td>
-<td style="text-align: right;">583.4283</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#kable(anova(modelo2_mt, modelo3_mt))</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-</section>
-<section id="análise-de-resíduos-modelos-com-efeitos-aleatórios-1" class="level2">
-<h2 class="anchored" data-anchor-id="análise-de-resíduos-modelos-com-efeitos-aleatórios-1">Análise de resíduos (Modelos com efeitos aleatórios)</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>residuos_mt <span class="ot">&lt;-</span> <span class="fu">resid</span>(modelo3_mt)</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(residuos_mt)</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(residuos_mt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
 </section>
 </section>
 

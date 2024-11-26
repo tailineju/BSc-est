@@ -36,8 +36,12 @@ write.csv(df_escola, file = "TS_ESCOLA_2019_co.csv")
 df_aluno <- vroom("TS_ALUNO_9EF_2019_co.csv", locale = locale(encoding = "UTF-8"))
 df_escola <- vroom("TS_ESCOLA_2019_co.csv", locale = locale(encoding = "UTF-8"))
 
+```
+
+```{r}
+# social points
 df_aluno <- df_aluno %>%
-  mutate(PONT1 = case_when( #Escolaridade da pessoa de referência 0 1 2 4 7
+  mutate(PONT1 = case_when(#escolaridade da mae
       TX_RESP_Q004 == "A" ~ 0,
       TX_RESP_Q004 == "B" ~ 1,
       TX_RESP_Q004 == "C" ~ 2,
@@ -45,57 +49,108 @@ df_aluno <- df_aluno %>%
       TX_RESP_Q004 == "E" ~ 4,
       TX_RESP_Q004 == "F" ~ 0,
       TRUE ~ NA_real_),
-    PONT2 = case_when( #Banheiros 0 3 7 10 14
+    PONT2 = case_when(#contrata limpeza
+      TX_RESP_Q007 == "A" ~ 0,
+      TX_RESP_Q007 == "B" ~ 1,
+      TX_RESP_Q007 == "C" ~ 3, 
+      TRUE ~ NA_real_),
+    PONT3 = case_when(#rua pavimentada
+      TX_RESP_Q008A == "A" ~ 0,
+      TX_RESP_Q008A == "B" ~ 1,
+      TRUE ~ NA_real_),
+    PONT4 = case_when(#água encanada 
+      TX_RESP_Q008B == "A" ~ 0,
+      TX_RESP_Q008B == "B" ~ 1,
+      TRUE ~ NA_real_),
+    PONT5 = case_when(#iluminação na rua
+      TX_RESP_Q008C == "A" ~ 0,
+      TX_RESP_Q008C == "B" ~ 1,
+      TRUE ~ NA_real_),
+    PONT6 = case_when(#geladeira
+      TX_RESP_Q009A == "A" ~ 0,
+      TX_RESP_Q009A == "B" ~ 1,
+      TX_RESP_Q009A == "C" ~ 2,
+      TX_RESP_Q009A == "D" ~ 3,
+      TRUE ~ NA_real_),
+    PONT7 = case_when(#tablet
+      TX_RESP_Q009B == "A" ~ 0,
+      TX_RESP_Q009B == "B" ~ 1,
+      TX_RESP_Q009B == "C" ~ 2,
+      TX_RESP_Q009B == "D" ~ 3,
+      TRUE ~ NA_real_),
+    PONT8 = case_when(#computador
+      TX_RESP_Q009C == "A" ~ 0,
+      TX_RESP_Q009C == "B" ~ 1,
+      TX_RESP_Q009C == "C" ~ 2,
+      TX_RESP_Q009C == "D" ~ 3,
+      TRUE ~ NA_real_),
+    PONT9 = case_when(#quartos
+      TX_RESP_Q009D == "A" ~ 0,
+      TX_RESP_Q009D == "B" ~ 1,
+      TX_RESP_Q009D == "C" ~ 2,
+      TX_RESP_Q009D == "D" ~ 3,
+      TRUE ~ NA_real_),
+    PONT10 = case_when(#televisao
+      TX_RESP_Q009E == "A" ~ 0,
+      TX_RESP_Q009E == "B" ~ 1,
+      TX_RESP_Q009E == "C" ~ 2,
+      TX_RESP_Q009E == "D" ~ 3,
+      TRUE ~ NA_real_),
+    PONT11 = case_when( #banheiro
       TX_RESP_Q009F == "A" ~ 0,
       TX_RESP_Q009F == "B" ~ 1,
       TX_RESP_Q009F == "C" ~ 2,
       TX_RESP_Q009F == "D" ~ 3,
-      TRUE ~ NA_real_),
-    PONT4 = case_when( #Automóveis 0 3 5 8 11
+      TRUE ~ NA_real_),    
+    PONT12 = case_when( #carro
       TX_RESP_Q009G == "A" ~ 0,
       TX_RESP_Q009G == "B" ~ 1,
       TX_RESP_Q009G == "C" ~ 2,
       TX_RESP_Q009G == "D" ~ 3,
       TRUE ~ NA_real_),
-    PONT5 = case_when(#Microcomputador 0 3 6 8 11 
-      TX_RESP_Q009A == "A" ~ 0,
-      TX_RESP_Q009A == "B" ~ 1,
-      TX_RESP_Q009A == "C" ~ 2,
-      TX_RESP_Q009A == "D" ~ 3,
+    PONT13 = case_when(#tv a cabo
+      TX_RESP_Q010A == "A" ~ 0,
+      TX_RESP_Q010A == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT7 = case_when(#Geladeira 0 2 3 5 5
-      TX_RESP_Q009A == "A" ~ 0,
-      TX_RESP_Q009A == "B" ~ 1,
-      TX_RESP_Q009A == "C" ~ 2,
-      TX_RESP_Q009A == "D" ~ 3,
+    PONT14 = case_when(#wifi
+      TX_RESP_Q010B == "A" ~ 0,
+      TX_RESP_Q010B == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT8 = case_when(#Freezer 0 2 4 6 6
-      TX_RESP_Q010I == "A" ~ 0,
-      TX_RESP_Q010I == "B" ~ 1,
+    PONT15 = case_when(#quarto separado
+      TX_RESP_Q010C == "A" ~ 0,
+      TX_RESP_Q010C == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT9 = case_when(#Lava roupa 0 2 4 6 6
-      TX_RESP_Q010H == "A" ~ 0,
-      TX_RESP_Q010H == "B" ~ 1,
+    PONT16 = case_when(#mesa de estudo
+      TX_RESP_Q010D == "A" ~ 0,
+      TX_RESP_Q010D == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT11 = case_when(#Micro-ondas 0 2 4 4 4
+    PONT17 = case_when(#garagem
+      TX_RESP_Q010E == "A" ~ 0,
+      TX_RESP_Q010E == "B" ~ 1,
+      TRUE ~ NA_real_),
+    PONT18 = case_when(#microoondas
       TX_RESP_Q010F == "A" ~ 0,
       TX_RESP_Q010F == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT14 = case_when(#água encanada 
-      TX_RESP_Q008B == "A" ~ 0,
-      TX_RESP_Q008B == "B" ~ 1,
+    PONT19 = case_when(#aspirador
+      TX_RESP_Q010G == "A" ~ 0,
+      TX_RESP_Q010G == "B" ~ 1,
       TRUE ~ NA_real_),
-    PONT15 = case_when(#rua pavimentada
-      TX_RESP_Q008A == "A" ~ 0,
-      TX_RESP_Q008A == "B" ~ 1,
-      TRUE ~ NA_real_) )
+    PONT20 = case_when(#lava roupa
+      TX_RESP_Q010H == "A" ~ 0,
+      TX_RESP_Q010H == "B" ~ 1,
+      TRUE ~ NA_real_),
+    PONT21 = case_when(#freezer
+      TX_RESP_Q010I == "A" ~ 0,
+      TX_RESP_Q010I == "B" ~ 1,
+      TRUE ~ NA_real_))
 ```
 
 ## PCA
 ```{r}
 # Selecionar as colunas relevantes para a PCA
 pca_data <- df_aluno %>%
-  select(PONT1, PONT2, PONT4, PONT5, PONT7, PONT8, PONT9, PONT11, PONT14, PONT15) %>%
+  select(PONT1, PONT2, PONT3, PONT4, PONT5, PONT6, PONT7, PONT8, PONT9, PONT10, PONT11, PONT12, PONT13, PONT14, PONT15, PONT16, PONT17, PONT18, PONT19, PONT20, PONT21) %>%
   mutate(across(everything(), as.numeric)) 
 
 non_na_rows <- complete.cases(pca_data)
@@ -111,10 +166,10 @@ pca_result <- princomp(pca_data_norm)
 summary(pca_result)
 
 # Initialize the NSE column with NAs
-df_aluno$NSE_pca <- NA
+df_aluno$NSE_ALUNO <- NA
 
 # Assign the PCA scores to the non-NA rows
-df_aluno$NSE_pca[non_na_rows] <- pca_result$scores[, 1]
+df_aluno$NSE_ALUNO[non_na_rows] <- pca_result$scores[, 1]
 
 ```	
 
@@ -126,7 +181,7 @@ df_aluno$NSE_pca[non_na_rows] <- pca_result$scores[, 1]
 
 
 df_escola <- df_escola %>%
-  mutate(NSE_esc = case_when(
+  mutate(NSE_ESCOLA = case_when(
     NIVEL_SOCIO_ECONOMICO == "Nível I" ~ 1,
     NIVEL_SOCIO_ECONOMICO == "Nível II" ~ 2,
     NIVEL_SOCIO_ECONOMICO == "Nível III" ~ 3,
@@ -140,7 +195,22 @@ df_escola <- df_escola %>%
 # var ESCDADE=POINT1
 
 df_aluno <- df_aluno %>%
-  mutate(ESCDADE = PONT1)
+  mutate(ESCOLARIDADE_MAE = PONT1)
+
+# grupo racial
+
+# 1: brancos e amarelos
+# 0: caso contrario
+
+df_aluno <- df_aluno %>%
+  mutate(GRUPO_RACIAL = case_when(
+    TX_RESP_Q002 == "A" | TX_RESP_Q002 == "D" ~ 1,
+    TRUE ~ 0
+  ))
+
+# reprovacao
+
+df_aluno$REPROVACAO <- ifelse(df_aluno$TX_RESP_Q015 == "A", 0, ifelse(df_aluno$TX_RESP_Q015 == "B", 1, 2))
 
 ````
 
@@ -164,15 +234,20 @@ write.csv(df,"dados_tcc.csv")
 #| message: false
 
 df <- vroom("dados_tcc.csv")%>%
-  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, NIVEL_SOCIO_ECONOMICO, NSEA, pont, ID_AREA, ID_LOCALIZACAO, PC_FORMACAO_DOCENTE_FINAL, TX_RESP_Q002, TX_RESP_Q004, TX_RESP_Q011, TX_RESP_Q015, TX_RESP_Q016, TX_RESP_Q017A, TX_RESP_Q017B, TX_RESP_Q017C, TX_RESP_Q017D, TX_RESP_Q018A, TX_RESP_Q018B)
-
-var_df <- names(df)
-dim(df)
+  select(ID_ALUNO,ID_ESCOLA,PROFICIENCIA_MT_SAEB,PROFICIENCIA_LP_SAEB, ID_AREA, ID_LOCALIZACAO, NSE_ESCOLA, NSE_ALUNO, GRUPO_RACIAL, ESCOLARIDADE_MAE, REPROVACAO)
 
 df_used <- df %>%
   filter(across(everything(), ~ !(. %in% c("*", ".")))) %>%
   na.omit(df_used)
 
+df_used$ID_AREA <- ifelse(df_used$ID_AREA == 1, 0, 1)
+df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 1, 0, 1)
+
+write_csv(df_used, "df_used.csv")
+
+```
+
+```{r}
 set.seed(123)
 df_sampled <- df_used %>% sample_n(5000)
 
@@ -194,6 +269,81 @@ theme_tcc <- function() {
 
 
 ## Análise descritiva dos dados
+
+- Gráficos novos
+
+```{r}	
+#| warning: false
+#| label: descritiva_new
+
+#1. proficiencia_mt_saeb x nse_aluno (scatterplot)
+df_used %>% 
+    ggplot(aes(x = NSE_ALUNO, y = PROFICIENCIA_MT_SAEB)) +
+    geom_point(alpha = 0.5) +
+    labs(x = "Nível Socioeconômico do Aluno",
+         y = "Matemática") +
+    theme_tcc()
+ggsave("img/new_scatterplot_mt_nse_aluno.pdf", width = 8, height = 5, dpi = 300)
+#2. proficiencia_mt_saeb x nse_escola (boxplot)
+df_used %>%
+    filter(!is.na(NSE_ESCOLA)) %>%
+    ggplot(aes(x = as.factor(NSE_ESCOLA), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Nível Socioeconômico da Escola",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_nse_esc.pdf", width = 8, height = 5, dpi = 300)
+
+#3. proficiencia_mt_saeb x grupo_racial (boxplot)
+df_used %>%
+    ggplot(aes(x = as.factor(GRUPO_RACIAL), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Grupo Racial",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_racial.pdf", width = 8, height = 5, dpi = 300)
+
+#4. proficiencia_mt_saeb x escolaridade_mae (boxplot)
+df_used %>%
+    ggplot(aes(x = as.factor(ESCOLARIDADE_MAE), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Escolaridade da Mãe",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_esc_mae.pdf", width = 8, height = 5, dpi = 300)
+
+#5. proficiencia_mt_saeb x reprovacao (boxplot)
+df_used %>%
+    ggplot(aes(x = as.factor(REPROVACAO), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Reprovação",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_reprovacao.pdf", width = 8, height = 5, dpi = 300)
+#6. proficiencia_mt_saeb x id_area (boxplot)
+df_used %>%
+    ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Área",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_area.pdf", width = 8, height = 5, dpi = 300)
+#7. proficiencia_mt_saeb x id_localizacao (boxplot)
+df_used %>%
+    ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_MT_SAEB)) +
+    geom_boxplot(fill = "white") +
+    labs(x = "Localização",
+         y = "Matemática") +
+    ylim(100,400)+
+    theme_tcc()
+ggsave("img/new_boxplot_mt_loc.pdf", width = 8, height = 5, dpi = 300)
+
+```
 
 ### Quantidade de Escolas
 ```{r}	 
