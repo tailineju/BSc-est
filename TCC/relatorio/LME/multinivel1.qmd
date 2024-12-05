@@ -65,7 +65,7 @@ write_csv(df_used, "df_used.csv")
 #| warning: false
 #| label: dados2
 
-df_used <- vroom("df_used.csv")
+df_used <- vroom("DADOS/df_used.csv")
 ```
 
 # Modelos
@@ -151,7 +151,7 @@ tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos ale
 #| eval: false
 #| echo: false
 #| label: modelo3_lp4
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + REPROVACAO|ID_ESCOLA), data = df_used)
+modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + GRUPO_RACIAL + REPROVACAO|ID_ESCOLA), data = df_used)
 #summary(modelo3_lp)
 tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
 ```
@@ -242,7 +242,7 @@ tab_model(modelo3_mt, show.icc = TRUE)
 ```{r}
 #| warning: false
 #| label: modelo4_mt
-modelo4_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
+modelo4_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
 tab_model(modelo4_mt, show.icc = TRUE)
 ```	
 
