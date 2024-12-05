@@ -229,6 +229,7 @@ df_center <- df_used %>%
 #| label: loading
 
 write_csv(df_used, "DADOS/df_used.csv")
+write_csv(df_center, "DADOS/df_center.csv")
 ```
 
 ```{r}
