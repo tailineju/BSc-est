@@ -21,19 +21,6 @@ format: html
 
 7. Definição do melhor modelo
 
-# Mudanças
-
-- [ ] Aprimoramento da PCA (inclusão de quase todas variáveis do bloco)
-
-- [ ] Adição do grupo racial
-
-- [ ] Alterações nos efeitos aleatórios
-
-- [ ] Adição de interações
-
-- [ ] Centralização HOX
-
-
 
 # Setup
 
@@ -42,8 +29,7 @@ format: html
 #| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr) 
-#setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
+pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr)
 ```
 
 ## Leitura dos dados
@@ -198,7 +184,7 @@ tab_model(modelo2_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
 ```	
 
 
-### Modelo 4 (todos os efeitos alerórios do primeiro nível)
+### Modelo 4 (efeitos alerórios do primeiro nível)
 
 ```{r}
 #| warning: false

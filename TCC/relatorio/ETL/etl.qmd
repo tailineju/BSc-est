@@ -213,8 +213,11 @@ df_used <- df %>%
   filter(across(everything(), ~ !(. %in% c("*", ".")))) %>%
   na.omit(df_used)
 
-df_used$ID_AREA <- ifelse(df_used$ID_AREA == 1, 0, 1)
-df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 1, 0, 1)
+table(df_used$ID_AREA)
+table(df_used$ID_LOCALIZACAO)
+
+df_used$ID_AREA <- ifelse(df_used$ID_AREA == 2, 0, 1)
+df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 2, 0, 1)
 ```
 
 ```{r}
