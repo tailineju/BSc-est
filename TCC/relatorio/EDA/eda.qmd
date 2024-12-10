@@ -12,7 +12,7 @@ format: pdf
 #| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse, knitr)#, kableExtra, lme4, gridExtra, clipr, corrplot)
+pacman::p_load(vroom,tidyverse, knitr, kableExtra, corrplot)#gridExtra, clipr
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 ```
 
@@ -20,10 +20,13 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 #| label: reading_data
 
 df <- vroom('C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio/DADOS/df_used.csv')
+set.seed(123)
+df_sampled <- df %>% sample_n(5000)
 ```
 
 ```{r}
 #| label: theme
+
 
 theme_tcc <- function() {
   theme_classic() +
@@ -42,10 +45,8 @@ theme_tcc <- function() {
 
 
 ```{r}	
-#| warning: false
-#| label: descritiva_new
+#| label: mt_x_nse_aluno
 
-#1. proficiencia_mt_saeb x nse_aluno (scatterplot)
 df %>% 
     ggplot(aes(x = NSE_ALUNO, y = PROFICIENCIA_MT_SAEB)) +
     geom_point(alpha = 0.5) +
@@ -53,7 +54,12 @@ df %>%
          y = "Matemática") +
     theme_tcc()
 ggsave("EDA/img/new_scatterplot_mt_nse_aluno.pdf", width = 8, height = 5, dpi = 300)
-#2. proficiencia_mt_saeb x nse_escola (boxplot)
+```	
+
+
+```{r}	
+#| label: mt_x_nse_escola
+
 df %>%
     filter(!is.na(NSE_ESCOLA)) %>%
     ggplot(aes(x = as.factor(NSE_ESCOLA), y = PROFICIENCIA_MT_SAEB)) +
@@ -63,8 +69,12 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_nse_esc.pdf", width = 8, height = 5, dpi = 300)
+```	
 
-#3. proficiencia_mt_saeb x grupo_racial (boxplot)
+
+```{r}	
+#| label: mt_x_grupo_racial
+
 df %>%
     ggplot(aes(x = as.factor(GRUPO_RACIAL), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -73,8 +83,11 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_racial.pdf", width = 8, height = 5, dpi = 300)
+```	
 
-#4. proficiencia_mt_saeb x escolaridade_mae (boxplot)
+
+```{r}	
+#| label: mt_x_escolaridade_mae
 df %>%
     ggplot(aes(x = as.factor(ESCOLARIDADE_MAE), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -83,8 +96,11 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_esc_mae.pdf", width = 8, height = 5, dpi = 300)
+```	
 
-#5. proficiencia_mt_saeb x reprovacao (boxplot)
+
+```{r}	
+#| label: mt_x_reprovacao
 df %>%
     ggplot(aes(x = as.factor(REPROVACAO), y = PROFICIENCIA_MT_SAEB)) +
     geom_boxplot(fill = "white") +
@@ -93,7 +109,11 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_reprovacao.pdf", width = 8, height = 5, dpi = 300)
-#6. proficiencia_mt_saeb x id_area (boxplot)
+```	
+
+
+```{r}	
+#| label: mt_x_area
 df %>%
     mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
     ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_MT_SAEB)) +
@@ -103,7 +123,11 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_area.pdf", width = 8, height = 5, dpi = 300)
-#7. proficiencia_mt_saeb x id_localizacao (boxplot)
+```	
+
+
+```{r}	
+#| label: mt_x_loc
 df %>%
     mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
     ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_MT_SAEB)) +
@@ -113,8 +137,9 @@ df %>%
     ylim(100,400)+
     theme_tcc()
 ggsave("EDA/img/new_boxplot_mt_loc.pdf", width = 8, height = 5, dpi = 300)
-
 ```
+
+## Visão geral das escolas
 
 ### Quantidade de Escolas
 ```{r}	 
@@ -158,8 +183,6 @@ df %>%
   pivot_longer(everything(), names_to = "Estatística", values_to = "Número de Alunos por Escola") %>%
   kable(booktabs = TRUE, caption = "Summary Statistics for Number of Students per School", format = "latex")
 ```	
-
-Análise: 
 
 ### Nível Socioecononômico (NSe) das Escolas
 ```{r}
@@ -208,41 +231,9 @@ ggsave("EDA/img/dist_loc_escola.pdf", width = 8, height = 5, dpi = 300)
 
 ```
 
-### Distribuição da proficiência em Língua Portuguesa e Matemática
+## Proficiência em Matemática
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#lingua portuguesa (ggplot histogram)
-df %>%
-    ggplot(aes(x = PROFICIENCIA_LP_SAEB)) +
-    geom_histogram(binwidth = 10,  fill = "white", color="black") +
-    labs(x = "Língua Portuguesa",
-         y = "Frequência") +
-    xlim(100,400)+
-    ylim(0,13000)+
-    theme_tcc()
-ggsave("EDA/img/dist_lp.pdf", width = 5, height = 5, dpi = 300)
-
-#lingua portuguesa (qqplot)
-df %>% 
-  ggplot(aes(sample = PROFICIENCIA_LP_SAEB)) +
-  stat_qq() +
-  labs(x = "Quantis teóricos", y = "Quantis amostrais") +
-  ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/qqplot_lp.pdf", width = 5, height = 5, dpi = 300)
-
-#lingua portuguesa (boxplot)
-df %>%
-    ggplot(aes(y = PROFICIENCIA_MT_SAEB)) +
-  geom_boxplot(fill = "white") +
-  labs(x = "Língua Portuguesa", y="") +
-  scale_x_discrete(labels = c("Língua Portuguesa")) +
-  ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp.pdf", width = 5, height = 5, dpi = 300)
+#| label: mt_dist_proficiencia
 
 #matemática (ggplot histogram)
 df %>%
@@ -256,7 +247,7 @@ df %>%
 ggsave("EDA/img/dist_mt.pdf", width = 5, height = 5, dpi = 300)
 
 #matematica (qqplot)
-df %>% 
+df_sampled %>% 
   ggplot(aes(sample = PROFICIENCIA_MT_SAEB)) +
   stat_qq() +
   geom_abline(slope = 1, intercept = 0, color = "red") +
@@ -278,9 +269,7 @@ ggsave("EDA/img/boxplot_mt.pdf", width = 5, height = 5, dpi = 300)
 
 ### Quadro Resumo  da proficiência em Língua Portuguesa e Matemática
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
+#| label: summary_stats
 
 lp_stats <- summarise(df,
   Média = mean(PROFICIENCIA_LP_SAEB, na.rm = TRUE),
@@ -292,7 +281,6 @@ lp_stats <- summarise(df,
   Máximo = max(PROFICIENCIA_LP_SAEB, na.rm = TRUE)
 ) %>% pivot_longer(everything(), names_to = "Estatística", values_to = "Língua Portuguesa")
 
-# Calculate summary statistics for Matemática
 mt_stats <- summarise(df,
   Média = mean(PROFICIENCIA_MT_SAEB, na.rm = TRUE),
   `Desvio Padrão` = sd(PROFICIENCIA_MT_SAEB, na.rm = TRUE),
@@ -303,10 +291,8 @@ mt_stats <- summarise(df,
   Máximo = max(PROFICIENCIA_MT_SAEB, na.rm = TRUE)
 ) %>% pivot_longer(everything(), names_to = "Estatística", values_to = "Matemática")
 
-# Combine the statistics into one data frame
 combined_stats <- full_join(lp_stats, mt_stats, by = "Estatística")
 
-# round to 2 decimal places and decimal mark as comma
 combined_stats <- combined_stats %>% mutate(across(where(is.numeric), ~format(round(., 2), nsmall = 2, decimal.mark = ",")))
 
 combined_stats %>%
@@ -316,846 +302,47 @@ combined_stats %>%
 ```
 
 
-## Boxplots da proficiência em Língua Portuguesa e Matemática
+## Proficiência em Língua Portuguesa
 
-### Por Nível Socioeconômico
+
 ```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
+#| label: lp_dist_proficiencia
+#lingua portuguesa (ggplot histogram)
 df %>%
-    filter(!is.na(NSE_ALUNO)) %>%
-    ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
+    ggplot(aes(x = PROFICIENCIA_LP_SAEB)) +
+    geom_histogram(binwidth = 10,  fill = "white", color="black") +
+    labs(x = "Língua Portuguesa",
+         y = "Frequência") +
+    xlim(100,400)+
+    ylim(0,13000)+
     theme_tcc()
-ggsave("EDA/img/boxplot_lp_nse.pdf", width = 8, height = 5, dpi = 300)
+ggsave("EDA/img/dist_lp.pdf", width = 5, height = 5, dpi = 300)
 
-df %>%
-    filter(!is.na(NIVEL_SOCIO_ECONOMICO)) %>%
-    ggplot(aes(x = as.factor(NIVEL_SOCIO_ECONOMICO), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_nse.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por Área
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-df %>%
-    mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
-    ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_area.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    mutate(ID_AREA = ifelse(ID_AREA == 1, "Capital", "Interior")) %>%
-    ggplot(aes(x = as.factor(ID_AREA), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_area.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por Administração
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-df %>%
-    mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
-    ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_loc.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    mutate(ID_LOCALIZACAO = ifelse(ID_LOCALIZACAO == 1, "Urbana", "Rural")) %>%
-    ggplot(aes(x = as.factor(ID_LOCALIZACAO), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_loc.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q002
-Branca.
-Preta.
-Parda.
-Amarela.
-Indígena.
-Não quero declarar.
-
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-unique(df$TX_RESP_Q002)
-
-#tabela de frequencia
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q002 = case_when(
-      TX_RESP_Q002 == "A" ~ "Branca",
-      TX_RESP_Q002 == "B" ~ "Preta",
-      TX_RESP_Q002 == "C" ~ "Parda",
-      TX_RESP_Q002 == "D" ~ "Amarela",
-      TX_RESP_Q002 == "E" ~ "Indígena",
-      TX_RESP_Q002 == "F" ~ "ND",
-      TRUE ~ TX_RESP_Q002
-    )) %>% 
-    mutate(TX_RESP_Q002 = factor(TX_RESP_Q002, levels = c("Branca", "Preta", "Parda", "Amarela", "Indígena", "ND")))%>%
-    count(TX_RESP_Q002) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q002, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência da Raça/Cor dos Responsáveis", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q002 = case_when(
-      TX_RESP_Q002 == "A" ~ "Branca",
-      TX_RESP_Q002 == "B" ~ "Preta",
-      TX_RESP_Q002 == "C" ~ "Parda",
-      TX_RESP_Q002 == "D" ~ "Amarela",
-      TX_RESP_Q002 == "E" ~ "Indígena",
-      TX_RESP_Q002 == "F" ~ "ND",
-      TRUE ~ TX_RESP_Q002
-    )) %>%
-    mutate(TX_RESP_Q002 = factor(TX_RESP_Q002, levels = c("Branca", "Preta", "Parda", "Amarela", "Indígena", "ND")))%>%
-    ggplot(aes(x = TX_RESP_Q002, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_raca.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q002 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q002 = case_when(
-      TX_RESP_Q002 == "A" ~ "Branca",
-      TX_RESP_Q002 == "B" ~ "Preta",
-      TX_RESP_Q002 == "C" ~ "Parda",
-      TX_RESP_Q002 == "D" ~ "Amarela",
-      TX_RESP_Q002 == "E" ~ "Indígena",
-      TX_RESP_Q002 == "F" ~ "ND",
-      TRUE ~ TX_RESP_Q002
-    )) %>%
-    mutate(TX_RESP_Q002 = factor(TX_RESP_Q002, levels = c("Branca", "Preta", "Parda", "Amarela", "Indígena", "ND"))) %>%
-    ggplot(aes(x = TX_RESP_Q002, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_raca.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q004
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-unique(df$TX_RESP_Q004)
-
-# tabela de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
-    count(TX_RESP_Q004) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q004, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Nível de Escolaridade da Mãe", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q004, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_mae.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q004 %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q004, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_mae.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q011
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#tabela de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q011 = case_when(
-    TX_RESP_Q011 == "A" ~ "Menos de 30min",
-    TX_RESP_Q011 == "B" ~ "Entre 30min e 1h",
-    TX_RESP_Q011 == "C" ~ "Mais de 1h",
-    TRUE ~ TX_RESP_Q011
-  )) %>%
-  mutate(TX_RESP_Q011 = factor(TX_RESP_Q011, levels = c("Menos de 30min", "Entre 30min e 1h", "Mais de 1h"))) %>%
-    count(TX_RESP_Q011) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q011, prop) %>%
-    kable(booktabs = TRUE, caption = "Tempo para chegar a escola", format = "latex") %>%
-    kable_styling()
-
-df %>%
-  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".", "*")) %>%
-  mutate(TX_RESP_Q011 = case_when(
-    TX_RESP_Q011 == "A" ~ "Menos de 30min",
-    TX_RESP_Q011 == "B" ~ "Entre 30min e 1h",
-    TX_RESP_Q011 == "C" ~ "Mais de 1h",
-    TRUE ~ TX_RESP_Q011
-  )) %>%
-  mutate(TX_RESP_Q011 = factor(TX_RESP_Q011, levels = c("Menos de 30min", "Entre 30min e 1h", "Mais de 1h"))) %>%
-  ggplot(aes(x = TX_RESP_Q011, y = PROFICIENCIA_LP_SAEB)) +
-  geom_boxplot(fill = "white") +
-  labs(x = "", y = "Língua Portuguesa") +
+#lingua portuguesa (qqplot)
+df_sampled %>% 
+  ggplot(aes(sample = PROFICIENCIA_LP_SAEB)) +
+  stat_qq() +
+  labs(x = "Quantis teóricos", y = "Quantis amostrais") +
   ylim(100,400)+
   theme_tcc()
-ggsave("EDA/img/boxplot_lp_tempo.pdf", width = 8, height = 5, dpi = 300)
+ggsave("EDA/img/qqplot_lp.pdf", width = 5, height = 5, dpi = 300)
 
+#lingua portuguesa (boxplot)
 df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q011 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q011 = case_when(
-      TX_RESP_Q011 == "A" ~ "Menos de 30min",
-      TX_RESP_Q011 == "B" ~ "Entre 30min e 1h",
-      TX_RESP_Q011 == "C" ~ "Mais de 1h",
-      TRUE ~ TX_RESP_Q011
-    )) %>%
-    mutate(TX_RESP_Q011 = factor(TX_RESP_Q011, levels = c("Menos de 30min", "Entre 30min e 1h", "Mais de 1h"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q011), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_tempo.pdf", width = 8, height = 5, dpi = 300)
-
-```
-
-### Por TX_RESP_Q015
-```{r}
-#| warning: false
-#| eval: false
-#| message: false#| 
-
-
-#tabela de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q015 = case_when(
-      TX_RESP_Q015 == "A" ~ "Não",
-      TX_RESP_Q015 == "B" ~ "1 vez",
-      TX_RESP_Q015 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q015
-    )) %>%
-    mutate(TX_RESP_Q015 = factor(TX_RESP_Q015, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    count(TX_RESP_Q015) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q015, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência da Reprovação dos Alunos", format = "latex") %>%
-    kable_styling()
-
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q015 = case_when(
-      TX_RESP_Q015 == "A" ~ "Não",
-      TX_RESP_Q015 == "B" ~ "1 vez",
-      TX_RESP_Q015 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q015
-    )) %>%
-    mutate(TX_RESP_Q015 = factor(TX_RESP_Q015, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    ggplot(aes(x = TX_RESP_Q015, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_reprovacao.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q015 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q015 = case_when(
-      TX_RESP_Q015 == "A" ~ "Não",
-      TX_RESP_Q015 == "B" ~ "1 vez",
-      TX_RESP_Q015 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q015
-    )) %>%
-    mutate(TX_RESP_Q015 = factor(TX_RESP_Q015, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q015), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_reprovacao.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q016
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#tab de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q016 = case_when(
-      TX_RESP_Q016 == "A" ~ "Não",
-      TX_RESP_Q016 == "B" ~ "1 vez",
-      TX_RESP_Q016 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q016
-    )) %>%
-    mutate(TX_RESP_Q016 = factor(TX_RESP_Q016, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    count(TX_RESP_Q016) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q016, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Abandono dos Alunos", format = "latex") %>%
-    kable_styling()
-
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q016 = case_when(
-      TX_RESP_Q016 == "A" ~ "Não",
-      TX_RESP_Q016 == "B" ~ "1 vez",
-      TX_RESP_Q016 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q016
-    )) %>%
-    mutate(TX_RESP_Q016 = factor(TX_RESP_Q016, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q016), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_abandono.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q016 %in% c(".","*")) %>%
-    mutate(TX_RESP_Q016 = case_when(
-      TX_RESP_Q016 == "A" ~ "Não",
-      TX_RESP_Q016 == "B" ~ "1 vez",
-      TX_RESP_Q016 == "C" ~ "2 ou mais",
-      TRUE ~ TX_RESP_Q016
-    )) %>%
-    mutate(TX_RESP_Q016 = factor(TX_RESP_Q016, levels = c("Não", "1 vez", "2 ou mais"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q016), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_abandono.pdf", width = 8, height = 5, dpi = 300)
-```
-
-Nas questões Q017[a-z] (a seguir)
-
-- A: Não uso meu tempo para isso.
-
-- B: Menos de 1 hora.
-
-- C: Entre 1 e 2 horas.
-
-- D: Mais de 2 horas.
-
-### Por TX_RESP_Q017A
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-unique(df$TX_RESP_Q017A)
-
-#tab freq
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017A = case_when(
-      TX_RESP_Q017A == "A" ~ "Não tem",
-      TX_RESP_Q017A == "B" ~ "Menos de 1h",
-      TX_RESP_Q017A == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017A == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017A
-    )) %>%
-    mutate(TX_RESP_Q017A = factor(TX_RESP_Q017A, levels
-    = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    count(TX_RESP_Q017A) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q017A, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Tempo de Lazer dos Alunos", format = "latex")
-
-
-df %>% 
-  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
-  mutate(TX_RESP_Q017A = case_when(
-    TX_RESP_Q017A == "A" ~ "Não tem",
-    TX_RESP_Q017A == "B" ~ "Menos de 1h",
-    TX_RESP_Q017A == "C" ~ "Entre 1 e 2h",
-    TX_RESP_Q017A == "D" ~ "Mais de 2h",
-    TRUE ~ TX_RESP_Q017A
-  )) %>%
-  mutate(TX_RESP_Q017A = factor(TX_RESP_Q017A, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-  ggplot(aes(x = TX_RESP_Q017A, y = PROFICIENCIA_LP_SAEB)) +
+    ggplot(aes(y = PROFICIENCIA_MT_SAEB)) +
   geom_boxplot(fill = "white") +
-  labs(x = "",
-     y = "Língua Portuguesa") +
+  labs(x = "Língua Portuguesa", y="") +
+  scale_x_discrete(labels = c("Língua Portuguesa")) +
   ylim(100,400)+
   theme_tcc()
-ggsave("EDA/img/boxplot_lp_lazer.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017A %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017A = case_when(
-    TX_RESP_Q017A == "A" ~ "Não tem",
-    TX_RESP_Q017A == "B" ~ "Menos de 1h",
-    TX_RESP_Q017A == "C" ~ "Entre 1 e 2h",
-    TX_RESP_Q017A == "D" ~ "Mais de 2h",
-    TRUE ~ TX_RESP_Q017A
-  )) %>%
-    mutate(TX_RESP_Q017A = factor(TX_RESP_Q017A, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017A, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_lazer.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q017B (Fazer cursos)
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-# descartar
-
-unique(df$TX_RESP_Q017B)
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017B %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017B = case_when(
-      TX_RESP_Q017B == "A" ~ "Não tem",
-      TX_RESP_Q017B == "B" ~ "Menos de 1h",
-      TX_RESP_Q017B == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017B == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017B)) %>%
-    mutate(TX_RESP_Q017B = factor(TX_RESP_Q017B, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017B, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_cursos.pdf", width = 8, height = 5, dpi = 300)
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017B %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017B = case_when(
-      TX_RESP_Q017B == "A" ~ "Não tem",
-      TX_RESP_Q017B == "B" ~ "Menos de 1h",
-      TX_RESP_Q017B == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017B == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017B)) %>%
-    mutate(TX_RESP_Q017B = factor(TX_RESP_Q017B, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017B, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_cursos.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q017C (Trabalhos domesticos)
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-# tabela de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017C = case_when(
-      TX_RESP_Q017C == "A" ~ "Não tem",
-      TX_RESP_Q017C == "B" ~ "Menos de 1h",
-      TX_RESP_Q017C == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017C == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017C)) %>%
-    mutate(TX_RESP_Q017C = factor(TX_RESP_Q017C, levels
-    = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    count(TX_RESP_Q017C) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q017C, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Tempo de Trabalho Doméstico dos Alunos", format = "latex") %>%
-    kable_styling()
-
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017C = case_when(
-      TX_RESP_Q017C == "A" ~ "Não tem",
-      TX_RESP_Q017C == "B" ~ "Menos de 1h",
-      TX_RESP_Q017C == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017C == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017C)) %>%
-    mutate(TX_RESP_Q017C= factor(TX_RESP_Q017C, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017C, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_domesticos.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017C %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017C = case_when(
-      TX_RESP_Q017C == "A" ~ "Não tem",
-      TX_RESP_Q017C == "B" ~ "Menos de 1h",
-      TX_RESP_Q017C == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017C == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017C)) %>%
-    mutate(TX_RESP_Q017C = factor(TX_RESP_Q017C, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017C, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_domesticos.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q017D
-
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#tab de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017D = case_when(
-      TX_RESP_Q017D == "A" ~ "Não tem",
-      TX_RESP_Q017D == "B" ~ "Menos de 1h",
-      TX_RESP_Q017D == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017D == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017D)) %>%
-    mutate(TX_RESP_Q017D = factor(TX_RESP_Q017D, levels
-    = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    count(TX_RESP_Q017D) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q017D, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Tempo de Estudo dos Alunos", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
-   mutate(TX_RESP_Q017D = case_when(
-      TX_RESP_Q017D == "A" ~ "Não tem",
-      TX_RESP_Q017D == "B" ~ "Menos de 1h",
-      TX_RESP_Q017D == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017D == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017D)) %>%
-    mutate(TX_RESP_Q017D = factor(TX_RESP_Q017D, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017D, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_estudo.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017D %in% c(".","*")) %>%
-     mutate(TX_RESP_Q017D = case_when(
-      TX_RESP_Q017D == "A" ~ "Não tem",
-      TX_RESP_Q017D == "B" ~ "Menos de 1h",
-      TX_RESP_Q017D == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017D == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017D)) %>%
-    mutate(TX_RESP_Q017D = factor(TX_RESP_Q017D, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = TX_RESP_Q017D, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc() 
-ggsave("EDA/img/boxplot_mt_estudo.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q017E
-```{r}	
-#| warning: false
-#| eval: false
-#| message: false
-
-#tab de frequencia
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017E = case_when(
-      TX_RESP_Q017E == "A" ~ "Não tem",
-      TX_RESP_Q017E == "B" ~ "Menos de 1h",
-      TX_RESP_Q017E == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017E == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017E)) %>%
-    mutate(TX_RESP_Q017E = factor(TX_RESP_Q017E, levels
-    = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    count(TX_RESP_Q017E) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q017E, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Tempo de Trabalho dos Alunos", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
-     mutate(TX_RESP_Q017E = case_when(
-      TX_RESP_Q017E == "A" ~ "Não tem",
-      TX_RESP_Q017E == "B" ~ "Menos de 1h",
-      TX_RESP_Q017E == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017E == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017E)) %>%
-    mutate(TX_RESP_Q017E = factor(TX_RESP_Q017E, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q017E), y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_trabalho.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q017E %in% c(".","*")) %>%
-    mutate(TX_RESP_Q017E = case_when(
-      TX_RESP_Q017E == "A" ~ "Não tem",
-      TX_RESP_Q017E == "B" ~ "Menos de 1h",
-      TX_RESP_Q017E == "C" ~ "Entre 1 e 2h",
-      TX_RESP_Q017E == "D" ~ "Mais de 2h",
-      TRUE ~ TX_RESP_Q017E)) %>%
-    mutate(TX_RESP_Q017E = factor(TX_RESP_Q017E, levels = c("Não tem", "Menos de 1h", "Entre 1 e 2h", "Mais de 2h"))) %>%
-    ggplot(aes(x = as.factor(TX_RESP_Q017E), y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_trabalho.pdf", width = 8, height = 5, dpi = 300)
-```
-
-Em relação às questões Q018[a-z] (a seguir)
-
-- A: Nunca ou quase nunca
-
-- B: De vez em quando
-
-- C: Sempre ou quase sempre
-
-
-### Por TX_RESP_Q018A
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-
-unique(df$TX_RESP_Q018A)
-
-#tab frequency()
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
-    mutate(TX_RESP_Q018A = case_when(
-      TX_RESP_Q018A == "A" ~ "Nunca ou quase nunca",
-      TX_RESP_Q018A == "B" ~ "De vez em quando",
-      TX_RESP_Q018A == "C" ~ "Sempre ou quase sempre",
-      TRUE ~ TX_RESP_Q018A)) %>%
-    mutate(TX_RESP_Q018A = factor(TX_RESP_Q018A, levels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre"))) %>%
-    count(TX_RESP_Q018A) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q018A, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Uso de Notícias pelos Alunos", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q018A, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_noticias.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018A %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q018A, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_noticias.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q018B (Livros)
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#tab frequency(
-
-df %>% 
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
-    mutate(TX_RESP_Q018B = case_when(
-      TX_RESP_Q018B == "A" ~ "Nunca ou quase nunca",
-      TX_RESP_Q018B == "B" ~ "De vez em quando",
-      TX_RESP_Q018B == "C" ~ "Sempre ou quase sempre",
-      TRUE ~ TX_RESP_Q018B)) %>%
-    mutate(TX_RESP_Q018B = factor(TX_RESP_Q018B, levels = c("Nunca ou quase nunca", "De vez em quando", "Sempre ou quase sempre"))) %>%
-    count(TX_RESP_Q018B) %>%
-    mutate(prop = round(n / sum(n) * 100,2)) %>%
-    select(TX_RESP_Q018B, prop) %>%
-    kable(booktabs = TRUE, caption = "Frequência do Uso de Livros pelos Alunos", format = "latex") %>%
-    kable_styling()
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q018B, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_livros.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018B %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q018B, y = PROFICIENCIA_MT_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Matemática") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_livros.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Por TX_RESP_Q018C (Quadrinhos)
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-
-#descartar
-
-df %>%
-    filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018C %in% c(".","*")) %>%
-    ggplot(aes(x = TX_RESP_Q018C, y = PROFICIENCIA_LP_SAEB)) +
-    geom_boxplot(fill = "white") +
-    labs(x = "",
-         y = "Língua Portuguesa") +
-    ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_lp_quadrinhos.pdf", width = 8, height = 5, dpi = 300)
-
-df %>%
-  filter(IN_PREENCHIMENTO_QUESTIONARIO == 1, !TX_RESP_Q018C %in% c(".","*")) %>%
-  ggplot(aes(x = TX_RESP_Q018C, y = PROFICIENCIA_MT_SAEB)) +
-  geom_boxplot(fill = "white") +
-  labs(x = "",
-     y = "Matemática") +
-  ylim(100,400)+
-  theme_tcc()
-ggsave("EDA/img/boxplot_mt_quadrinhos.pdf", width = 8, height = 5, dpi = 300)
-```
-
-### Ordinais para numericas
-```{r}
-#| warning: false
-#| eval: false
-#| message: false
-unique(df$NIVEL_SOCIO_ECONOMICO)
-table(df$NIVEL_SOCIO_ECONOMICO)
-
-
-table(df$NSE_pont)
-
-unique(df$TX_RESP_Q004)
-table(df$TX_RESP_Q004)
-
-df <- df %>%
-  mutate(escolaridade = case_when(
-    TX_RESP_Q004 == "A" ~ 1,
-    TX_RESP_Q004 == "B" ~ 2,
-    TX_RESP_Q004 == "C" ~ 3,
-    TX_RESP_Q004 == "D" ~ 4,
-    TX_RESP_Q004 == "E" ~ 5,
-    TX_RESP_Q004 == "F" ~ 0,
-    TRUE ~ as.numeric(TX_RESP_Q004)
-  ))
-table(df$escolaridade)
-
-write.csv(df, "df.csv", row.names = FALSE)
-
+ggsave("EDA/img/boxplot_lp.pdf", width = 5, height = 5, dpi = 300)
 ```	
+
 
 ### Correlação entre as variáveis
 ```{r}
 #| warning: false
-#| eval: false
-#| message: false
+#| label: correlacoes
 
 # between pont and PROFICIENCIA_MT_SAEB
 df %>%
