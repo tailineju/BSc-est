@@ -10,7 +10,7 @@ format: pdf
 #| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse)
+pacman::p_load(vroom,tidyverse,data.table)
 setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 ```
 
@@ -20,7 +20,8 @@ setwd("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio")
 ```{r}
 #| label: filtragem_co
 #| 
-df_aluno <- vroom("DADOS/TS_ALUNO_9EF_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #2.388.931
+df_aluno <- fread("DADOS/TS_ALUNO_9EF_2019.csv", encoding = "Latin-1") #2.388.931
+View(tail(df_aluno,1000))
 df_aluno <- df_aluno %>% filter(IN_PREENCHIMENTO_LP ==1, IN_PREENCHIMENTO_MT ==1) #1.943.252, #1.942.375
 
 df_escola <- vroom("DADOS/TS_ESCOLA_2019.csv", locale = locale(encoding = "Latin1"), delim = ";") #70.606
@@ -222,6 +223,8 @@ df_used$ID_LOCALIZACAO <- ifelse(df_used$ID_LOCALIZACAO == 2, 0, 1)
 
 ```{r}
 #| label: centralizacao
+#rename variable  co_escola to id_escola
+
 
 #centralizar variaveis numericas
 df_center <- df_used %>%

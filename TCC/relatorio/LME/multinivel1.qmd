@@ -15,11 +15,7 @@ format: html
 
 4. Adição de efeitos aleatórios do primeiro nível
 
-5. Comparação entre modelos utilizando X²
-
-6. Análise de resíduos
-
-7. Definição do melhor modelo
+5. Adição de interações relevantes
 
 
 # Setup
@@ -29,7 +25,8 @@ format: html
 #| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr)
+pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr,glmmTMB, stargazer)
+setwd('C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio')
 ```
 
 ## Leitura dos dados
@@ -42,120 +39,9 @@ df_used <- vroom("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio/DADOS/d
 df_center <- vroom("C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio/DADOS/df_center.csv")
 ```
 
+
+
 # Modelos
-
-```{r}
-#| eval: false
-#| echo: false
-#| warning: false 
-#| label: modelo0_lp
-
-### Modelo 0
-## Língua Portuguesa
-modelo_nulo_lp <- lmer(PROFICIENCIA_LP_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
-#summary(modelo_nulo_lp)
-tab_model(modelo_nulo_lp, show.icc = TRUE, title="Modelo Nulo")
-```	
-
-
-```{r}
-#| eval: false
-#| echo: false
-#| warning: false
-#| label: modelo1_lp
-
-### Modelo 1
-modelo1_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + (1|ID_ESCOLA), data = df_used)
-#summary(modelo1_lp)
-tab_model(modelo1_lp, show.icc = TRUE, title="Modelo com adição de variáveis do primeiro nível")
-```
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: modelo2_lp
-
-
-### Modelo 2
-modelo2_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
-#summary(modelo2_lp)
-tab_model(modelo2_lp, show.icc = TRUE, title="Modelo com adição de variáveis do segundo nível")
-```
-
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: modelo3_lp1
-
-### Modelo 3
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + REPROVACAO|ID_ESCOLA), data = df_used)
-##summary(modelo3_lp)
-tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
-```
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: modelo3_lp2
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-##summary(modelo3_lp)
-tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
-```
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: modelo3_lp3
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO|ID_ESCOLA), data = df_used)
-##summary(modelo3_lp)
-tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
-```
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: modelo3_lp4
-modelo3_lp <- lmer(PROFICIENCIA_LP_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA  + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + GRUPO_RACIAL + REPROVACAO|ID_ESCOLA), data = df_used)
-#summary(modelo3_lp)
-tab_model(modelo3_lp, show.icc = TRUE, title="Modelo com adição de efeitos aleatórios do primeiro nível")
-```
-
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: comparacaolp
-
-
-summary(df_used$NSE_ALUNO)
-sd(df_used$NSE_ALUNO)
-
-
-### Comparação entre modelos
-kable(anova(modelo_nulo_lp, modelo1_lp))
-kable(anova(modelo1_lp, modelo2_lp))
-#kable(anova(modelo2_lp, modelo3_lp))
-```
-
-
-```{r}
-#| warning: false
-#| eval: false
-#| echo: false
-#| label: residuos_lp
-
-### Análise de resíduos (Modelos com efeitos aleatórios)
-residuos_lp <- resid(modelo3_lp)
-qqnorm(residuos_lp)
-qqline(residuos_lp)
-```
 
 ## Matemática
 
@@ -163,24 +49,48 @@ qqline(residuos_lp)
 ```{r}
 #| warning: false
 #| label: modelo0_mt
-modelo0_mt <- lmer(PROFICIENCIA_MT_SAEB ~ 1 + (1|ID_ESCOLA), data = df_used)
-tab_model(modelo0_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo0_mt <- lmer(PROFICIENCIA_MT_SAEB ~ 1 + (1|ID_ESCOLA), data = df_center)
+#now using nlme package
+modelo0_mt_2 <- lme(PROFICIENCIA_MT_SAEB ~ 1, random = ~1|ID_ESCOLA, data = df_center)
+#now using glmmTMB
+modelo0_mt_3 <- glmmTMB(PROFICIENCIA_MT_SAEB ~ 1 + (1|ID_ESCOLA), data = df_center)
+tab_model(modelo0_mt_3, show.ci=FALSE, show.icc=TRUE, file = 'resultados.tex', file.type = 'latex')
+tab_model(modelo0_mt, show.ci=FALSE, show.icc=TRUE)
+
+
+
+tidy_model <- broom::tidy(modelo0_mt_3)
+
+# Save as a CSV file
+write.csv(tidy_model, "model_output.csv", row.names = FALSE)
+
+# Save as a TXT file
+write.table(tidy_model, "model_output.txt", row.names = FALSE, sep = "\t")
 ```	
+
 
 ### Modelo 1
 ```{r}
 #| warning: false
 #| label: modelo1_mt
-modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + (1|ID_ESCOLA), data = df_used)
-tab_model(modelo1_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo1_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + (1|ID_ESCOLA), data = df_center)
+#using nlme
+modelo1_mt_2 <- glmmTMB(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + (1|ID_ESCOLA), data = df_center)
+tab_model(modelo1_mt, show.ci=FALSE, show.icc=TRUE)
+tab_model(modelo1_mt_2, show.ci=FALSE, show.icc=TRUE)
+#now using stargazer
+stargazer(modelo1_mt, type = "latex", style='all', decimal.mark = ",", digit.separator = ".", table.placement = "H")
 ```
 
 ### Modelo 2
 ```{r}
 #| warning: false
 #| label: modelo2_mt
-modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_used)
-tab_model(modelo2_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo2_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1|ID_ESCOLA), data = df_center)
+#using nlme
+modelo2_mt_2 <- lme(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO, random = ~1|ID_ESCOLA, data = df_center)
+tab_model(modelo2_mt, show.ci=FALSE, show.icc=TRUE)
+tab_model(modelo2_mt_2, show.ci=FALSE, show.icc=TRUE)
 ```	
 
 
@@ -189,8 +99,11 @@ tab_model(modelo2_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
 ```{r}
 #| warning: false
 #| label: modelo4_mt
-modelo4_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-tab_model(modelo4_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo4_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
+#using nlme
+modelo4_mt_2 <- lme(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO, random = ~1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA, data = df_center)
+tab_model(modelo4_mt, show.ci=FALSE, show.icc=TRUE)
+tab_model(modelo4_mt_2, show.ci=FALSE, show.icc=TRUE)
 ```	
 
 ### Modelo 5 (todas interações)
@@ -198,8 +111,8 @@ tab_model(modelo4_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
 ```{r}
 #| warning: false
 #| label: modelo5_mt
-modelo5_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:GRUPO_RACIAL + NSE_ESCOLA:ESCOLARIDADE_MAE + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-tab_model(modelo5_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo5_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:GRUPO_RACIAL + NSE_ESCOLA:ESCOLARIDADE_MAE + (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
+tab_model(modelo5_mt, show.ci=FALSE, show.icc=TRUE)
 ```	
 
 ### Modelo 6 (interações relevantes)
@@ -207,8 +120,8 @@ tab_model(modelo5_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
 ```{r}
 #| warning: false
 #| label: modelo6_mt
-modelo6_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-tab_model(modelo6_mt, show.icc = TRUE, show.dev=TRUE)
+modelo6_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
+tab_model(modelo6_mt, show.icc = TRUE)
 ```	
 
 ### Modelo 7 (interações relevantes - efeito aleatório)
@@ -216,8 +129,8 @@ tab_model(modelo6_mt, show.icc = TRUE, show.dev=TRUE)
 ```{r}
 #| warning: false
 #| label: modelo7_mt
-modelo7_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-tab_model(modelo7_mt, show.icc = TRUE, show.dev=TRUE)
+modelo7_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
+tab_model(modelo7_mt, show.icc = TRUE)
 ```	
 
 
@@ -227,7 +140,7 @@ tab_model(modelo7_mt, show.icc = TRUE, show.dev=TRUE)
 #| warning: false
 #| label: modelo6_mt_center
 modelo6_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + ESCOLARIDADE_MAE + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
-tab_model(modelo6_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+tab_model(modelo6_mt, show.ci=FALSE, show.icc=TRUE)
 ```	
 
 ### Modelo 7 (interações relevantes - efeito aleatório) - Centralizado
@@ -236,7 +149,7 @@ tab_model(modelo6_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
 #| warning: false
 #| label: modelo7_mt_center
 modelo7_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
-tab_model(modelo7_mt, show.icc = TRUE, show.dev=TRUE)
+tab_model(modelo7_mt, show.icc = TRUE, file= 'resultados.html')
 ```	
 
 
@@ -247,15 +160,25 @@ tab_model(modelo7_mt, show.icc = TRUE, show.dev=TRUE)
 #| label: modelo3_mt1
 
 ### Modelos 3 (testando efeitos aleatórios)
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + REPROVACAO|ID_ESCOLA), data = df_used)
-tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + REPROVACAO|ID_ESCOLA), data = df_center)
+tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE)
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + GRUPO_RACIAL|ID_ESCOLA), data = df_used)
-tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
+tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE)
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO|ID_ESCOLA), data = df_used)
-tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + NSE_ALUNO|ID_ESCOLA), data = df_center)
+tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE)
 
-modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + ESCOLARIDADE_MAE|ID_ESCOLA), data = df_used)
-tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE, show.dev=TRUE)
+modelo3_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + (1 + ESCOLARIDADE_MAE|ID_ESCOLA), data = df_center)
+tab_model(modelo3_mt, show.ci=FALSE, show.icc=TRUE)
 ```	
+
+
+```{r}
+modelo <- glmmTMB(PROFICIENCIA_MT_SAEB ~ GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + 
+                  NSE_ALUNO + NSE_ESCOLA + ID_AREA + ID_LOCALIZACAO + 
+                  NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE + 
+                  (1 + NSE_ALUNO + REPROVACAO + GRUPO_RACIAL | ID_ESCOLA), 
+                  data = df_center)
+tab_model(modelo, show.ci=FALSE,show.icc = TRUE)
+```
