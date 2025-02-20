@@ -1,0 +1,60 @@
+
+===============================================
+LEIA-ME: 1ª EXTRAÇÃO DE RESULTADOS
+-----------------------------------------------
+Data: 15 Jan 2025
+Autor(a): Tailine Nonato
+
+-----------------------------------------------
+Tabelas utilizadas (SEDAP)
+-----------------------------------------------
+SAEB_ALUNO_9EF_2019_2
+TS_ALUNO_9EF_2019
+TS_SAEB_ESCOLA_2015
+TS_SAEB_ESCOLA_2019
+
+-----------------------------------------------
+Tabelas utilizadas (Externas)
+-----------------------------------------------
+pdde_2015
+pdde_2016
+pdde_2017
+pdde_2018
+
+-----------------------------------------------
+Filtros realizados
+-----------------------------------------------
+* ESCOLA
+NU_MATRICULADOS_CENSO_9EF = não vazio
+ID_REGIAO = Centro-Oeste
+ESCOLAS EM COMUM (SAEB 2015, SAEB 2019, PDDE)
+
+* ALUNO
+IN_PRESENCA_MT = presente
+ID_REGIAO = Centro-Oeste
+ESCOLAS EM COMUM (SAEB 2015, SAEB 2019, PDDE)
+
+-----------------------------------------------
+Amostra mínima
+-----------------------------------------------
+n=30
+
+-----------------------------------------------
+Arquivos
+-----------------------------------------------
+* Gráficos
+47 itens em 'IMG/'
+
+* Códigos
+1 item em script R ('CODIGO.R')
+2 itens em objeto R ('MODELO_PERFORMANCE_LP.rds', 'MODELO_PERFORMANCE_MT.rds')
+
+-> Como não é um objeto usual, não sei se será possível extraí-los. 
+   Caso possa ser avaliado, os itens 'objeto R' foram gerados a partir dos seguintes códigos:
+	> diag <- performance::check_model(modelo, theme=theme, return=TRUE)
+	> saveRDS(diag,'MODELO_PERFORMANCE.rds')
+
+* Tabelas 
+3 itens em texto ('MEDIDAS_TEXT.txt', 'MODELOS_LP_TEXT.txt', 'MODELOS_MT_TEXT.txt')
+2 itens em latex ('MODELOS_LP_LATEX.tex', 'MODELOS_MT_LATEX.tex')
+

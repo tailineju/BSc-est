@@ -25,10 +25,15 @@ format: html
 #| label: pacotes
 
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr,glmmTMB, stargazer)
-setwd('C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio')
+pacman::p_load(vroom,tidyverse,lme4,sjPlot,knitr,glmmTMB, stargazer, performance)
+#setwd('C:/Users/User/Documents/GitHub/gradest-1/TCC/relatorio')
 ```
 
+```{r}
+data(sleepstudy, package = "lme4")
+m <- lme4::lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+check_model(m, panel = FALSE)
+```
 ## Leitura dos dados
 
 ```{r}	
@@ -149,7 +154,10 @@ tab_model(modelo6_mt, show.ci=FALSE, show.icc=TRUE)
 #| warning: false
 #| label: modelo7_mt_center
 modelo7_mt <- lmer(PROFICIENCIA_MT_SAEB ~  GRUPO_RACIAL + ESCOLARIDADE_MAE + REPROVACAO + NSE_ALUNO + NSE_ESCOLA + ID_AREA +  ID_LOCALIZACAO + NSE_ESCOLA:REPROVACAO + NSE_ESCOLA:ESCOLARIDADE_MAE +  (1 + NSE_ALUNO + REPROVACAO + GRUPO_RACIAL|ID_ESCOLA), data = df_center)
-tab_model(modelo7_mt, show.icc = TRUE, file= 'resultados.html')
+summary(modelo7_mt)
+tab_model(modelo7_mt, show.icc = TRUE)
+check_model(modelo7_mt, return=TRUE)
+
 ```	
 
 

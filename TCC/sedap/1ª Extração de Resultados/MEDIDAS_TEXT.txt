@@ -1,0 +1,73 @@
+
+ ********************************************* 
+ # Medidas Resumo - Língua Portuguesa 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  118.4   232.1   267.0   263.9   298.2   376.5 
+
+ SD: 47.2674670860835 
+
+ # Medidas Resumo - Matemática 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  126.3   234.8   267.8   265.9   298.0   397.5 
+
+ SD: 46.5118631238879 
+
+ # Medidas Resumo - Valor Total 
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+      0   32060   51160   55278   75280  235500 
+
+ SD: 35164.344664873 
+
+ # Correlação - Língua Portuguesa 
+[1] 0.04412174
+
+ # Correlação - Matemática 
+[1] 0.05237439
+
+ # Resumo PCA 
+Importance of components:
+                          Comp.1     Comp.2     Comp.3     Comp.4     Comp.5     Comp.6    Comp.7     Comp.8     Comp.9
+Standard deviation     1.9767584 1.31981448 1.09455060 1.05038223 1.02005450 0.97108235 0.9651274 0.94192005 0.93509883
+Proportion of Variance 0.1860768 0.08294893 0.05705014 0.05253875 0.04954864 0.04490525 0.0443562 0.04224868 0.04163898
+Cumulative Proportion  0.1860768 0.26902572 0.32607586 0.37861461 0.42816325 0.47306850 0.5174247 0.55967338 0.60131235
+                         Comp.10    Comp.11    Comp.12    Comp.13    Comp.14    Comp.15    Comp.16    Comp.17    Comp.18
+Standard deviation     0.9151715 0.91401979 0.89274214 0.88825943 0.87313375 0.84685920 0.81977854 0.80740170 0.78751982
+Proportion of Variance 0.0398832 0.03978288 0.03795221 0.03757203 0.03630334 0.03415132 0.03200207 0.03104305 0.02953303
+Cumulative Proportion  0.6411956 0.68097843 0.71893064 0.75650268 0.79280601 0.82695733 0.85895940 0.89000245 0.91953548
+                          Comp.19    Comp.20    Comp.21
+Standard deviation     0.77180958 0.74823196 0.73088791
+Proportion of Variance 0.02836647 0.02665984 0.02543821
+Cumulative Proportion  0.94790195 0.97456179 1.00000000
+
+ # Base de dados: Alunos Presentes 2019 Brasil 
+[1] 2402595     107
+
+ # Base de dados: Alunos Presentes 2019 Centro-Oeste 
+[1] 143223    130
+
+ # Base de dados: SAEB 2019 Brasil 
+[1] 36855   140
+
+ # Base de dados: SAEB 2019 Centro-Oeste 
+[1] 2536  140
+
+ # Base de dados: SAEB 2015 Brasil 
+[1] 30412   140
+
+ # Base de dados: SAEB 2015 Centro-Oeste 
+[1] 2215  140
+
+ # Base de dados: Escolas comuns SAEB 2015 e SAEB 2019 
+[1] 1998
+
+ # Base de dados: PDDE 2015 a 2018 Centro-Oeste 
+[1] 7371    4
+
+ # Base de dados: Escolas comuns SAEB e PDDE 
+[1] 1857
+
+ # Base de dados: Escolas avaliadas 
+[1] 1955
+
+ # Base de dados: Alunos avaliados 
+[1] 99422

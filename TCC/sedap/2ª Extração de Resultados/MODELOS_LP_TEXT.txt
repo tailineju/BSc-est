@@ -1,0 +1,345 @@
+Modelo 1: 
+
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                       PROFICIENCIA_LP_SAEB    
+-----------------------------------------------
+Constant                    261,456***         
+                             p = 0,000         
+                                               
+-----------------------------------------------
+Observations                  99.422           
+Log Likelihood             -520.783,800        
+Akaike Inf. Crit.          1.041.574,000       
+Bayesian Inf. Crit.        1.041.602,000       
+===============================================
+Note:               *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.095
+  Unadjusted ICC: 0.095
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.095
+     Marginal R2: 0.000
+
+ # Matriz de Variâncias 
+        grp        var1 var2      vcov    sdcor
+1 ID_ESCOLA (Intercept) <NA>  210.3838 14.50461
+2  Residual        <NA> <NA> 2008.9925 44.82179
+
+ ********************************************* 
+Modelo 2: 
+
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                       PROFICIENCIA_LP_SAEB    
+-----------------------------------------------
+GRUPO_RACIAL                 6,708***          
+                             p = 0,000         
+                                               
+ESCOLARIDADE_MAE             4,409***          
+                             p = 0,000         
+                                               
+REPROVACAO                  -15,434***         
+                             p = 0,000         
+                                               
+VL_INSE_ALUNO                -0,473**          
+                             p = 0,014         
+                                               
+Constant                    261,795***         
+                             p = 0,000         
+                                               
+-----------------------------------------------
+Observations                  99.422           
+Log Likelihood             -517.045,900        
+Akaike Inf. Crit.          1.034.106,000       
+Bayesian Inf. Crit.        1.034.172,000       
+===============================================
+Note:               *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.083
+  Unadjusted ICC: 0.077
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.149
+     Marginal R2: 0.073
+
+ # Matriz de Variâncias 
+        grp        var1 var2      vcov    sdcor
+1 ID_ESCOLA (Intercept) <NA>  168.4329 12.97817
+2  Residual        <NA> <NA> 1867.6494 43.21631
+
+ ********************************************* 
+Modelo 3: 
+
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                       PROFICIENCIA_LP_SAEB    
+-----------------------------------------------
+GRUPO_RACIAL                 6,597***          
+                             p = 0,000         
+                                               
+ESCOLARIDADE_MAE             4,348***          
+                             p = 0,000         
+                                               
+REPROVACAO                  -15,444***         
+                             p = 0,000         
+                                               
+VL_INSE_ALUNO                -0,846***         
+                            p = 0,00002        
+                                               
+NSE_ESCOLA                   10,016***         
+                             p = 0,000         
+                                               
+ID_AREA                      -5,019***         
+                             p = 0,000         
+                                               
+ID_LOCALIZACAO               5,372***          
+                            p = 0,00005        
+                                               
+Constant                    263,099***         
+                             p = 0,000         
+                                               
+-----------------------------------------------
+Observations                  99.422           
+Log Likelihood             -516.844,600        
+Akaike Inf. Crit.          1.033.709,000       
+Bayesian Inf. Crit.        1.033.804,000       
+===============================================
+Note:               *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.065
+  Unadjusted ICC: 0.058
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.158
+     Marginal R2: 0.100
+
+ # Matriz de Variâncias 
+        grp        var1 var2      vcov    sdcor
+1 ID_ESCOLA (Intercept) <NA>  128.8959 11.35323
+2  Residual        <NA> <NA> 1867.4225 43.21368
+
+ ********************************************* 
+Modelo 4: 
+
+===============================================
+                        Dependent variable:    
+                    ---------------------------
+                       PROFICIENCIA_LP_SAEB    
+-----------------------------------------------
+GRUPO_RACIAL                 6,694***          
+                             p = 0,000         
+                                               
+ESCOLARIDADE_MAE             4,396***          
+                             p = 0,000         
+                                               
+REPROVACAO                  -15,452***         
+                             p = 0,000         
+                                               
+VL_INSE_ALUNO                -0,813***         
+                            p = 0,0001         
+                                               
+NSE_ESCOLA                   9,930***          
+                             p = 0,000         
+                                               
+ID_AREA                      -5,069***         
+                             p = 0,000         
+                                               
+ID_LOCALIZACAO               5,220***          
+                            p = 0,0001         
+                                               
+Constant                    263,096***         
+                             p = 0,000         
+                                               
+-----------------------------------------------
+Observations                  99.422           
+Log Likelihood             -516.792,900        
+Akaike Inf. Crit.          1.033.634,000       
+Bayesian Inf. Crit.        1.033.862,000       
+===============================================
+Note:               *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.073
+  Unadjusted ICC: 0.066
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.166
+     Marginal R2: 0.101
+
+ # Matriz de Variâncias 
+         grp             var1             var2          vcov        sdcor
+1  ID_ESCOLA      (Intercept)             <NA>  126.57500665 11.250555837
+2  ID_ESCOLA    VL_INSE_ALUNO             <NA>    7.95179857  2.819893361
+3  ID_ESCOLA       REPROVACAO             <NA>   13.59196742  3.686728553
+4  ID_ESCOLA ESCOLARIDADE_MAE             <NA>    2.70913162  1.645943990
+5  ID_ESCOLA     GRUPO_RACIAL             <NA>   14.05985760  3.749647663
+6  ID_ESCOLA      (Intercept)    VL_INSE_ALUNO    1.58943480  0.050099807
+7  ID_ESCOLA      (Intercept)       REPROVACAO   -7.77659978 -0.187488488
+8  ID_ESCOLA      (Intercept) ESCOLARIDADE_MAE   -0.85102483 -0.045957162
+9  ID_ESCOLA      (Intercept)     GRUPO_RACIAL  -16.37288379 -0.388115278
+10 ID_ESCOLA    VL_INSE_ALUNO       REPROVACAO    2.93427425  0.282245389
+11 ID_ESCOLA    VL_INSE_ALUNO ESCOLARIDADE_MAE    0.40893859  0.088106988
+12 ID_ESCOLA    VL_INSE_ALUNO     GRUPO_RACIAL   -0.05333364 -0.005044035
+13 ID_ESCOLA       REPROVACAO ESCOLARIDADE_MAE    0.16268338  0.026809392
+14 ID_ESCOLA       REPROVACAO     GRUPO_RACIAL    2.47474594  0.179018946
+15 ID_ESCOLA ESCOLARIDADE_MAE     GRUPO_RACIAL   -0.31656133 -0.051292320
+16  Residual             <NA>             <NA> 1849.89041116 43.010352372
+
+ ********************************************* 
+Modelo 5: 
+
+=======================================================
+                                Dependent variable:    
+                            ---------------------------
+                               PROFICIENCIA_LP_SAEB    
+-------------------------------------------------------
+GRUPO_RACIAL                         6,707***          
+                                     p = 0,000         
+                                                       
+ESCOLARIDADE_MAE                     4,348***          
+                                     p = 0,000         
+                                                       
+REPROVACAO                          -15,525***         
+                                     p = 0,000         
+                                                       
+VL_INSE_ALUNO                        -0,831***         
+                                    p = 0,0001         
+                                                       
+NSE_ESCOLA                           10,016***         
+                                     p = 0,000         
+                                                       
+ID_AREA                              -4,998***         
+                                     p = 0,000         
+                                                       
+ID_LOCALIZACAO                       5,106***          
+                                    p = 0,0002         
+                                                       
+REPROVACAO:NSE_ESCOLA                -2,000***         
+                                    p = 0,00000        
+                                                       
+ESCOLARIDADE_MAE:NSE_ESCOLA          -0,520***         
+                                    p = 0,0003         
+                                                       
+Constant                            263,189***         
+                                     p = 0,000         
+                                                       
+-------------------------------------------------------
+Observations                          99.422           
+Log Likelihood                     -516.792,000        
+Akaike Inf. Crit.                  1.033.626,000       
+Bayesian Inf. Crit.                1.033.826,000       
+=======================================================
+Note:                       *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.070
+  Unadjusted ICC: 0.063
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.164
+     Marginal R2: 0.101
+
+ # Matriz de Variâncias 
+         grp          var1          var2         vcov       sdcor
+1  ID_ESCOLA   (Intercept)          <NA>  126.0986121 11.22936383
+2  ID_ESCOLA VL_INSE_ALUNO          <NA>    9.1399072  3.02322795
+3  ID_ESCOLA    REPROVACAO          <NA>   12.2433764  3.49905365
+4  ID_ESCOLA  GRUPO_RACIAL          <NA>   14.4090385  3.79592393
+5  ID_ESCOLA   (Intercept) VL_INSE_ALUNO    1.2106024  0.03565952
+6  ID_ESCOLA   (Intercept)    REPROVACAO   -9.0562746 -0.23048562
+7  ID_ESCOLA   (Intercept)  GRUPO_RACIAL  -16.4049038 -0.38485846
+8  ID_ESCOLA VL_INSE_ALUNO    REPROVACAO    2.5537495  0.24141086
+9  ID_ESCOLA VL_INSE_ALUNO  GRUPO_RACIAL   -0.1721669 -0.01500242
+10 ID_ESCOLA    REPROVACAO  GRUPO_RACIAL    3.4272397  0.25803367
+11  Residual          <NA>          <NA> 1855.1305942 43.07122699
+
+ ********************************************* 
+Modelo 6: 
+
+=======================================================
+                                Dependent variable:    
+                            ---------------------------
+                               PROFICIENCIA_LP_SAEB    
+-------------------------------------------------------
+GRUPO_RACIAL                         6,574***          
+                                     p = 0,000         
+                                                       
+ESCOLARIDADE_MAE                     4,343***          
+                                     p = 0,000         
+                                                       
+REPROVACAO                          -15,631***         
+                                     p = 0,000         
+                                                       
+VL_INSE_ALUNO                        -0,889***         
+                                    p = 0,00003        
+                                                       
+NSE_ESCOLA                           4,969***          
+                                     p = 0,000         
+                                                       
+ID_AREA                              -4,258***         
+                                     p = 0,000         
+                                                       
+VL_TOTAL                              0,00000          
+                                     p = 0,827         
+                                                       
+MEDIA_LP_2015                        0,439***          
+                                     p = 0,000         
+                                                       
+REPROVACAO:NSE_ESCOLA                -1,799***         
+                                    p = 0,00001        
+                                                       
+ESCOLARIDADE_MAE:NSE_ESCOLA          -0,555***         
+                                    p = 0,0001         
+                                                       
+Constant                            263,354***         
+                                     p = 0,000         
+                                                       
+-------------------------------------------------------
+Observations                          99.422           
+Log Likelihood                     -516.540,600        
+Akaike Inf. Crit.                  1.033.125,000       
+Bayesian Inf. Crit.                1.033.334,000       
+=======================================================
+Note:                       *p<0,1; **p<0,05; ***p<0,01
+
+# Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.050
+  Unadjusted ICC: 0.044
+
+# R2 for Mixed Models
+
+  Conditional R2: 0.167
+     Marginal R2: 0.123
+
+ # Matriz de Variâncias 
+         grp          var1          var2         vcov       sdcor
+1  ID_ESCOLA   (Intercept)          <NA>   85.0019835  9.21965202
+2  ID_ESCOLA VL_INSE_ALUNO          <NA>    8.5966340  2.93200171
+3  ID_ESCOLA    REPROVACAO          <NA>   11.6568597  3.41421436
+4  ID_ESCOLA  GRUPO_RACIAL          <NA>   14.2821430  3.77917226
+5  ID_ESCOLA   (Intercept) VL_INSE_ALUNO    2.5150386  0.09303919
+6  ID_ESCOLA   (Intercept)    REPROVACAO   -0.8547179 -0.02715298
+7  ID_ESCOLA   (Intercept)  GRUPO_RACIAL  -11.4467903 -0.32852809
+8  ID_ESCOLA VL_INSE_ALUNO    REPROVACAO    1.5442571  0.15426400
+9  ID_ESCOLA VL_INSE_ALUNO  GRUPO_RACIAL   -1.0452732 -0.09433414
+10 ID_ESCOLA    REPROVACAO  GRUPO_RACIAL    2.8172861  0.21834511
+11  Residual          <NA>          <NA> 1855.0427552 43.07020728
